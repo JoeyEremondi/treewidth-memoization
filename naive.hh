@@ -16,6 +16,7 @@ typedef typename boost::graph_traits<Graph>::vertex_descriptor Vertex;
 int naiveTW(std::set<Vertex> S, Graph G);
 
 int sizeQ(std::set<Vertex> S, Vertex v, Graph G);
+int sizeQ(std::set<Vertex> S, Vertex v, Graph G, std::queue<Vertex> open, std::set<Vertex> closed);
 
 
 
