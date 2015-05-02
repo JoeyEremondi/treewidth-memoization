@@ -13,9 +13,9 @@ typedef boost::adjacency_list < boost::vecS, boost::vecS, boost::undirectedS > G
 typedef typename boost::graph_traits<Graph>::edge_descriptor Edge;
 typedef typename boost::graph_traits<Graph>::vertex_descriptor Vertex; 
 
-int naiveTW(int n, Graph G);
+int naiveTW(std::set<Vertex> S, Graph G);
 
-int sizeQ(std::set<int> S, int, Graph G);
+int sizeQ(std::set<Vertex> S, Vertex v, Graph G);
 
 
 
