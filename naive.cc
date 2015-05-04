@@ -6,8 +6,6 @@
 
 #include <boost/property_map/property_map.hpp>
 #include <boost/graph/adjacency_list.hpp>
-#include <boost/graph/breadth_first_search.hpp>
-#include <boost/graph/filtered_graph.hpp>
 #include <boost/graph/random.hpp>
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/graph/graphviz.hpp>
@@ -23,24 +21,6 @@
 
 //Treewidth is always positive, so we can use this in place of -Inf
 const int NO_WIDTH = -1;
-
-
-std::string showSet(std::set<Vertex> S) {
-    std::ostringstream result;
-    
-    result << "{";
-        
-        
-        for (auto iter = S.begin(); iter != S.end(); iter++)
-        {
-            result << *iter << " ; ";
-        }
-        
-    result << "}";
-    
-    return result.str();
-    
-}
 
 
 
@@ -78,72 +58,8 @@ int naiveTW(std::set<Vertex> S, Graph G)
 }
 
 
-/**
-Functor to remove vertices in a graph which are in the given set
-*/
-class QFilter
-{
-    public:
-    std::set<Vertex> S;
-    QFilter() = default;
-    
-    QFilter(std::set<Vertex> inputSet)
-    {
-        S = inputSet;
-    }
-    
-    bool operator()(const Vertex& v) const
-    {
-        return S.find(v) == S.end(); // keep all vertx_descriptors greater than 3
-    }
-};
 
-
-//Basically just a BFS
-//We start at v, and search
-//We expand vertices in S
-//And we add to our count (without expanding) for those not in S
-int sizeQ(std::set<Vertex> S, Vertex v, Graph G)
-{
-    std::queue<Vertex> open;
-    open.push(v);
-    
-    std::set<Vertex> closed;
-    
-    int numInQ = 0;
-
-    while (!open.empty() )
-    {
-	Vertex w = open.front();
-	open.pop();
-	auto neighbours = boost::adjacent_vertices(w,G);
-	for (auto iter = neighbours.first; iter != neighbours.second; iter++ )
-	{
-            Vertex u = *iter;
-	    if (closed.find(u) == closed.end())
-	    {
-		bool inS = S.find(u) != S.end();
-                closed.insert(u);
-		
-		if (u != v && !inS)
-		{
-		    open.push(u);
-		} 
-		else 
-		{
-		    numInQ++;
-		    
-		}
-	    }
-	}
-    }
-    return numInQ;
-    
-}
-
-
-
-int main()
+int naiveMain()
 {
     
     Graph g;
