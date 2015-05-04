@@ -6,16 +6,14 @@ CPPFLAGS=-g
 LDFLAGS=-g
 LDLIBS=-lm
 
-SRCS= qset.cc memo.cc naive.cc
+SRCS= qset.cc memo.cc test.cc NaiveMemo.cc
 OBJS=$(subst .cc,.o,$(SRCS))
 
-all: memo naive
+all: test
 
-naive: $(OBJS)
-	$(CXX) $(LDFLAGS) -o naive $(OBJS) $(LDLIBS) 
 
-memo: $(OBJS)
-	$(CXX) $(LDFLAGS) -o memo $(OBJS) $(LDLIBS)
+test: $(OBJS)
+	$(CXX) $(LDFLAGS) -o test $(OBJS) $(LDLIBS)
 
 depend: .depend
 

@@ -26,7 +26,7 @@
 const int NO_WIDTH = -1;
 
 
-int memoTW(Memoizer& memo, std::set<Vertex> S, Graph G)
+int memoTW(Memoizer* memo, std::set<Vertex> S, Graph G)
 {
     if (S.empty())
     {
@@ -35,7 +35,9 @@ int memoTW(Memoizer& memo, std::set<Vertex> S, Graph G)
     else
     {
         int minSoFar = INT_MAX;
-        auto orderedVerts = memo.orderVertices(S,G);
+
+	//We let our implementation order the vertices
+        auto orderedVerts = memo->orderVertices(S,G);
 	
         for (auto iter = orderedVerts.begin(); iter != orderedVerts.end(); iter++)
         {
@@ -44,7 +46,7 @@ int memoTW(Memoizer& memo, std::set<Vertex> S, Graph G)
             
             S2.erase(v);
             
-            int subTW = memo.subTW(S2, G);
+            int subTW = memo->subTW(S2, G);
             int qVal = sizeQ(S2, v, G);
 
 	    //Optimization: if there are more elements in the Q set than our
@@ -67,27 +69,4 @@ int memoTW(Memoizer& memo, std::set<Vertex> S, Graph G)
 
 
 
-int main()
-{
-    
-    Graph g;
-    boost::mt19937 rng(time (NULL));
-    boost::generate_random_graph(g, 8, 20, rng, true, true);
-    
-    boost::write_graphviz(std::cout, g);
-    
-    
-    auto iterInfo = boost::vertices(g);
-    std::set<Vertex> S;
-    for (auto iter = iterInfo.first; iter != iterInfo.second; iter++ )
-    {
-        S.insert(*iter);
-    }
-    
-    
-    //std::cout << "Treewidth: " << memoTW(S, g) << std::endl;
 
-    
-    return EXIT_SUCCESS;
-    
-}

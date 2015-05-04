@@ -9,16 +9,7 @@
 #include <boost/graph/graph_traits.hpp>
 #include <boost/graph/breadth_first_search.hpp>
 
-//Adapted from http://stackoverflow.com/questions/14470566/how-to-traverse-graph-in-boost-use-bfs
-typedef boost::adjacency_list < boost::vecS, boost::vecS, boost::undirectedS > Graph;
-typedef typename boost::graph_traits<Graph>::edge_descriptor Edge;
-typedef typename boost::graph_traits<Graph>::vertex_descriptor Vertex; 
-
-int naiveTW(std::set<Vertex> S, Graph G);
-
-int sizeQ(std::set<Vertex> S, Vertex v, Graph G);
-int sizeQ(std::set<Vertex> S, Vertex v, Graph G, std::queue<Vertex> open, std::set<Vertex> closed);
-
+#include "qset.hh"
 
 /**
 Abstract class for memoizing the result of recursive calls,
@@ -33,6 +24,16 @@ class Memoizer
     virtual std::vector<Vertex> orderVertices(std::set<Vertex> S, Graph G) = 0;
     
 };
+
+
+
+
+
+int memoTW(Memoizer* memo, std::set<Vertex> S, Graph G);
+
+int sizeQ(std::set<Vertex> S, Vertex v, Graph G);
+int sizeQ(std::set<Vertex> S, Vertex v, Graph G, std::queue<Vertex> open, std::set<Vertex> closed);
+
 
 
 
