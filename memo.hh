@@ -20,5 +20,21 @@ int sizeQ(std::set<Vertex> S, Vertex v, Graph G);
 int sizeQ(std::set<Vertex> S, Vertex v, Graph G, std::queue<Vertex> open, std::set<Vertex> closed);
 
 
+/**
+Abstract class for memoizing the result of recursive calls,
+finding cases that can be efficiently solved,
+and optimizations for ordering and pruning our search
+ */
+class Memoizer
+{
+   public:
+      // pure virtual function
+    virtual int subTW(std::set<Vertex> S, Graph G) = 0;
+    virtual std::vector<Vertex> orderVertices(std::set<Vertex> S, Graph G) = 0;
+    
+};
+
+
+
 #endif
 

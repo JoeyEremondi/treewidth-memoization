@@ -26,10 +26,7 @@
 const int NO_WIDTH = -1;
 
 
-
-
-
-int memoTW(std::set<Vertex> S, Graph G)
+int memoTW(Memoizer& memo, std::set<Vertex> S, Graph G)
 {
     if (S.empty())
     {
@@ -38,24 +35,28 @@ int memoTW(std::set<Vertex> S, Graph G)
     else
     {
         int minSoFar = INT_MAX;
-        
-        for (auto iter = S.begin(); iter != S.end(); iter++)
+        auto orderedVerts = memo.orderVertices(S,G);
+	
+        for (auto iter = orderedVerts.begin(); iter != orderedVerts.end(); iter++)
         {
             Vertex v = *iter;
             std::set<Vertex> S2(S);
             
             S2.erase(v);
             
-            int subTW = memoTW(S2, G);
+            int subTW = memo.subTW(S2, G);
             int qVal = sizeQ(S2, v, G);
+
+	    //Optimization: if there are more elements in the Q set than our
+	    //lowest treewidth found so far, we now this vertex isn't optimal
+	    //So don't recurse
+	    if (qVal < minSoFar)
+	    {
+		minSoFar = std::min(minSoFar, std::max(subTW, qVal ) );
+	    }
+	    
             
             
-            
-            //std::cout << "S2 is " << showSet(S2) << std::endl;
-            //std::cout << "subTW " << subTW << std::endl;
-            //std::cout << "qVal " << qVal << std::endl;
-            
-            minSoFar = std::min(minSoFar, std::max(subTW, qVal ) );
         }
         return minSoFar;
         
@@ -84,7 +85,7 @@ int main()
     }
     
     
-    std::cout << "Treewidth: " << memoTW(S, g) << std::endl;
+    //std::cout << "Treewidth: " << memoTW(S, g) << std::endl;
 
     
     return EXIT_SUCCESS;
