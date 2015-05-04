@@ -3,11 +3,12 @@
 #include <cstdlib>
 
 #include "NaiveMemo.hh"
+#include "qset.hh"
 
     //We just recursively call our TW algorithm in the naive version
 int NaiveMemo::subTW(std::set<Vertex> S, Graph G) 
 {
-    return memoTW(this, S, G); ;
+    return memoTW(this, S, G);
 }
 
 

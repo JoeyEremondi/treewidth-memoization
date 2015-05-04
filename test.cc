@@ -12,13 +12,17 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/graph/graphviz.hpp>
 
+#include <boost/timer/timer.hpp>
+
 #include <vector>
 #include <utility>
 #include <ctime>
 
 #include "memo.hh"
 #include "NaiveMemo.hh"
+#include "BasicMemo.hh"
 
+using namespace boost::timer;
 
 int main()
 {
@@ -31,17 +35,25 @@ int main()
     
     
     auto iterInfo = boost::vertices(g);
-    std::set<Vertex> S;
-    for (auto iter = iterInfo.first; iter != iterInfo.second; iter++ )
-    {
-        S.insert(*iter);
-    }
-    
-    auto memo = new NaiveMemo();
-    
-    std::cout << "Treewidth: " << memoTW(memo, S, g) << std::endl;
+    std::set<Vertex> S(iterInfo.first, iterInfo.second);
 
+    auto_cpu_timer* timer;
+
+    std::cout << "Naive version" << std::endl;
+    timer = new auto_cpu_timer();
+
+    auto memo = new NaiveMemo();    
+    std::cout << "Treewidth: " << memoTW(memo, S, g) << std::endl;
     delete memo;
+    delete timer;
+
+    std::cout << "Basic Memoization" << std::endl;
+    timer = new auto_cpu_timer();
+
+    BasicMemo* memo2 = new BasicMemo();    
+    std::cout << "Treewidth: " << memoTW(memo2, S, g) << std::endl;
+    delete memo;
+    delete timer;
     
     return EXIT_SUCCESS;
     
