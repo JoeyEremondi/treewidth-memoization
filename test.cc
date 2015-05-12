@@ -12,6 +12,8 @@
 #include <boost/random/mersenne_twister.hpp>
 #include <boost/graph/graphviz.hpp>
 
+#include <boost/graph/dimacs.hpp>
+
 #include <boost/timer/timer.hpp>
 
 #include <vector>
@@ -22,39 +24,54 @@
 #include "NaiveMemo.hh"
 #include "BasicMemo.hh"
 
+#include <fstream>
+
+
 using namespace boost::timer;
+using namespace boost::graph;
 
 int main()
 {
+    //Graph g;
     
-    Graph g;
-    boost::mt19937 rng(time (NULL));
-    boost::generate_random_graph(g, 8, 20, rng, true, true);
+    //boost::mt19937 rng(time (NULL));
+    //boost::generate_random_graph(g, 8, 20, rng, true, true);
     
-    boost::write_graphviz(std::cout, g);
+    /*
+    std::ifstream inGraph;
+    inGraph.open("myciel4.col");
+
+
+    dimacs_basic_reader reader(inGraph, false);
+    dimacs_basic_reader end;
+    dimacs_edge_iterator<dimacs_basic_reader> dimacsStart(reader);
+    dimacs_edge_iterator<dimacs_basic_reader> endIter(end);
+
+    for (auto i = dimacsStart; i != endIter; i++)
+    {
+	std::cout << *i << std::endl;
+	
+    }
+    
+
+    Graph g2(dimacsStart, endIter, reader.n_vertices());
+    boost::write_graphviz(std::cout, g2);
     
     
-    auto iterInfo = boost::vertices(g);
+    auto iterInfo = boost::vertices(g2);
     std::set<Vertex> S(iterInfo.first, iterInfo.second);
 
     auto_cpu_timer* timer;
 
-    std::cout << "Naive version" << std::endl;
-    timer = new auto_cpu_timer();
-
-    auto memo = new NaiveMemo();    
-    std::cout << "Treewidth: " << memoTW(memo, S, g) << std::endl;
-    delete memo;
-    delete timer;
-
     std::cout << "Basic Memoization" << std::endl;
     timer = new auto_cpu_timer();
 
-    BasicMemo* memo2 = new BasicMemo();    
-    std::cout << "Treewidth: " << memoTW(memo2, S, g) << std::endl;
-    delete memo;
+    auto memo2 = new BasicMemo();    
+    std::cout << "Treewidth: " << memoTW(memo2, S, g2) << std::endl;
+    delete memo2;
     delete timer;
     
-    return EXIT_SUCCESS;
     
+    return EXIT_SUCCESS;
+    */
 }
