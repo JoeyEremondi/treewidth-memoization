@@ -8,7 +8,7 @@
 
 class BasicMemo : public Memoizer
 {
-private:
+protected:
     Graph g;    
     std::map<std::set<Vertex>,int>* storedCalls;
     

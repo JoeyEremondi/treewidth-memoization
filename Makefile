@@ -6,7 +6,7 @@ CPPFLAGS=-g
 LDFLAGS=-g
 LDLIBS=-lm -lboost_system -lboost_timer
 
-SRCS= qset.cc memo.cc test.cc NaiveMemo.cc BasicMemo.cc DepthBoundedMemo.cc
+SRCS= qset.cc memo.cc test.cc NaiveMemo.cc BasicMemo.cc DepthBoundedMemo.cc GCMemo.cc
 OBJS=$(subst .cc,.o,$(SRCS))
 
 all: test
