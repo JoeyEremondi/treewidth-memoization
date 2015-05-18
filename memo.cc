@@ -56,9 +56,6 @@ int memoTW(Memoizer* memo, std::set<Vertex> S, Graph G)
 	    {
 		minSoFar = std::min(minSoFar, std::max(subTW, qVal ) );
 	    }
-	    
-            
-            
         }
         return minSoFar;
         
