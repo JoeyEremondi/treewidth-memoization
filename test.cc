@@ -21,21 +21,44 @@
 #include <ctime>
 
 #include "AbstractMemo.hh"
-#include "NaiveMemo.hh"
+#include "DepthBoundedMemo.hh"
 #include "BasicMemo.hh"
 
 #include <fstream>
+
+#include <sstream>
 
 
 using namespace boost::timer;
 using namespace boost::graph;
 
-int main()
+int main(int argc, char** argv)
 {
+
+    //Get our vertex and edge counts from the command line
+    std::istringstream vcs(argv[1]);
+    std::istringstream ecs(argv[2]);
+
+    int vc, ec;
+    
+    if (!(vcs >> vc))
+    {
+        std::cerr << "Invalid number " << argv[1] << '\n';
+	return -1;
+    }
+    if (!(ecs >> ec))
+    {
+        std::cerr << "Invalid number " << argv[2] << '\n';
+	return -1;
+    }
+    	
+
+
+
     Graph gRand;
     
     boost::mt19937 rng(time (NULL));
-    boost::generate_random_graph(gRand, 8, 20, rng, true, true);
+    boost::generate_random_graph(gRand, vc, ec, rng, true, true);
 
     auto_cpu_timer* timer;
 
@@ -47,15 +70,15 @@ int main()
     delete memo2;
     delete timer;
 
-    std::cout << "Naive Memoization" << std::endl;
+    std::cout << "Depth-bounded Memoization" << std::endl;
     timer = new auto_cpu_timer();
 
-    auto memo3 = new NaiveMemo(gRand);    
+    auto memo3 = new DepthBoundedMemo(1, gRand);    
     std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
     delete memo3;
     delete timer;
 
-    boost::write_graphviz(std::cout, gRand);
+    //boost::write_graphviz(std::cout, gRand);
     
     /*
     std::ifstream inGraph;

@@ -4,8 +4,6 @@
 #include "AbstractMemo.hh"
 #include "qset.hh"
 
-#include <map>
-
 class NaiveMemo : public AbstractMemo
 {
     //No no methods, we just implement the virtual ones from AbstractMemo

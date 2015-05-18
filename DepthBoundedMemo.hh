@@ -1,29 +1,22 @@
 #ifndef __DEPTH_BOUND_MEMO__H_
 #define __DEPTH_BOUND_MEMO__H_
 
-#include "memo.hh"
-#include "qset.hh"
+#include "AbstractMemo.hh"
 #include "BasicMemo.hh"
-#include "NaiveMemo.hh"
+#include "qset.hh"
 
-#include <map>
-
-/**
-A basic memoized treewidth search algorithm, but uses the naive (no memoization)
-version when the sets are smaller than the parameter given.
-*/
-class DepthBoundedMemo : public BasicMemo, public NaiveMemo
+class DepthBoundedMemo : public BasicMemo
 {
-private:
-    unsigned long bruteForceSize;
-    
-    
+    //We have an integer for the size of the smallest sets we bother caching
+protected:
+    int bound;
+
+    bool shouldCache(std::set<Vertex> S) ;
 public:
-    DepthBoundedMemo(unsigned long bound);
+    DepthBoundedMemo(int boundParam, Graph G);
     ~DepthBoundedMemo();
-    int subTW(std::set<Vertex> S, Graph G);
-    //std::vector<Vertex> orderVertices(std::set<Vertex> S, Graph G);
     
 };
 
 #endif   
+

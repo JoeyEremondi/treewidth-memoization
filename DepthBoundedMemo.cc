@@ -1,24 +1,22 @@
-#include "DepthBoundedMemo.hh"
-#include "NaiveMemo.hh"
-#include "BasicMemo.hh"
-
+#include <vector>
 #include <set>
+#include <cstdlib>
 
-DepthBoundedMemo::DepthBoundedMemo(unsigned long bound)
+#include "DepthBoundedMemo.hh"
+
+
+bool DepthBoundedMemo::shouldCache(std::set<Vertex> S)
 {
-    bruteForceSize = bound;
-    
+    return S.size() >= bound;
 }
 
 
-int DepthBoundedMemo::subTW(std::set<Vertex> S, Graph G)
+DepthBoundedMemo::DepthBoundedMemo(int boundParam, Graph G) : BasicMemo(G)
 {
-    if (S.size() < bruteForceSize) //TODO different sizes?
-    {
-	return NaiveMemo::subTW(S, G);
-    } else {
-	return BasicMemo::subTW(S, G);
-    }
+    bound = boundParam;
     
-    
+}
+
+DepthBoundedMemo::~DepthBoundedMemo()
+{
 }
