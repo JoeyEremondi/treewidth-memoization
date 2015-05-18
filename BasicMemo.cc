@@ -41,6 +41,13 @@ std::vector<std::set<Vertex>> BasicMemo::setsToForget(std::set<Vertex> S)
     return std::vector<std::set<Vertex>>();
 }
 
+BasicMemo::BasicMemo(Graph G) : AbstractMemo(G)
+{
+}
+
+BasicMemo::~BasicMemo()
+{
+}
 
 
 

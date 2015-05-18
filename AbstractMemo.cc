@@ -6,8 +6,23 @@
 AbstractMemo::AbstractMemo(Graph theGraph)
 {
     G = theGraph;
+    storedCalls = new std::map<std::set<Vertex>,int>();
     
 }
+
+AbstractMemo::~AbstractMemo()
+{
+    delete storedCalls;
+}
+
+int AbstractMemo::treeWidth()
+{
+    auto iterInfo = boost::vertices(G);
+    std::set<Vertex> S(iterInfo.first, iterInfo.second);
+    return subTW(S);
+}
+
+
 
 //If a recursive value is stored, then return it
 //Otherwise, compute and store it before returning it

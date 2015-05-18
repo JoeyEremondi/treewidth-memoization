@@ -17,6 +17,9 @@ protected:
     bool shouldCache(std::set<Vertex> S) ;
     bool needsCleaning() ;
     std::vector<std::set<Vertex>> setsToForget(std::set<Vertex> S) ;
+public:
+    BasicMemo(Graph G);
+    ~BasicMemo();
 };
 
 #endif   

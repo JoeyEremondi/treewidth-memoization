@@ -41,4 +41,12 @@ std::vector<std::set<Vertex>> NaiveMemo::setsToForget(std::set<Vertex> S)
     return std::vector<std::set<Vertex>>();
 }
 
+NaiveMemo::NaiveMemo(Graph G) : AbstractMemo(G)
+{
+}
+
+NaiveMemo::~NaiveMemo()
+{
+}
+
 

@@ -32,10 +32,20 @@ using namespace boost::graph;
 
 int main()
 {
-    //Graph g;
+    Graph gRand;
     
-    //boost::mt19937 rng(time (NULL));
-    //boost::generate_random_graph(g, 8, 20, rng, true, true);
+    boost::mt19937 rng(time (NULL));
+    boost::generate_random_graph(gRand, 8, 20, rng, true, true);
+
+    auto_cpu_timer* timer;
+
+    std::cout << "Basic Memoization" << std::endl;
+    timer = new auto_cpu_timer();
+
+    auto memo2 = new BasicMemo(gRand);    
+    std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
+    delete memo2;
+    delete timer;
     
     /*
     std::ifstream inGraph;
