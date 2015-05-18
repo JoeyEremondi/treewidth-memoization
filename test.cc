@@ -46,6 +46,16 @@ int main()
     std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
     delete memo2;
     delete timer;
+
+    std::cout << "Naive Memoization" << std::endl;
+    timer = new auto_cpu_timer();
+
+    auto memo3 = new NaiveMemo(gRand);    
+    std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
+    delete memo3;
+    delete timer;
+
+    boost::write_graphviz(std::cout, gRand);
     
     /*
     std::ifstream inGraph;

@@ -23,10 +23,10 @@ int NaiveMemo::lowerBound(std::set<Vertex> S)
     return 1;
 }
 
-//Always cache for basic memoization
+//Never cache in naive version
 bool NaiveMemo::shouldCache(std::set<Vertex> S)
 {
-    return true;
+    return false;
 }
 
 //Never clean in the basic version

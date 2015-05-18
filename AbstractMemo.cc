@@ -51,8 +51,7 @@ int AbstractMemo::fetchOrStore(std::set<Vertex> S)
 
 //Override
 int AbstractMemo::subTW(std::set<Vertex> S)
-{
-
+{    
     //Clean if we need to
     if (needsCleaning())
     {
@@ -78,7 +77,7 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
     
     auto maybeStored = storedCalls->find(S);
 
-    if (maybeStored == storedCalls->end())
+    if (maybeStored != storedCalls->end())
     {
 	return maybeStored->second;
     }
