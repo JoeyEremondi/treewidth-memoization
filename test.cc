@@ -20,7 +20,7 @@
 #include <utility>
 #include <ctime>
 
-#include "memo.hh"
+#include "AbstractMemo.hh"
 #include "NaiveMemo.hh"
 #include "BasicMemo.hh"
 

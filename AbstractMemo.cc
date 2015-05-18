@@ -1,7 +1,4 @@
 #include "AbstractMemo.hh"
-#include "NaiveMemo.hh"
-#include "BasicMemo.hh"
-#include "memo.hh"
 #include "qset.hh"
 
 #include <set>

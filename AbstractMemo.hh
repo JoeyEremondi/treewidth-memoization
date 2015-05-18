@@ -1,11 +1,7 @@
 #ifndef __ABSTRACT_MEMO__H_
 #define __ABSTRACT_MEMO__H_
 
-#include "memo.hh"
 #include "qset.hh"
-#include "BasicMemo.hh"
-#include "NaiveMemo.hh"
-
 #include <map>
 
 //Treewidth is always positive, so we can use this in place of -Inf
@@ -13,13 +9,12 @@ const int NO_WIDTH = -1;
 
 
 /**
-A basic memoized treewidth search algorithm, but uses the naive (no memoization)
-version when the sets are smaller than the parameter given.
+Abstract implementation of the memoized recursive TW algorithm.
+This lets us tune our heuristics without changing the core algorithm.
 */
 class AbstractMemo
 {
 protected:
-    unsigned long bruteForceSize;
     Graph G;
     int subTW(std::set<Vertex> S);
     std::map<std::set<Vertex>,int>* storedCalls;

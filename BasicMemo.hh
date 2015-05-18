@@ -1,24 +1,22 @@
 #ifndef __BASIC_MEMO__H_
 #define __BASIC_MEMO__H_
 
-#include "memo.hh"
+#include "AbstractMemo.hh"
 #include "qset.hh"
 
 #include <map>
 
-class BasicMemo : public Memoizer
+class BasicMemo : public AbstractMemo
 {
+    //No no methods, we just implement the virtual ones from AbstractMemo
+    //We can use the default constructor and destructor
 protected:
-    Graph g;    
-    std::map<std::set<Vertex>,int>* storedCalls;
-    
-    
-public:
-    BasicMemo();
-    ~BasicMemo();
-    int subTW(std::set<Vertex> S, Graph G);
-    std::vector<Vertex> orderVertices(std::set<Vertex> S, Graph G);
-    
+    std::vector<Vertex> orderVertices(std::set<Vertex> S) ;
+    int upperBound(std::set<Vertex> S) ;
+    int lowerBound(std::set<Vertex> S) ;
+    bool shouldCache(std::set<Vertex> S) ;
+    bool needsCleaning() ;
+    std::vector<std::set<Vertex>> setsToForget(std::set<Vertex> S) ;
 };
 
 #endif   
