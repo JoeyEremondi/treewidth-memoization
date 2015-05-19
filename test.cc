@@ -22,6 +22,7 @@
 
 #include "AbstractMemo.hh"
 #include "DepthBoundedMemo.hh"
+#include "SimplicialFirstMemo.hh"
 #include "BasicMemo.hh"
 
 #include <fstream>
@@ -73,10 +74,19 @@ int main(int argc, char** argv)
     std::cout << "Depth-bounded Memoization" << std::endl;
     timer = new auto_cpu_timer();
 
-    auto memo3 = new DepthBoundedMemo(1, gRand);    
-    std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
+    auto memo3 = new DepthBoundedMemo(3, gRand);    
+    std::cout << "Treewidth: " << memo3->treeWidth() << std::endl;
     delete memo3;
     delete timer;
+
+    std::cout << "Simplicial-first Memoization" << std::endl;
+    timer = new auto_cpu_timer();
+
+    auto memo4 = new SimplicialFirstMemo(gRand);    
+    std::cout << "Treewidth: " << memo4->treeWidth() << std::endl;
+    delete memo4;
+    delete timer;
+
 
     //boost::write_graphviz(std::cout, gRand);
     

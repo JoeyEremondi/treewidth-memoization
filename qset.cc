@@ -1,4 +1,4 @@
-#include "qset.hh"
+
 
 #include <cstdlib>
 #include <iostream>
@@ -9,6 +9,15 @@
 #include <utility>
 #include <queue>
 #include <ctime>
+
+#include "qset.hh"
+
+//TODO make a Utils file?
+bool setContains (std::set<Vertex> S, Vertex v)
+{
+    return S.find(v) != S.end();
+}
+
 
 //Basically just a BFS
 //We start at v, and search

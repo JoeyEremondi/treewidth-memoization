@@ -18,5 +18,7 @@ int sizeQ(std::set<Vertex> S, Vertex v, Graph G);
 
 std::string showSet(std::set<Vertex> S);
 
+bool setContains (std::set<Vertex> S, Vertex v);
+
 
 #endif
