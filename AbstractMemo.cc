@@ -97,7 +97,7 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
             
             S2.erase(v);
             
-            int subTW = memo->subTW(S2);
+            
             int qVal = sizeQ(S2, v, G);
 
 	    //Optimization: if our Q value, or the treewidth lower bound, is worse
@@ -105,7 +105,8 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
 	    //this option, since it can't be the best
 	    if (qVal < minSoFar && lowerBound(S2) < minSoFar)
 	    {
-		minSoFar = std::min(minSoFar, std::max(subTW, qVal ) );
+		int subTWVal = memo->subTW(S2);
+		minSoFar = std::min(minSoFar, std::max(subTWVal, qVal ) );
 	    }
         }
         return minSoFar;
