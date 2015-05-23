@@ -14,11 +14,11 @@ typedef boost::adjacency_list < boost::vecS, boost::vecS, boost::undirectedS > G
 typedef typename boost::graph_traits<Graph>::edge_descriptor Edge;
 typedef typename boost::graph_traits<Graph>::vertex_descriptor Vertex; 
 
-int sizeQ(std::set<Vertex> S, Vertex v, Graph G);
+int sizeQ(std::set<Vertex> &S, Vertex v, Graph &G);
 
 std::string showSet(std::set<Vertex> S);
 
-bool setContains (std::set<Vertex> S, Vertex v);
+bool setContains (std::set<Vertex> &S, Vertex v);
 
 
 #endif
