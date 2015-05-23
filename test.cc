@@ -25,6 +25,8 @@
 #include "SimplicialFirstMemo.hh"
 #include "BasicMemo.hh"
 
+#include "HeuristicUpperBoundMemo.hh"
+
 #include <fstream>
 
 #include <sstream>
@@ -63,9 +65,11 @@ int main(int argc, char** argv)
 
     auto_cpu_timer* timer;
 
+    /*
     std::cout << "Basic Memoization" << std::endl;
     timer = new auto_cpu_timer();
 
+    
     auto memo2 = new BasicMemo(gRand);    
     std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
     delete memo2;
@@ -74,17 +78,23 @@ int main(int argc, char** argv)
     std::cout << "Depth-bounded Memoization" << std::endl;
     timer = new auto_cpu_timer();
 
-    auto memo3 = new DepthBoundedMemo(3, gRand);    
+    auto memo3 = new DepthBoundedMemo(5, gRand);    
     std::cout << "Treewidth: " << memo3->treeWidth() << std::endl;
     delete memo3;
     delete timer;
 
     std::cout << "Simplicial-first Memoization" << std::endl;
     timer = new auto_cpu_timer();
-
     auto memo4 = new SimplicialFirstMemo(gRand);    
     std::cout << "Treewidth: " << memo4->treeWidth() << std::endl;
     delete memo4;
+    delete timer; */
+
+    std::cout << "Heuristic UB Memoization" << std::endl;
+    timer = new auto_cpu_timer();
+    auto memo5 = new HeuristicUpperBoundMemo(gRand);    
+    std::cout << "Treewidth: " << memo5->treeWidth() << std::endl;
+    delete memo5;
     delete timer;
 
 
