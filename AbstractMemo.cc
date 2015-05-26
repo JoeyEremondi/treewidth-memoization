@@ -6,6 +6,10 @@
 AbstractMemo::AbstractMemo(Graph theGraph)
 {
     G = theGraph;
+    numVerts = boost::num_vertices(G);
+    
+    globalUpperBound = numVerts;
+    
     storedCalls = new std::map<std::set<Vertex>,int>();
     
 }
@@ -31,6 +35,7 @@ int AbstractMemo::fetchOrStore(std::set<Vertex> S)
     auto maybeStored = storedCalls->find(S);
     if ( maybeStored == storedCalls->end())
     {
+	memoMisses++;
 	if (shouldCache(S))
 	{
 	    auto newEntry = std::pair<std::set<Vertex>, int>(S, naiveTW(this, S, G));
@@ -44,6 +49,7 @@ int AbstractMemo::fetchOrStore(std::set<Vertex> S)
 	
 	
     } else {
+	memoHits++;
 	return maybeStored->second;
     }
     
@@ -83,9 +89,13 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
     }
     else
     {
-	//Set our minimum so far to the worst possible case for the optimum
+	//Set our minimum so far to the worst possible case for the optimum for this set,
+	// or the worst for the graph as a whole, whicever is lower
+	//TODO document this
+	//This technically doesn't preserve our recurrence, but it only
+	//Gives incorrect results in branches we know will not contribute to the final result
 	//Any elements worse than this we don't need to expand
-        int minSoFar = upperBound(S);
+        int minSoFar = std::min(upperBound(S), globalUpperBound);
 
 	//We let our implementation order the vertices
         auto orderedVerts = memo->orderVertices(S);
@@ -105,11 +115,31 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
 	    //this option, since it can't be the best
 	    if (qVal < minSoFar && lowerBound(S2) < minSoFar)
 	    {
+		//Count this as expansion
+		numExpanded++;
+		
 		int subTWVal = memo->subTW(S2);
 		minSoFar = std::min(minSoFar, std::max(subTWVal, qVal ) );
+		
+		//Update our global upper bound, according to Lemma 9 of the paper
+		globalUpperBound = 
+		       std::min(globalUpperBound, 
+				std::max(subTWVal, (int)(numVerts - S.size() - 1) ) );
+		
 	    }
         }
         return minSoFar;
         
     }
 }
+
+void AbstractMemo::printStats()
+{
+    std::cout << "Num expanded " << numExpanded << std::endl;
+    std::cout << "Hits  " << memoHits << std::endl;
+    std::cout << "Misses " << memoMisses << std::endl;
+    
+    
+}
+
+

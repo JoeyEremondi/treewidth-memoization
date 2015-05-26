@@ -31,6 +31,8 @@
 
 #include <sstream>
 
+#include "DIMACS.hh"
+
 
 using namespace boost::timer;
 using namespace boost::graph;
@@ -38,6 +40,7 @@ using namespace boost::graph;
 int main(int argc, char** argv)
 {
 
+    /*
     //Get our vertex and edge counts from the command line
     std::istringstream vcs(argv[1]);
     std::istringstream ecs(argv[2]);
@@ -53,49 +56,71 @@ int main(int argc, char** argv)
     {
         std::cerr << "Invalid number " << argv[2] << '\n';
 	return -1;
-    }
+    } */
     	
 
+    //std::vector<std::string> inFiles({"myciel4.dgf" , "myciel4.dgf" , "queen5-5.dgf", "queen6-6.dgf", "queen7-7.dgf"  });
+    std::vector<std::string> inFiles({"myciel3.dgf" ,  "queen5_5.dgf" });
+    //TODO make nicer loop
+    for (auto iter = inFiles.begin(); iter != inFiles.end(); iter++)
+    {
+	
+	std::ifstream inGraphFile;
+	inGraphFile.open("testGraphs/"  + *iter);
+	std::cout << "\n\n***********\nTesting on graph " << *iter << "\n***********\n";
+	
+	
 
-
-    Graph gRand;
+	Graph gRand;
     
-    boost::mt19937 rng(time (NULL));
-    boost::generate_random_graph(gRand, vc, ec, rng, true, true);
+	read_coloring_problem(inGraphFile, gRand);
+	//boost::write_graphviz(std::cout, gRand);
+	inGraphFile.close();
+	
+	//boost::generate_random_graph(gRand, vc, ec, rng, true, true);
+    
 
-    auto_cpu_timer* timer;
 
-    /*
-    std::cout << "Basic Memoization" << std::endl;
-    timer = new auto_cpu_timer();
+	auto_cpu_timer* timer;
 
     
-    auto memo2 = new BasicMemo(gRand);    
-    std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
-    delete memo2;
-    delete timer;
+	std::cout << "Basic Memoization" << std::endl;
+	timer = new auto_cpu_timer();
 
-    std::cout << "Depth-bounded Memoization" << std::endl;
-    timer = new auto_cpu_timer();
+    
+	auto memo2 = new BasicMemo(gRand);    
+	std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
+	memo2->printStats();
+	delete memo2;
+	delete timer;
 
-    auto memo3 = new DepthBoundedMemo(5, gRand);    
-    std::cout << "Treewidth: " << memo3->treeWidth() << std::endl;
-    delete memo3;
-    delete timer;
+	std::cout << "Depth-bounded Memoization" << std::endl;
+	timer = new auto_cpu_timer();
 
-    std::cout << "Simplicial-first Memoization" << std::endl;
-    timer = new auto_cpu_timer();
-    auto memo4 = new SimplicialFirstMemo(gRand);    
-    std::cout << "Treewidth: " << memo4->treeWidth() << std::endl;
-    delete memo4;
-    delete timer; */
+	auto memo3 = new DepthBoundedMemo(5, gRand);    
+	std::cout << "Treewidth: " << memo3->treeWidth() << std::endl;
+	memo3->printStats();
+	delete memo3;
+	delete timer;
 
-    std::cout << "Heuristic UB Memoization" << std::endl;
-    timer = new auto_cpu_timer();
-    auto memo5 = new HeuristicUpperBoundMemo(gRand);    
-    std::cout << "Treewidth: " << memo5->treeWidth() << std::endl;
-    delete memo5;
-    delete timer;
+	std::cout << "Simplicial-first Memoization" << std::endl;
+	timer = new auto_cpu_timer();
+	auto memo4 = new SimplicialFirstMemo(gRand);    
+	std::cout << "Treewidth: " << memo4->treeWidth() << std::endl;
+	memo4->printStats();
+	delete memo4;
+	delete timer; 
+
+	std::cout << "Heuristic UB Memoization" << std::endl;
+	timer = new auto_cpu_timer();
+	auto memo5 = new HeuristicUpperBoundMemo(gRand);    
+	std::cout << "Treewidth: " << memo5->treeWidth() << std::endl;
+	memo5->printStats();
+	delete memo5;
+	delete timer;
+    }
+    
+
 
 
     //boost::write_graphviz(std::cout, gRand);

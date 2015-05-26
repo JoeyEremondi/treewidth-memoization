@@ -16,6 +16,15 @@ class AbstractMemo
 {
 protected:
     Graph G;
+    int numExpanded = 0;
+    int memoMisses = 0;
+    int memoHits = 0;
+
+    int globalUpperBound;
+    int numVerts;
+    
+    
+
     int subTW(std::set<Vertex> S);
     std::map<std::set<Vertex>,int>* storedCalls;
     int fetchOrStore(std::set<Vertex> S);
@@ -37,7 +46,8 @@ protected:
     
 public:
     int treeWidth();
-
+    void printStats();
+    
     
     
 };
