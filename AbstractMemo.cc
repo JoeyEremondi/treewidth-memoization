@@ -124,7 +124,7 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
 		//Update our global upper bound, according to Lemma 9 of the paper
 		globalUpperBound = 
 		       std::min(globalUpperBound, 
-				std::max(subTWVal, (int)(numVerts - S.size() - 1) ) );
+				std::max(subTWVal, (int)(numVerts - S.size() - 1) ) ); 
 		
 	    }
         }
