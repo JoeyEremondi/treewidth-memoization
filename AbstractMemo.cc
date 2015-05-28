@@ -31,7 +31,7 @@ int AbstractMemo::treeWidth()
 //Otherwise, compute and store it before returning it
 int AbstractMemo::fetchOrStore(VSet S) 
 {
-    std::cout << "Calls stored " << storedCalls->size() << "\n";
+    //std::cout << "Calls stored " << storedCalls->size() << "\n";
     
     auto maybeStored = storedCalls->find(S);
     //Did we find the result for set S memoized?
