@@ -1,30 +1,29 @@
 #include <vector>
-#include <set>
 #include <cstdlib>
 
 #include "BasicMemo.hh"
 
 //Ordered vertices: basic version doesn't order anything
-std::vector<Vertex> BasicMemo::orderVertices(std::set<Vertex> S)
+std::vector<Vertex> BasicMemo::orderVertices(VSet S)
 {
     std::vector<Vertex> v(S.begin(), S.end());
     return v;
 }
 
 //Basic version: upper bound is the size of the set
-int BasicMemo::upperBound(std::set<Vertex> S)
+int BasicMemo::upperBound(VSet S)
 {
-    return S.size();
+    return numVerts;
 }
 
-//Basic version: lower bound is always 1, nothing fance
-int BasicMemo::lowerBound(std::set<Vertex> S)
+//Basic version: lower bound is always 1, nothing fancy
+int BasicMemo::lowerBound(VSet S)
 {
     return 1;
 }
 
 //Always cache for basic memoization
-bool BasicMemo::shouldCache(std::set<Vertex> S)
+bool BasicMemo::shouldCache(VSet S)
 {
     return true;
 }
@@ -36,9 +35,9 @@ bool BasicMemo::needsCleaning()
 }
 
 //Should never get called
-std::vector<std::set<Vertex>> BasicMemo::setsToForget(std::set<Vertex> S)
+std::vector<VSet> BasicMemo::setsToForget(VSet S)
 {
-    return std::vector<std::set<Vertex>>();
+    return std::vector<VSet>();
 }
 
 BasicMemo::BasicMemo(Graph G) : AbstractMemo(G)

@@ -1,6 +1,5 @@
 #include <cstdlib>
 #include <iostream>
-#include <set>
 #include <climits>
 #include <algorithm>
 
@@ -60,7 +59,7 @@ int main(int argc, char** argv)
     	
 
     //std::vector<std::string> inFiles({"myciel4.dgf" , "myciel4.dgf" , "queen5-5.dgf", "queen6-6.dgf", "queen7-7.dgf"  });
-    std::vector<std::string> inFiles({"myciel3.dgf" ,  "queen5_5.dgf" });
+    std::vector<std::string> inFiles({"myciel3.dgf" ,  "pathfinder-pp.dgf" });
     //TODO make nicer loop
     for (auto iter = inFiles.begin(); iter != inFiles.end(); iter++)
     {
@@ -74,7 +73,7 @@ int main(int argc, char** argv)
 	Graph gRand;
     
 	read_coloring_problem(inGraphFile, gRand);
-	//boost::write_graphviz(std::cout, gRand);
+	boost::write_graphviz(std::cout, gRand);
 	inGraphFile.close();
 	
 	//boost::generate_random_graph(gRand, vc, ec, rng, true, true);
@@ -87,13 +86,13 @@ int main(int argc, char** argv)
 	std::cout << "Basic Memoization" << std::endl;
 	timer = new auto_cpu_timer();
 
-    
+	/*
 	auto memo2 = new BasicMemo(gRand);    
 	std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
 	memo2->printStats();
 	delete memo2;
 	delete timer;
-
+	
 	std::cout << "Depth-bounded Memoization" << std::endl;
 	timer = new auto_cpu_timer();
 
@@ -102,7 +101,7 @@ int main(int argc, char** argv)
 	memo3->printStats();
 	delete memo3;
 	delete timer;
-
+	*/
 	std::cout << "Simplicial-first Memoization" << std::endl;
 	timer = new auto_cpu_timer();
 	auto memo4 = new SimplicialFirstMemo(gRand);    
@@ -110,7 +109,7 @@ int main(int argc, char** argv)
 	memo4->printStats();
 	delete memo4;
 	delete timer; 
-
+	/*
 	std::cout << "Heuristic UB Memoization" << std::endl;
 	timer = new auto_cpu_timer();
 	auto memo5 = new HeuristicUpperBoundMemo(gRand);    
@@ -118,6 +117,7 @@ int main(int argc, char** argv)
 	memo5->printStats();
 	delete memo5;
 	delete timer;
+	*/
     }
     
 

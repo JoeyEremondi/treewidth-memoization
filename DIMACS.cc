@@ -68,6 +68,11 @@ bool read_coloring_problem(std::istream& dimacs, Graph& g) {
                 case 'e': 
                     if (edges-- && (iss >> from >> to) && (add_edge(from-1, to-1, g).second))
                         break;
+	        case 'n':
+	        case 'x':
+		    //Skip node info
+		    break;
+		    
                 default: 
                     return false;
             }

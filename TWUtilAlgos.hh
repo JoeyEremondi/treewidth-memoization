@@ -3,7 +3,6 @@
 
 #include "qset.hh"
 #include <vector>
-#include <set>
 
 //Find the width of a given permutation
 //Useful in finding heuristic upper bounds for treewidth

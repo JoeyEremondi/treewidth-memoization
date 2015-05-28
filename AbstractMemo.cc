@@ -1,16 +1,16 @@
 #include "AbstractMemo.hh"
 #include "qset.hh"
 
-#include <set>
+#include <unordered_set>
 
 AbstractMemo::AbstractMemo(Graph theGraph)
 {
     G = theGraph;
     numVerts = boost::num_vertices(G);
     
-    globalUpperBound = numVerts;
+    globalUpperBound = numVerts + 1; //TODO need +1?
     
-    storedCalls = new std::map<std::set<Vertex>,int>();
+    storedCalls = new std::map<VSet,int>();
     
 }
 
@@ -22,7 +22,7 @@ AbstractMemo::~AbstractMemo()
 int AbstractMemo::treeWidth()
 {
     auto iterInfo = boost::vertices(G);
-    std::set<Vertex> S(iterInfo.first, iterInfo.second);
+    VSet S(iterInfo.first, iterInfo.second);
     return subTW(S);
 }
 
@@ -30,15 +30,22 @@ int AbstractMemo::treeWidth()
 
 //If a recursive value is stored, then return it
 //Otherwise, compute and store it before returning it
-int AbstractMemo::fetchOrStore(std::set<Vertex> S) 
+int AbstractMemo::fetchOrStore(VSet S) 
 {
+    std::cout << "Calls stored " << storedCalls->size() << "\n";
+    
     auto maybeStored = storedCalls->find(S);
+    //Did we find the result for set S memoized?
     if ( maybeStored == storedCalls->end())
     {
+	//If not, check if we cache it
+	//Then calculate it using our recurrence relation
+	//And cache it if necessary
+	//TODO use DP not recursion for fast case
 	memoMisses++;
 	if (shouldCache(S))
 	{
-	    auto newEntry = std::pair<std::set<Vertex>, int>(S, naiveTW(this, S, G));
+	    auto newEntry = std::pair<VSet, int>(S, naiveTW(this, S, G));
 	    storedCalls->insert(newEntry);
 	    return newEntry.second;
 	} else {
@@ -56,8 +63,13 @@ int AbstractMemo::fetchOrStore(std::set<Vertex> S)
 }
 
 //Override
-int AbstractMemo::subTW(std::set<Vertex> S)
+int AbstractMemo::subTW(VSet S)
 {    
+    recursionDepth++;
+    //std::cout << "Recursion depth " << recursionDepth << "\n";
+    //std::cout << "Set " << showSet(S) << "\n";
+    
+    
     //Clean if we need to
     if (needsCleaning())
     {
@@ -69,13 +81,18 @@ int AbstractMemo::subTW(std::set<Vertex> S)
 	
     }
 
-    return fetchOrStore(S);
+    
+    auto ret = fetchOrStore(S);
+    
+    recursionDepth--;
+    return ret;
     
 }
 
 
-int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
+int AbstractMemo::naiveTW(AbstractMemo* memo, VSet S, Graph G)
 {
+    //std::cout << "NaiveMemo Set: " << showSet(S) << "\n";
     if (S.empty())
     {
         return NO_WIDTH;
@@ -83,7 +100,7 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
     
     auto maybeStored = storedCalls->find(S);
 
-    if (maybeStored != storedCalls->end())
+    if (false)//(maybeStored != storedCalls->end())
     {
 	return maybeStored->second;
     }
@@ -91,19 +108,21 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
     {
 	//Set our minimum so far to the worst possible case for the optimum for this set,
 	// or the worst for the graph as a whole, whicever is lower
-	//TODO document this
+	//TODO document this 
+	//TODO fix this
 	//This technically doesn't preserve our recurrence, but it only
 	//Gives incorrect results in branches we know will not contribute to the final result
 	//Any elements worse than this we don't need to expand
         int minSoFar = std::min(upperBound(S), globalUpperBound);
-
+	//std::cout << "Starting with min " << minSoFar << "\n";
+	
 	//We let our implementation order the vertices
         auto orderedVerts = memo->orderVertices(S);
 	
         for (auto iter = orderedVerts.begin(); iter != orderedVerts.end(); iter++)
         {
             Vertex v = *iter;
-            std::set<Vertex> S2(S);
+            VSet S2(S);
             
             S2.erase(v);
             
@@ -119,12 +138,21 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
 		numExpanded++;
 		
 		int subTWVal = memo->subTW(S2);
-		minSoFar = std::min(minSoFar, std::max(subTWVal, qVal ) );
+		int thisTW = std::max(subTWVal, qVal );
+		minSoFar = std::min(minSoFar, thisTW);
+
+		//std::cout << "Try vertex " << v << " subTW " << subTWVal << " qVal " << qVal << "\n";
+		
 		
 		//Update our global upper bound, according to Lemma 9 of the paper
+		
+		//std::cout << "Current Set: " << showSet(S) << "\n";
+		//std::cout << "GUB: old " << globalUpperBound << "\n";
+		//std::cout << "Trying " << thisTW << ", " << numVerts - (int)(S.size()) - 1 << "\n";
+		
 		globalUpperBound = 
 		       std::min(globalUpperBound, 
-				std::max(subTWVal, (int)(numVerts - S.size() - 1) ) ); 
+				std::max(thisTW, numVerts - (int)(S.size()) - 1  ) ); 
 		
 	    }
         }
@@ -135,9 +163,9 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G)
 
 void AbstractMemo::printStats()
 {
-    std::cout << "Num expanded " << numExpanded << std::endl;
-    std::cout << "Hits  " << memoHits << std::endl;
-    std::cout << "Misses " << memoMisses << std::endl;
+    //std::cout << "Num expanded " << numExpanded << std::endl;
+    //std::cout << "Hits  " << memoHits << std::endl;
+    //std::cout << "Misses " << memoMisses << std::endl;
     
     
 }

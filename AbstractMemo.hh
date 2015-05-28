@@ -22,24 +22,26 @@ protected:
 
     int globalUpperBound;
     int numVerts;
+
+    int recursionDepth = 0;
     
     
 
-    int subTW(std::set<Vertex> S);
-    std::map<std::set<Vertex>,int>* storedCalls;
-    int fetchOrStore(std::set<Vertex> S);
-    int naiveTW(AbstractMemo* memo, std::set<Vertex> S, Graph G);
+    int subTW(VSet S);
+    std::map<VSet,int>* storedCalls;
+    int fetchOrStore(VSet S);
+    int naiveTW(AbstractMemo* memo, VSet S, Graph G);
 
     //These should be called by any constuctors or destructors
     AbstractMemo(Graph G);
     ~AbstractMemo();
     
-    virtual std::vector<Vertex> orderVertices(std::set<Vertex> S) = 0;
-    virtual int upperBound(std::set<Vertex> S) = 0;
-    virtual int lowerBound(std::set<Vertex> S) = 0;
-    virtual bool shouldCache(std::set<Vertex> S) = 0;
+    virtual std::vector<Vertex> orderVertices(VSet S) = 0;
+    virtual int upperBound(VSet S) = 0;
+    virtual int lowerBound(VSet S) = 0;
+    virtual bool shouldCache(VSet S) = 0;
     virtual bool needsCleaning() = 0;
-    virtual std::vector<std::set<Vertex>> setsToForget(std::set<Vertex> S) = 0;
+    virtual std::vector<VSet> setsToForget(VSet S) = 0;
 
     
     

@@ -1,6 +1,5 @@
 #include "qset.hh"
 #include <vector>
-#include <set>
 
 #include "TWUtilAlgos.hh"
 #include "AbstractMemo.hh"
@@ -12,7 +11,7 @@ int permutTW(std::vector<Vertex> Svec, Graph G) {
     {
 	auto current = Svec.back();
 	Svec.pop_back();
-	std::set<Vertex> S(Svec.begin(), Svec.end());
+	VSet S(Svec.begin(), Svec.end());
 	
 	int qval = sizeQ(S, current, G);
 	

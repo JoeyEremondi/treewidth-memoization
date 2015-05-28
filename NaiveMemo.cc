@@ -1,5 +1,4 @@
 #include <vector>
-#include <set>
 #include <cstdlib>
 
 #include "NaiveMemo.hh"

@@ -2,7 +2,6 @@
 
 #include <cstdlib>
 #include <iostream>
-#include <set>
 #include <climits>
 #include <algorithm>
 #include <vector>
@@ -12,7 +11,7 @@
 #include "qset.hh"
 
 //TODO make a Utils file?
-bool setContains (std::set<Vertex> &S, Vertex v)
+bool setContains (VSet &S, Vertex v)
 {
     return S.find(v) != S.end();
 }
@@ -22,12 +21,14 @@ bool setContains (std::set<Vertex> &S, Vertex v)
 //We start at v, and search
 //We expand vertices in S
 //And we add to our count (without expanding) for those not in S
-int sizeQ(std::set<Vertex> &S, Vertex v, Graph &G)
+int sizeQ(VSet &S, Vertex v, Graph &G)
 {
+    //std::cout << "Q: starting with S = " << showSet(S) << "\n";
+    
     std::vector<Vertex> open;
     open.push_back(v);
     
-    std::set<Vertex> closed;
+    VSet closed;
     
     int numInQ = 0;
 
@@ -36,19 +37,24 @@ int sizeQ(std::set<Vertex> &S, Vertex v, Graph &G)
 	Vertex w = open.back();
 	open.pop_back();
 	auto neighbours = boost::adjacent_vertices(w,G);
+	//std::cout << "Q: expanding " << w << "\n";
+	
 	for (auto iter = neighbours.first; iter != neighbours.second; iter++ )
 	{
             Vertex u = *iter;
-	    if (closed.find(u) == closed.end())
+	    //std::cout << "Q: found neighbour " << u << "\n";
+	    if (!setContains(closed, u))
 	    {
-		bool inS = S.find(u) != S.end();
+		//std::cout << "Q: adding " << u << " to closed\n";
+		
                 closed.insert(u);
 		
-		if (u != v && !inS)
+		if (u != v && setContains(S, u))
 		{
+		    //std::cout << "Q: adding " << u << " to queue\n";
 		    open.push_back(u);
 		} 
-		else 
+		else if (u != v)
 		{
 		    numInQ++;
 		    
@@ -61,7 +67,7 @@ int sizeQ(std::set<Vertex> &S, Vertex v, Graph &G)
 }
 
 
-std::string showSet(std::set<Vertex> S) {
+std::string showSet(VSet S) {
     std::ostringstream result;
     
     result << "{";

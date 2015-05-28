@@ -11,12 +11,12 @@ class BasicMemo : public AbstractMemo
     //No no methods, we just implement the virtual ones from AbstractMemo
     //We can use the default constructor and destructor
 protected:
-    std::vector<Vertex> orderVertices(std::set<Vertex> S) ;
-    int upperBound(std::set<Vertex> S) ;
-    int lowerBound(std::set<Vertex> S) ;
-    bool shouldCache(std::set<Vertex> S) ;
+    std::vector<Vertex> orderVertices(VSet S) ;
+    int upperBound(VSet S) ;
+    int lowerBound(VSet S) ;
+    bool shouldCache(VSet S) ;
     bool needsCleaning() ;
-    std::vector<std::set<Vertex>> setsToForget(std::set<Vertex> S) ;
+    std::vector<VSet> setsToForget(VSet S) ;
 public:
     BasicMemo(Graph G);
     ~BasicMemo();
