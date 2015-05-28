@@ -21,8 +21,7 @@ AbstractMemo::~AbstractMemo()
 
 int AbstractMemo::treeWidth()
 {
-    auto iterInfo = boost::vertices(G);
-    VSet S(iterInfo.first, iterInfo.second);
+    VSet S(G);
     return subTW(S);
 }
 
@@ -45,7 +44,7 @@ int AbstractMemo::fetchOrStore(VSet S)
 	memoMisses++;
 	if (shouldCache(S))
 	{
-	    auto newEntry = std::pair<VSet, int>(S, naiveTW(this, S, G));
+	    std::pair<VSet, int> newEntry(S, naiveTW(this, S, G));
 	    storedCalls->insert(newEntry);
 	    return newEntry.second;
 	} else {

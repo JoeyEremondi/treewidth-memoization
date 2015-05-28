@@ -9,12 +9,7 @@
 #include <ctime>
 
 #include "qset.hh"
-
-//TODO make a Utils file?
-bool setContains (VSet &S, Vertex v)
-{
-    return S.find(v) != S.end();
-}
+#include "graphTypes.hh"
 
 
 //Basically just a DFS
@@ -43,13 +38,13 @@ int sizeQ(VSet &S, Vertex v, Graph &G)
 	{
             Vertex u = *iter;
 	    //std::cout << "Q: found neighbour " << u << "\n";
-	    if (!setContains(closed, u))
+	    if (!closed.contains(u))
 	    {
 		//std::cout << "Q: adding " << u << " to closed\n";
 		
                 closed.insert(u);
 		
-		if (u != v && setContains(S, u))
+		if (u != v && S.contains(u))
 		{
 		    //std::cout << "Q: adding " << u << " to queue\n";
 		    open.push_back(u);
@@ -72,8 +67,9 @@ std::string showSet(VSet S) {
     
     result << "{";
         
-        
-        for (auto iter = S.begin(); iter != S.end(); iter++)
+    auto members = S.members();
+    
+    for (auto iter = members.begin(); iter != members.end(); iter++)
         {
             result << *iter << " ; ";
         }

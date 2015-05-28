@@ -11,7 +11,7 @@ int permutTW(std::vector<Vertex> Svec, Graph G) {
     {
 	auto current = Svec.back();
 	Svec.pop_back();
-	VSet S(Svec.begin(), Svec.end());
+	VSet S(G);
 	
 	int qval = sizeQ(S, current, G);
 	

@@ -6,8 +6,8 @@
 //Ordered vertices: basic version doesn't order anything
 std::vector<Vertex> BasicMemo::orderVertices(VSet S)
 {
-    std::vector<Vertex> v(S.begin(), S.end());
-    return v;
+    return S.members();
+    
 }
 
 //Basic version: upper bound is the size of the set
