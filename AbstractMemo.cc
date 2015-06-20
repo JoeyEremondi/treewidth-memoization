@@ -1,5 +1,6 @@
 #include "AbstractMemo.hh"
 #include "qset.hh"
+#include "TWUtilAlgos.hh"
 
 #include <unordered_set>
 
@@ -22,6 +23,21 @@ AbstractMemo::~AbstractMemo()
 int AbstractMemo::treeWidth()
 {
     VSet S(G);
+    
+    //Optimization from Lemma 11
+    //We don't consider any vertices in the max clique
+    VSet maxClique = exactMaxClique(G);
+    auto cliqueVec = maxClique.members();
+    
+    for (auto iter = cliqueVec.begin(); iter != cliqueVec.end(); iter++)
+    {
+	S.erase(*iter);
+    }
+
+    std::cout << "Eliminated " << maxClique.size() << " vertices using max clique\n";
+    
+    
+
     return subTW(S);
 }
 
@@ -31,7 +47,7 @@ int AbstractMemo::treeWidth()
 //Otherwise, compute and store it before returning it
 int AbstractMemo::fetchOrStore(VSet S) 
 {
-    //std::cout << "Calls stored " << storedCalls->size() << "\n";
+    //std::cout << storedCalls->size() << "\n";
     
     auto maybeStored = storedCalls->find(S);
     //Did we find the result for set S memoized?
@@ -139,7 +155,8 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, VSet S, Graph G)
 		int subTWVal = memo->subTW(S2);
 		int thisTW = std::max(subTWVal, qVal );
 		minSoFar = std::min(minSoFar, thisTW);
-
+		
+		//std::cout << "Current Set: " << showSet(S) << "\n";
 		//std::cout << "Try vertex " << v << " subTW " << subTWVal << " qVal " << qVal << "\n";
 		
 		
@@ -162,9 +179,9 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, VSet S, Graph G)
 
 void AbstractMemo::printStats()
 {
-    //std::cout << "Num expanded " << numExpanded << std::endl;
-    //std::cout << "Hits  " << memoHits << std::endl;
-    //std::cout << "Misses " << memoMisses << std::endl;
+    std::cout << "Num expanded " << numExpanded << std::endl;
+    std::cout << "Hits  " << memoHits << std::endl;
+    std::cout << "Misses " << memoMisses << std::endl;
     
     
 }

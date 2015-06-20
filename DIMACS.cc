@@ -47,6 +47,10 @@ std::pair<int, int> coloring_problem_size(std::istream& dimacs) {
 bool read_coloring_problem(std::istream& dimacs, Graph& g) {
     size_t vertices = 0, edges = 0;
 
+    
+    std::map<Vertex, Vertex> newNums;
+    Vertex nextVertex = 0;
+    
     std::string line;
     while (getline(dimacs, line))
     {
@@ -66,8 +70,43 @@ bool read_coloring_problem(std::istream& dimacs, Graph& g) {
                     }
                     break;
                 case 'e': 
-                    if (edges-- && (iss >> from >> to) && (add_edge(from-1, to-1, g).second))
-                        break;
+                    if (edges-- && (iss >> from >> to))
+		    { 
+			Vertex newTo, newFrom;
+			auto findFrom = newNums.find(from);
+			
+			//Renumber our vertices if needed
+
+			if (findFrom != newNums.end() )
+			{
+			    newFrom = (*findFrom).second;
+			} else {
+			    newFrom = nextVertex;
+			    nextVertex++;
+			    newNums.insert(std::pair<Vertex, Vertex>(from, newFrom));
+			}
+
+			auto findTo = newNums.find(to);
+			if (findTo != newNums.end() )
+			{
+			    newTo = (*findTo).second;
+			} else {
+			    newTo = nextVertex;
+			    nextVertex++;
+			    newNums.insert(std::pair<Vertex, Vertex>(to, newTo));
+			    
+			}
+			
+			
+			if (add_edge(newFrom, newTo, g).second)
+			{
+			    std::cout << "Adding edge " << newFrom << " " << newTo << "\n";
+			    break;
+			}
+			
+		    }
+		    return false;
+		    
 	        case 'n':
 	        case 'x':
 		    //Skip node info
