@@ -2,8 +2,8 @@
 CC=clang
 CXX=clang++ -std=c++14
 RM=rm -f
-CPPFLAGS=-pg
-LDFLAGS=-pg
+CPPFLAGS=-O2
+LDFLAGS=
 LDLIBS=-lm -lboost_system -lboost_timer
 
 SRCS= qset.cc test.cc NaiveMemo.cc BasicMemo.cc DepthBoundedMemo.cc AbstractMemo.cc SimplicialFirstMemo.cc HeuristicUpperBoundMemo.cc TWUtilAlgos.cc DIMACS.cc VSet.cc

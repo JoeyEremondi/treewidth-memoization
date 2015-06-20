@@ -35,6 +35,12 @@ int AbstractMemo::treeWidth()
     }
 
     std::cout << "Eliminated " << maxClique.size() << " vertices using max clique\n";
+
+    //Optimiation: set the golbal upper-bound to the TW from some linear ordering
+    //TODO choose a smart one?
+    globalUpperBound = permutTW(S.members(), G);
+
+    std::cout << "Found global upper-bound of " << globalUpperBound << "\n";
     
     
 
