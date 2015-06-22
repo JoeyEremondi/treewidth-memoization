@@ -23,5 +23,19 @@ VSet maxIndSetHelper(VSet S, Graph G);
 //We will see if this is fast enough for lower bounds
 VSet exactMaxClique(Graph G);
 
+//min-degree heuristic for finding a clique
+
+VSet approxIndSetHelper(VSet S, Graph G);
+
+VSet approxMaxIndSet(Graph G);
+
+VSet approxMaxClique(Graph G);
+
+//Use known techniques to find the lower-bound for the treewidth of a subgraph of a graph
+int subgraphTWLowerBound(VSet S, Graph G);
+
+
+
+
 
 #endif

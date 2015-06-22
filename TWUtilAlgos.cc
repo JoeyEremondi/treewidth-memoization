@@ -5,6 +5,10 @@
 #include "TWUtilAlgos.hh"
 #include "AbstractMemo.hh"
 
+#include <boost/graph/subgraph.hpp>
+#include <boost/graph/adjacency_list.hpp>
+#include <boost/graph/graph_utility.hpp>
+
 int permutTW(std::vector<Vertex> Svec, Graph G) {
     int tw = NO_WIDTH;
     
@@ -191,3 +195,96 @@ VSet exactMaxClique(Graph G)
     return ret;
     
 }
+
+
+//Approximate algorithms for clique and IS
+//using the min-degree heuristic
+//We can do this quickly using iteration
+VSet approxIndSetHelper(VSet Sarg, Graph G)
+{
+    VSet S = Sarg;
+    VSet returnSet;
+    
+
+    //Base case
+   while (S.size() > 0)
+    {    
+	auto members = S.members();
+	Vertex minDegreeVert = members[0];
+	int minDeg = subgraphDegree(members[0], S, G);
+
+	for (auto iter = members.begin(); iter != members.end(); iter++ )
+	{
+	    int currentDeg = subgraphDegree(*iter, S, G);
+	    if (minDeg > currentDeg )
+	    {
+		minDegreeVert = *iter;
+		minDeg = currentDeg;
+	    }
+	}
+
+	//Assume the Max-IS contains the min-degree vertex
+	//Erase each neighbour of the vertex, and the vertex itself
+	auto svNeighbs = boost::adjacent_vertices(minDegreeVert, G );
+	for (auto neighb = svNeighbs.first; neighb != svNeighbs.second; neighb++)
+	{
+	    S.erase(*neighb);
+	}
+	S.erase(minDegreeVert);
+	//The min-degree vertex is in our independent set, the neighbours are not
+	returnSet.insert(minDegreeVert);
+    }
+   
+   
+    return returnSet;
+    
+}
+
+VSet approxMaxIndSet(Graph G)
+{
+    VSet S(G);
+    return approxIndSetHelper(S, G);
+    
+}
+
+VSet approxMaxClique(Graph G)
+{
+    auto compInfo = complement_graph(G);
+    VSet iset =  approxMaxIndSet(compInfo.first);
+    auto iVec = iset.members();
+
+    //Translate the compliment vertices into our vertices
+    VSet ret;
+    
+    for (auto iter = iVec.begin(); iter != iVec.end(); iter++)
+    {
+	ret.insert(compInfo.second[*iter]);
+    }
+
+    return ret;
+    
+}
+
+//TODO is there a smarter way to do this with boost subgraphs?
+int subgraphTWLowerBound(VSet S, Graph G)
+{    
+    auto memb = S.members();
+    
+    Graph Gs = G;
+
+    auto vinfo = boost::vertices(G);
+    for (auto iter = vinfo.first; iter != vinfo.second; iter++)
+    {
+	if (!S.contains(*iter))
+	{
+	    boost::remove_vertex(*iter, Gs);
+	}
+	
+    }    
+    VSet aClique = approxMaxClique(Gs);
+    
+    //TODO more advanced techniques?
+    return aClique.size();
+}
+
+

@@ -10,8 +10,8 @@ class HeuristicUpperBoundMemo : public BasicMemo
     //We have an integer for the size of the smallest sets we bother caching
 protected:
     int bound;
-
-    int upperBound(std::set<Vertex> S) ;
+    int lowerBound(VSet S) ;
+    int upperBound(VSet S) ;
 public:
     HeuristicUpperBoundMemo(Graph G);
     ~HeuristicUpperBoundMemo();

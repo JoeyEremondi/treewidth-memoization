@@ -100,7 +100,7 @@ bool read_coloring_problem(std::istream& dimacs, Graph& g) {
 			
 			if (add_edge(newFrom, newTo, g).second)
 			{
-			    std::cout << "Adding edge " << newFrom << " " << newTo << "\n";
+			    //std::cout << "Adding edge " << newFrom << " " << newTo << "\n";
 			    break;
 			}
 			

@@ -35,6 +35,7 @@ int AbstractMemo::treeWidth()
     }
 
     std::cout << "Eliminated " << maxClique.size() << " vertices using max clique\n";
+    std::cout << "The clique: " << showSet(maxClique) << " \n";
 
     //Optimiation: set the golbal upper-bound to the TW from some linear ordering
     //TODO choose a smart one?
