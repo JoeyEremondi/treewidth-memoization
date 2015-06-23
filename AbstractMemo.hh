@@ -14,6 +14,10 @@ This lets us tune our heuristics without changing the core algorithm.
 */
 class AbstractMemo
 {
+private:
+    void setGlobalUpperBound(VSet S);
+    void setGlobalLowerBound(VSet S);
+
 protected:
     Graph G;
     Graph GC;
@@ -22,22 +26,26 @@ protected:
     int memoMisses = 0;
     int memoHits = 0;
 
-    int globalUpperBound;
     int numVerts;
 
     int recursionDepth = 0;
-    
-    
 
-    int subTW(int lowerBound, VSet S);
+    int globalUpperBound;
+    int globalLowerBound;
+
+    VSet maxClique;
+    
     std::map<VSet,int>* storedCalls;
-    int fetchOrStore(int lowerBound, VSet S);
-    int naiveTW(AbstractMemo* memo, int ourLB, VSet S, Graph G);
+    int fetchOrStore(int lowerBound, int upperBound, VSet S);
+    int naiveTW(int ourLB, int ourUB, VSet S, Graph G);
 
     //These should be called by any constuctors or destructors
     AbstractMemo(Graph G);
     ~AbstractMemo();
     
+    //TODO too slow as virtual?
+    virtual int subTW(int lowerBound, int upperBound, VSet S);
+
     virtual std::vector<Vertex> orderVertices(VSet S) = 0;
     virtual int upperBound(VSet S) = 0;
     virtual int lowerBound(VSet S) = 0;

@@ -34,6 +34,18 @@ VSet approxMaxClique(const Graph& G);
 //Use known techniques to find the lower-bound for the treewidth of a subgraph of a graph
 int subgraphTWLowerBound(VSet S, const Graph& G, const Graph& GC);
 
+std::pair<Vertex, int> minDegreeSubgraphVert(VSet S, const Graph& G);
+
+//Used for Delta2 degeneracy, return the min-degree vertex of a subgraph
+//that isn't the given vertex v
+std::pair<Vertex, int> minDegreeVertExcept(Vertex v, VSet S, const Graph& G);
+
+int d2degen(VSet Sarg, const Graph& G);
+
+int MMD(VSet Sarg, const Graph& G);
+
+
+int subgraphDegree(Vertex v, VSet S, const Graph& G);
 
 
 

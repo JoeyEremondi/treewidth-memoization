@@ -28,7 +28,7 @@ int AbstractMemo::treeWidth()
     
     //Optimization from Lemma 11
     //We don't consider any vertices in the max clique
-    VSet maxClique = exactMaxClique(G);
+    maxClique = exactMaxClique(G);
     auto cliqueVec = maxClique.members();
     
     for (auto iter = cliqueVec.begin(); iter != cliqueVec.end(); iter++)
@@ -39,6 +39,19 @@ int AbstractMemo::treeWidth()
     std::cout << "Eliminated " << maxClique.size() << " vertices using max clique\n";
     std::cout << "The clique: " << showSet(maxClique) << " \n";
 
+    setGlobalUpperBound(S);
+    setGlobalLowerBound(S);
+    
+
+    //std::cout << "Found global upper-bound of " << globalUpperBound << "\n";
+    
+    
+
+    return subTW(lowerBound(S), globalUpperBound, S);
+}
+
+void AbstractMemo::setGlobalUpperBound(VSet S)
+{
     //Optimiation: set the golbal upper-bound to the TW from some linear ordering
     //First try: default ordering
     globalUpperBound = permutTW(S, S.members(), G);
@@ -62,20 +75,30 @@ int AbstractMemo::treeWidth()
 				auto vd = boost::degree(v, this->G);
 				return ud > vd;
 			    } );
-    globalUpperBound = std::min(globalUpperBound, permutTW(S, Svec, G));
+    globalUpperBound = std::min(globalUpperBound, permutTW(S, Svec, G)); 
 
-    std::cout << "Found global upper-bound of " << globalUpperBound << "\n";
-    
-    
-
-    return subTW(lowerBound(S), S);
+    std::cout << "Found global upper bound " << globalUpperBound << "\n";
 }
+
+void AbstractMemo::setGlobalLowerBound(VSet S)
+{
+    //Try 1: The treewidth is at least the size of the largest clique
+    //TODO +1?
+    globalLowerBound = maxClique.size();
+    
+    globalLowerBound = std::max(globalLowerBound, MMD(S, G));
+
+    std::cout << "Found global lower bound " << globalLowerBound << "\n";
+    
+}
+
+
 
 
 
 //If a recursive value is stored, then return it
 //Otherwise, compute and store it before returning it
-int AbstractMemo::fetchOrStore(int lowerBound, VSet S) 
+int AbstractMemo::fetchOrStore(int lowerBound, int upperBound, VSet S) 
 {
     //std::cout << storedCalls->size() << "\n";
     
@@ -90,11 +113,11 @@ int AbstractMemo::fetchOrStore(int lowerBound, VSet S)
 	memoMisses++;
 	if (shouldCache(S))
 	{
-	    std::pair<VSet, int> newEntry(S, naiveTW(this, lowerBound, S, G));
+	    std::pair<VSet, int> newEntry(S, naiveTW( lowerBound, upperBound, S, G));
 	    storedCalls->insert(newEntry);
 	    return newEntry.second;
 	} else {
-	    return naiveTW(this, lowerBound, S, G);
+	    return naiveTW(lowerBound, upperBound, S, G);
 
 	}
 	
@@ -108,7 +131,7 @@ int AbstractMemo::fetchOrStore(int lowerBound, VSet S)
 }
 
 //Override
-int AbstractMemo::subTW(int lowerBound, VSet S)
+int AbstractMemo::subTW(int lowerBound, int upperBound, VSet S)
 {    
     recursionDepth++;
     //std::cout << "Recursion depth " << recursionDepth << "\n";
@@ -127,7 +150,7 @@ int AbstractMemo::subTW(int lowerBound, VSet S)
     }
 
     
-    auto ret = fetchOrStore(lowerBound, S);
+    auto ret = fetchOrStore(lowerBound, upperBound, S);
     
     recursionDepth--;
     return ret;
@@ -135,7 +158,7 @@ int AbstractMemo::subTW(int lowerBound, VSet S)
 }
 
 
-int AbstractMemo::naiveTW(AbstractMemo* memo, int ourLB, VSet S, Graph G)
+int AbstractMemo::naiveTW(int ourLB, int ourUB, VSet S, Graph G)
 {
     //std::cout << "NaiveMemo Set: " << showSet(S) << "\n";
     if (S.empty())
@@ -162,10 +185,16 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, int ourLB, VSet S, Graph G)
 	//std::cout << "Starting with min " << minSoFar << "\n";
 	
 	//We let our implementation order the vertices
-        auto orderedVerts = memo->orderVertices(S);
+        auto orderedVerts = this->orderVertices(S);
 
         for (auto iter = orderedVerts.begin(); iter != orderedVerts.end(); iter++)
         {
+	    //Optimization: if our upper bound and lower bound converge, then return them
+	    if (minSoFar == ourLB)
+	    {
+		return minSoFar;
+	    }
+
             Vertex v = *iter;
             VSet S2(S);
             
@@ -178,39 +207,33 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, int ourLB, VSet S, Graph G)
 	    //than our upper bound so far, don't bother recursively expanding
 	    //this option, since it can't be the best
 	    int subLB = 0;
-	    if (qVal < minSoFar && (subLB = lowerBound(S2)) < minSoFar /*&& upperBound(S2) > ourLB*/ )
-	    {		
+	    int subUB = boost::num_vertices(G);
+	    int thisTW;
+	    if (qVal < minSoFar && (subLB = lowerBound(S2)) < minSoFar  )
+	    {	
+		subUB = upperBound(S2);
+		
+		//Optimization: the upper bound of the recursive value
+		//is less than our local or global lower bound,
+		//We know the value doesn't contribute to our final value
+		if (ourLB > subUB || globalLowerBound > subUB)
+		{
+		    thisTW = qVal;
+		} else {
 		    
+		    
+		    //subUB = upperBound(S2); //TODO do in if?
 		    //Count this as expansion
 		    numExpanded++;
-		
-		    int subTWVal = memo->subTW(subLB, S2);
-		    int thisTW = std::max(subTWVal, qVal );
-		    minSoFar = std::min(minSoFar, thisTW);
-		
-		    //std::cout << "Current Set: " << showSet(S) << "\n";
-		    //std::cout << "Try vertex " << v << " subTW " << subTWVal << " qVal " << qVal << "\n";
-		
-		
-		    //Update our global upper bound, according to Lemma 9 of the paper
-		
-		    //std::cout << "Current Set: " << showSet(S) << "\n";
-		    //std::cout << "GUB: old " << globalUpperBound << "\n";
-		    //std::cout << "Trying " << thisTW << ", " << numVerts - (int)(S.size()) - 1 << "\n";
-		
-		    globalUpperBound = 
-			std::min(globalUpperBound, 
-				 std::max(thisTW, numVerts - (int)(S.size()) - 1  ) ); 
+		    int subTWVal = subTW(subLB, subUB, S2);
+		    thisTW = std::max(subTWVal, qVal );
+		}
+		minSoFar = std::min(minSoFar, thisTW);	    
+		//Adjust our global upper bound according to the lemma
+		globalUpperBound = 
+		       std::min(globalUpperBound, 
+				std::max(thisTW, numVerts - (int)(S.size()) - 1  ) ); 
 
-		    //Optimization: if our upper bound and lower bound converge, then return them
-		    if (minSoFar == ourLB)
-		    {
-			return minSoFar;
-		    }
-		    
-		
-		
-		
 	    }
         }
         return minSoFar;

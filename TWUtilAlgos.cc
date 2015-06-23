@@ -109,23 +109,13 @@ VSet maxIndSetHelper(VSet S, const Graph& G)
     }
     
     
-    auto members = S.members();
-    Vertex minDegreeVert = members[0];
-    int minDeg = subgraphDegree(members[0], S, G);
+   //auto members = S.members();
 
-    //std::cout << "Set members: " << members;
-
-    for (auto iter = members.begin(); iter != members.end(); iter++ )
-    {
-	//std::cout << "Checking degree for " << *iter << "\n";
-	int currentDeg = subgraphDegree(*iter, S, G);
-	if (minDeg > currentDeg )
-	{
-	    minDegreeVert = *iter;
-	    minDeg = currentDeg;
-	}
-    }
+    std::pair<Vertex, int> minDegInfo = minDegreeSubgraphVert(S, G);
     
+    Vertex minDegreeVert = minDegInfo.first;
+    int minDeg = minDegInfo.second;
+
 
     //Try finding max IS with the min-degree vertex removed
     auto SV = S;
@@ -290,4 +280,96 @@ int subgraphTWLowerBound(VSet S, const Graph& G, const Graph& GC)
     return aClique.size();
 }
 
+std::pair<Vertex, int> minDegreeSubgraphVert(VSet S, const Graph& G)
+{
+    auto members = S.members();
+    
+    Vertex minDegreeVert = members[0];
+    int minDeg = subgraphDegree(members[0], S, G);
 
+    //std::cout << "Set members: " << members;
+
+    for (auto iter = members.begin(); iter != members.end(); iter++ )
+    {
+	//std::cout << "Checking degree for " << *iter << "\n";
+	int currentDeg = subgraphDegree(*iter, S, G);
+	if (minDeg > currentDeg )
+	{
+	    minDegreeVert = *iter;
+	    minDeg = currentDeg;
+	}
+    }
+
+    return std::pair<Vertex, int>(minDegreeVert, minDeg );
+}
+
+//Fails if S doesn't have at least 2 vertices
+std::pair<Vertex, int> minDegreeVertExcept(Vertex v, VSet S, const Graph& G)
+{
+    auto members = S.members();
+    
+    Vertex minDegreeVert;
+    int minDeg;
+
+    if (v == members[0])
+    {
+	minDegreeVert = members[1];
+	minDeg = subgraphDegree(members[1], S, G);
+    } else {
+	minDegreeVert = members[0];
+	minDeg = subgraphDegree(members[0], S, G);
+    }
+
+    for (auto iter = members.begin(); iter != members.end(); iter++ )
+    {
+	//std::cout << "Checking degree for " << *iter << "\n";
+	int currentDeg = subgraphDegree(*iter, S, G);
+	if (*iter != v && minDeg > currentDeg )
+	{
+	    minDegreeVert = *iter;
+	    minDeg = currentDeg;
+	}
+    }
+
+    return std::pair<Vertex, int>(minDegreeVert, minDeg );
+}
+
+int MMD(VSet S, const Graph& G)
+{
+    VSet H = S;
+    int maxmin = 0;
+    while (H.size() >= 2)
+    {
+	Vertex v = minDegreeSubgraphVert(H, G).first;
+	maxmin = std::max(maxmin, subgraphDegree(v, H, G));
+	H.erase(v);
+    }
+
+    return maxmin;
+    
+}
+
+
+
+//TODO fix this
+//Based on Algorithm 2 from the lower bounds paper
+int d2degen(VSet Sarg, const Graph& G)
+{
+    VSet S = Sarg;
+    
+    int d2D = 0;
+    auto vertInfo = boost::vertices(G);
+    for (auto iter = vertInfo.first; iter != vertInfo.second; iter++)
+    {
+	VSet H = G;
+	while (H.size() >= 2)
+	{
+	    Vertex w = minDegreeVertExcept(*iter, H, G).first;
+	    d2D = std::max(d2D, subgraphDegree(*iter, H, G)); //TODO *iter or w?
+	    H.erase(w);
+	}
+	
+    }
+    return d2D;
+    
+}
