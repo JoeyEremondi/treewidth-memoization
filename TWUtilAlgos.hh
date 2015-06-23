@@ -7,7 +7,7 @@
 //Find the width of a given permutation
 //Useful in finding heuristic upper bounds for treewidth
 //TODO check if need copy?
-int permutTW(std::vector<Vertex> Svec, const Graph& G);
+int permutTW(VSet vsetArg, const std::vector<Vertex>& Svec, const Graph& G);
 
 //Return the edge-complement of a graph
 std::pair<Graph, std::map<Vertex, Vertex>> complement_graph(const Graph& G);

@@ -5,20 +5,19 @@
 #include "TWUtilAlgos.hh"
 
 int HeuristicUpperBoundMemo::upperBound(VSet S)
-{
-    auto memb = S.members();
-    
+{    
     auto Svec = S.members();
     
     Graph gthis = this->G;
+    //TODO ascending or descending?
     std::sort(Svec.begin(), Svec.end(), [this](Vertex u, Vertex v)
 			    {
 				auto ud = boost::degree(u, this->G);
 				auto vd = boost::degree(v, this->G);
-				return ud < vd;
+				return ud > vd;
 			    } );
 
-    return permutTW(Svec, G);
+    return permutTW(S, Svec, G);
     
 			    
 }

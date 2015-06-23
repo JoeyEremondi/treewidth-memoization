@@ -40,21 +40,42 @@ int AbstractMemo::treeWidth()
     std::cout << "The clique: " << showSet(maxClique) << " \n";
 
     //Optimiation: set the golbal upper-bound to the TW from some linear ordering
-    //TODO choose a smart one?
-    globalUpperBound = permutTW(S.members(), G);
+    //First try: default ordering
+    globalUpperBound = permutTW(S, S.members(), G);
+    
+    //Second try: order by degree ascending
+    auto Svec = S.members();
+    Graph gthis = this->G;
+    std::sort(Svec.begin(), Svec.end(), [this](Vertex u, Vertex v)
+			    {
+				auto ud = boost::degree(u, this->G);
+				auto vd = boost::degree(v, this->G);
+				return ud < vd;
+			    } );
+    globalUpperBound = std::min(globalUpperBound, permutTW(S, Svec, G));
+
+    //Third try: order by degree descending
+    Svec = S.members();
+    std::sort(Svec.begin(), Svec.end(), [this](Vertex u, Vertex v)
+			    {
+				auto ud = boost::degree(u, this->G);
+				auto vd = boost::degree(v, this->G);
+				return ud > vd;
+			    } );
+    globalUpperBound = std::min(globalUpperBound, permutTW(S, Svec, G));
 
     std::cout << "Found global upper-bound of " << globalUpperBound << "\n";
     
     
 
-    return subTW(S);
+    return subTW(lowerBound(S), S);
 }
 
 
 
 //If a recursive value is stored, then return it
 //Otherwise, compute and store it before returning it
-int AbstractMemo::fetchOrStore(VSet S) 
+int AbstractMemo::fetchOrStore(int lowerBound, VSet S) 
 {
     //std::cout << storedCalls->size() << "\n";
     
@@ -69,11 +90,11 @@ int AbstractMemo::fetchOrStore(VSet S)
 	memoMisses++;
 	if (shouldCache(S))
 	{
-	    std::pair<VSet, int> newEntry(S, naiveTW(this, S, G));
+	    std::pair<VSet, int> newEntry(S, naiveTW(this, lowerBound, S, G));
 	    storedCalls->insert(newEntry);
 	    return newEntry.second;
 	} else {
-	    return naiveTW(this, S, G);
+	    return naiveTW(this, lowerBound, S, G);
 
 	}
 	
@@ -87,7 +108,7 @@ int AbstractMemo::fetchOrStore(VSet S)
 }
 
 //Override
-int AbstractMemo::subTW(VSet S)
+int AbstractMemo::subTW(int lowerBound, VSet S)
 {    
     recursionDepth++;
     //std::cout << "Recursion depth " << recursionDepth << "\n";
@@ -106,7 +127,7 @@ int AbstractMemo::subTW(VSet S)
     }
 
     
-    auto ret = fetchOrStore(S);
+    auto ret = fetchOrStore(lowerBound, S);
     
     recursionDepth--;
     return ret;
@@ -114,7 +135,7 @@ int AbstractMemo::subTW(VSet S)
 }
 
 
-int AbstractMemo::naiveTW(AbstractMemo* memo, VSet S, Graph G)
+int AbstractMemo::naiveTW(AbstractMemo* memo, int ourLB, VSet S, Graph G)
 {
     //std::cout << "NaiveMemo Set: " << showSet(S) << "\n";
     if (S.empty())
@@ -142,7 +163,7 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, VSet S, Graph G)
 	
 	//We let our implementation order the vertices
         auto orderedVerts = memo->orderVertices(S);
-	
+
         for (auto iter = orderedVerts.begin(); iter != orderedVerts.end(); iter++)
         {
             Vertex v = *iter;
@@ -156,28 +177,39 @@ int AbstractMemo::naiveTW(AbstractMemo* memo, VSet S, Graph G)
 	    //Optimization: if our Q value, or the treewidth lower bound, is worse
 	    //than our upper bound so far, don't bother recursively expanding
 	    //this option, since it can't be the best
-	    if (qVal < minSoFar && lowerBound(S2) < minSoFar)
-	    {
-		//Count this as expansion
-		numExpanded++;
+	    int subLB = 0;
+	    if (qVal < minSoFar && (subLB = lowerBound(S2)) < minSoFar /*&& upperBound(S2) > ourLB*/ )
+	    {		
+		    
+		    //Count this as expansion
+		    numExpanded++;
 		
-		int subTWVal = memo->subTW(S2);
-		int thisTW = std::max(subTWVal, qVal );
-		minSoFar = std::min(minSoFar, thisTW);
+		    int subTWVal = memo->subTW(subLB, S2);
+		    int thisTW = std::max(subTWVal, qVal );
+		    minSoFar = std::min(minSoFar, thisTW);
 		
-		//std::cout << "Current Set: " << showSet(S) << "\n";
-		//std::cout << "Try vertex " << v << " subTW " << subTWVal << " qVal " << qVal << "\n";
+		    //std::cout << "Current Set: " << showSet(S) << "\n";
+		    //std::cout << "Try vertex " << v << " subTW " << subTWVal << " qVal " << qVal << "\n";
 		
 		
-		//Update our global upper bound, according to Lemma 9 of the paper
+		    //Update our global upper bound, according to Lemma 9 of the paper
 		
-		//std::cout << "Current Set: " << showSet(S) << "\n";
-		//std::cout << "GUB: old " << globalUpperBound << "\n";
-		//std::cout << "Trying " << thisTW << ", " << numVerts - (int)(S.size()) - 1 << "\n";
+		    //std::cout << "Current Set: " << showSet(S) << "\n";
+		    //std::cout << "GUB: old " << globalUpperBound << "\n";
+		    //std::cout << "Trying " << thisTW << ", " << numVerts - (int)(S.size()) - 1 << "\n";
 		
-		globalUpperBound = 
-		       std::min(globalUpperBound, 
-				std::max(thisTW, numVerts - (int)(S.size()) - 1  ) ); 
+		    globalUpperBound = 
+			std::min(globalUpperBound, 
+				 std::max(thisTW, numVerts - (int)(S.size()) - 1  ) ); 
+
+		    //Optimization: if our upper bound and lower bound converge, then return them
+		    if (minSoFar == ourLB)
+		    {
+			return minSoFar;
+		    }
+		    
+		
+		
 		
 	    }
         }

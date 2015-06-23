@@ -29,10 +29,10 @@ protected:
     
     
 
-    int subTW(VSet S);
+    int subTW(int lowerBound, VSet S);
     std::map<VSet,int>* storedCalls;
-    int fetchOrStore(VSet S);
-    int naiveTW(AbstractMemo* memo, VSet S, Graph G);
+    int fetchOrStore(int lowerBound, VSet S);
+    int naiveTW(AbstractMemo* memo, int ourLB, VSet S, Graph G);
 
     //These should be called by any constuctors or destructors
     AbstractMemo(Graph G);

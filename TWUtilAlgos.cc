@@ -11,20 +11,15 @@
 
 #include <boost/graph/graphviz.hpp>
 
-int permutTW(std::vector<Vertex> Svec, const Graph& G) {
+int permutTW(VSet vsetArg, const std::vector<Vertex>& Svec, const Graph& G) {
     int tw = NO_WIDTH;
+    VSet vs = vsetArg;
     
-    while (!Svec.empty())
+    for(auto current = Svec.begin(); current != Svec.end(); current++)
     {
-	auto current = Svec.back();
-	Svec.pop_back();
-	VSet S(Svec);
-	
-	int qval = sizeQ(S, current, G);
-	
-
+	vs.erase(*current);
+	int qval = sizeQ(vs, *current, G);	
         tw = std::max(tw, qval);
-	
     }
     return tw;
 }
