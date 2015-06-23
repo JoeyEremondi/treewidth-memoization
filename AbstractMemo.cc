@@ -7,6 +7,8 @@
 AbstractMemo::AbstractMemo(Graph theGraph)
 {
     G = theGraph;
+    GC = complement_graph(G).first;
+    
     numVerts = boost::num_vertices(G);
     
     globalUpperBound = numVerts + 1; //TODO need +1?

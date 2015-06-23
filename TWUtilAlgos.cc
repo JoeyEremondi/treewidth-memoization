@@ -287,22 +287,9 @@ VSet approxMaxClique(const Graph& G)
 }
 
 //TODO is there a smarter way to do this with boost subgraphs?
-int subgraphTWLowerBound(VSet S, const Graph& G)
+int subgraphTWLowerBound(VSet S, const Graph& G, const Graph& GC)
 {    
-    auto memb = S.members();
-    
-    Graph Gs = G;
-
-    auto vinfo = boost::vertices(G);
-    for (auto iter = vinfo.first; iter != vinfo.second; iter++)
-    {
-	if (!S.contains(*iter))
-	{
-	    boost::remove_vertex(*iter, Gs);
-	}
-	
-    }    
-    VSet aClique = approxMaxClique(Gs);
+    VSet aClique = approxIndSetHelper(S, GC);
     
     //TODO more advanced techniques?
     return aClique.size();

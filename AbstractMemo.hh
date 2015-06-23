@@ -16,6 +16,8 @@ class AbstractMemo
 {
 protected:
     Graph G;
+    Graph GC;
+    
     int numExpanded = 0;
     int memoMisses = 0;
     int memoHits = 0;

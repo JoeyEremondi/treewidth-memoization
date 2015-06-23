@@ -32,7 +32,7 @@ VSet approxMaxIndSet(const Graph& G);
 VSet approxMaxClique(const Graph& G);
 
 //Use known techniques to find the lower-bound for the treewidth of a subgraph of a graph
-int subgraphTWLowerBound(VSet S, const Graph& G);
+int subgraphTWLowerBound(VSet S, const Graph& G, const Graph& GC);
 
 
 

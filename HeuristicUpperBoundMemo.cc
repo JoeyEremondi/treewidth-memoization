@@ -27,8 +27,7 @@ int HeuristicUpperBoundMemo::lowerBound(VSet S)
 {
     //The lower-bound for subgraph tree-width is also a lower-bound for our recurrence
     //TODO prove this
-    //return subgraphTWLowerBound(S, this->G);
-    return 0;
+    return subgraphTWLowerBound(S, this->G, this->GC);
 }
 
 
