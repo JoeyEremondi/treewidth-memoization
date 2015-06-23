@@ -13,7 +13,7 @@
 //Adapted from http://stackoverflow.com/questions/14470566/how-to-traverse-graph-in-boost-use-bfs
 
 
-int sizeQ(VSet &S, Vertex v, Graph &G);
+int sizeQ(VSet &S, Vertex v, const Graph &G);
 
 std::string showSet(VSet S);
 

@@ -103,7 +103,7 @@ int subgraphDegree(Vertex v, VSet S, const Graph& G)
 }
 
 //TODO this is not returning cliques
-VSet maxIndSetHelper(VSet S, Graph G)
+VSet maxIndSetHelper(VSet S, const Graph& G)
 {
     //std::cout << "Max IS: size " << S.size() << "\n";
     //Base case

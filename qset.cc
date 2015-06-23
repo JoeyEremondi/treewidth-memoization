@@ -16,7 +16,7 @@
 //We start at v, and search
 //We expand vertices in S
 //And we add to our count (without expanding) for those not in S
-int sizeQ(VSet &S, Vertex v, Graph &G)
+int sizeQ(VSet &S, Vertex v, const Graph& G)
 {
     //std::cout << "Q: starting with S = " << showSet(S) << "\n";
     
