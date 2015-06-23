@@ -9,7 +9,9 @@
 #include <boost/graph/adjacency_list.hpp>
 #include <boost/graph/graph_utility.hpp>
 
-int permutTW(std::vector<Vertex> Svec, Graph G) {
+#include <boost/graph/graphviz.hpp>
+
+int permutTW(std::vector<Vertex> Svec, const Graph& G) {
     int tw = NO_WIDTH;
     
     while (!Svec.empty())
@@ -49,9 +51,11 @@ std::pair<Graph, std::map<Vertex, Vertex>> complement_graph(const Graph& G)
     {
 	for (auto v = vertexInfo.first; v != vertexInfo.second; v++)
 	{
-	    if (*u < *v && ( edge(*u, *v, G).second == false))
+	    //std::cout << "Edge Info: " << *u << " " << *v << " " << edge(*u, *v, G).second << "\n";
+	    
+	    if (*u < *v && ! ( edge(*u, *v, G).second))
 	    {
-		//std::cout << "Adding comp edge " << *u << " and " << *v << "\n";
+		//std::cout << "Adding comp edge " << vmap[*u] << " and " << vmap[*v] << "\n";
 		//std::cout << "Comp numbers: " << vmap[*u] << " and " << vmap[*v] << "\n";
 		boost::add_edge(vmap[*u], vmap[*v], GC);
 	    }
@@ -59,6 +63,8 @@ std::pair<Graph, std::map<Vertex, Vertex>> complement_graph(const Graph& G)
 	}
 	
     }
+
+    //std::cout << "Done comp\n";
     
     //Return our key-value set for the map
     //http://stackoverflow.com/questions/8321316/flip-map-key-value-pair
@@ -73,7 +79,7 @@ std::pair<Graph, std::map<Vertex, Vertex>> complement_graph(const Graph& G)
 }
 
 
-int subgraphDegree(Vertex v, VSet S, Graph G)
+int subgraphDegree(Vertex v, VSet S, const Graph& G)
 {
     int ret = 0;
     
@@ -96,7 +102,7 @@ int subgraphDegree(Vertex v, VSet S, Graph G)
     
 }
 
-
+//TODO this is not returning cliques
 VSet maxIndSetHelper(VSet S, Graph G)
 {
     //std::cout << "Max IS: size " << S.size() << "\n";
@@ -129,12 +135,15 @@ VSet maxIndSetHelper(VSet S, Graph G)
     //Try finding max IS with the min-degree vertex removed
     auto SV = S;
     //Erase each neighbour of the vertex, and the vertex itself
-    auto svNeighbs = boost::adjacent_vertices(minDegreeVert, G );
-    for (auto neighb = svNeighbs.first; neighb != svNeighbs.second; neighb++)
-    {
-	SV.erase(*neighb);
-    }
+    //std::cout << "Size " << S.size() << " choosing " << minDegreeVert << "\n";
     SV.erase(minDegreeVert);
+    auto svNeighbs = boost::adjacent_vertices(minDegreeVert, G );
+    for (auto minNeighb = svNeighbs.first; minNeighb != svNeighbs.second; minNeighb++)
+    {
+	//std::cout << "Size " << S.size() << " erasing " << *minNeighb << "\n";
+	
+	SV.erase(*minNeighb);
+    }
     VSet bestFound = maxIndSetHelper(SV, G);
     bestFound.insert(minDegreeVert);
     
@@ -147,13 +156,22 @@ VSet maxIndSetHelper(VSet S, Graph G)
 	{
 	    auto SNew = S;
 	    //Erase each neighbour of this neighbour
-	    auto nnSet = boost::adjacent_vertices(minDegreeVert, G );
-	    for (auto neighb = nnSet.first; neighb != nnSet.second; neighb++)
-	    {
-		SNew.erase(*neighb);
-	    }
+	    //std::cout << "Size " << S.size() << " choosing " << *iter << "\n";
 	    //And erase the neighbour itself
 	    SNew.erase(*iter);
+
+	    //Erase the min-degree vertex
+	    //TODO why do we need this?
+	    //std::cout << "Size " << S.size() << " erasing " << minDegreeVert << "\n";
+	    SNew.erase(minDegreeVert);
+
+	    auto nnSet = boost::adjacent_vertices(minDegreeVert, G );
+	    for (auto nneighb = nnSet.first; nneighb != nnSet.second; nneighb++)
+	    {
+		//std::cout << "Size " << S.size() << " erasing " << *nneighb << "\n";
+		SNew.erase(*nneighb);
+	    }
+	    
 	    VSet subFound = maxIndSetHelper(SNew, G);
 	    subFound.insert(*iter);
 	    //std::cout << "Returning to " << S.size() << "\n";
@@ -170,7 +188,7 @@ VSet maxIndSetHelper(VSet S, Graph G)
     
 }
 
-VSet exactMaxIndSet(Graph G)
+VSet exactMaxIndSet(const Graph& G)
 {
     VSet S(G);
     return maxIndSetHelper(S, G);
@@ -178,9 +196,12 @@ VSet exactMaxIndSet(Graph G)
 }
 
 
-VSet exactMaxClique(Graph G)
+VSet exactMaxClique(const Graph& G)
 {
     auto compInfo = complement_graph(G);
+    std::cout << "Graph complement:\n";
+    //boost::write_graphviz(std::cout, compInfo.first);
+
     VSet iset =  exactMaxIndSet(compInfo.first);
     auto iVec = iset.members();
 
@@ -200,7 +221,7 @@ VSet exactMaxClique(Graph G)
 //Approximate algorithms for clique and IS
 //using the min-degree heuristic
 //We can do this quickly using iteration
-VSet approxIndSetHelper(VSet Sarg, Graph G)
+VSet approxIndSetHelper(VSet Sarg, const Graph& G)
 {
     VSet S = Sarg;
     VSet returnSet;
@@ -240,14 +261,14 @@ VSet approxIndSetHelper(VSet Sarg, Graph G)
     
 }
 
-VSet approxMaxIndSet(Graph G)
+VSet approxMaxIndSet(const Graph& G)
 {
     VSet S(G);
     return approxIndSetHelper(S, G);
     
 }
 
-VSet approxMaxClique(Graph G)
+VSet approxMaxClique(const Graph& G)
 {
     auto compInfo = complement_graph(G);
     VSet iset =  approxMaxIndSet(compInfo.first);
@@ -266,7 +287,7 @@ VSet approxMaxClique(Graph G)
 }
 
 //TODO is there a smarter way to do this with boost subgraphs?
-int subgraphTWLowerBound(VSet S, Graph G)
+int subgraphTWLowerBound(VSet S, const Graph& G)
 {    
     auto memb = S.members();
     
