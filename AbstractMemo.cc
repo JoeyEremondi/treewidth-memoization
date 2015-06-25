@@ -100,7 +100,7 @@ void AbstractMemo::setGlobalLowerBound(VSet S)
 
 //If a recursive value is stored, then return it
 //Otherwise, compute and store it before returning it
-int AbstractMemo::fetchOrStore(int lowerBound, int upperBound, VSet S) 
+int AbstractMemo::fetchOrStore(int lowerBound, int upperBound, const VSet& S) 
 {
     //std::cout << storedCalls->size() << "\n";
     
@@ -134,7 +134,7 @@ int AbstractMemo::fetchOrStore(int lowerBound, int upperBound, VSet S)
 }
 
 //Override
-int AbstractMemo::subTW(int lowerBound, int upperBound, VSet S)
+int AbstractMemo::subTW(int lowerBound, int upperBound, const VSet& S)
 {    
     recursionDepth++;
     //std::cout << "Recursion depth " << recursionDepth << "\n";
@@ -161,7 +161,7 @@ int AbstractMemo::subTW(int lowerBound, int upperBound, VSet S)
 }
 
 
-int AbstractMemo::naiveTW(int ourLB, int ourUB, VSet S)
+int AbstractMemo::naiveTW(int ourLB, int ourUB, const VSet& S)
 {
     /*
     if (S.asInt() % 2047 == 0)

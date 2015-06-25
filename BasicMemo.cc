@@ -4,26 +4,26 @@
 #include "BasicMemo.hh"
 
 //Ordered vertices: basic version doesn't order anything
-std::vector<Vertex> BasicMemo::orderVertices(VSet S)
+std::vector<Vertex> BasicMemo::orderVertices(const VSet& S)
 {
     return S.members();
     
 }
 
 //Basic version: upper bound is the size of the set
-int BasicMemo::upperBound(VSet S)
+int BasicMemo::upperBound(const VSet& S)
 {
     return numVerts;
 }
 
 //Basic version: lower bound is always 1, nothing fancy
-int BasicMemo::lowerBound(VSet S)
+int BasicMemo::lowerBound(const VSet& S)
 {
     return 1;
 }
 
 //Always cache for basic memoization
-bool BasicMemo::shouldCache(VSet S)
+bool BasicMemo::shouldCache(const VSet& S)
 {
     return true;
 }
@@ -35,7 +35,7 @@ bool BasicMemo::needsCleaning()
 }
 
 //Should never get called
-std::vector<VSet> BasicMemo::setsToForget(VSet S)
+std::vector<VSet> BasicMemo::setsToForget(const VSet& S)
 {
     return std::vector<VSet>();
 }

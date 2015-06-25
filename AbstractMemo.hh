@@ -36,22 +36,22 @@ protected:
     VSet maxClique;
     
     std::map<VSet,int>* storedCalls;
-    int fetchOrStore(int lowerBound, int upperBound, VSet S);
-    int naiveTW(int ourLB, int ourUB, VSet S);
+    int fetchOrStore(int lowerBound, int upperBound, const VSet& S);
+    int naiveTW(int ourLB, int ourUB, const VSet& S);
 
     //These should be called by any constuctors or destructors
     AbstractMemo(Graph G);
     ~AbstractMemo();
     
     //TODO too slow as virtual?
-    virtual int subTW(int lowerBound, int upperBound, VSet S);
+    virtual int subTW(int lowerBound, int upperBound, const VSet& S);
 
-    virtual std::vector<Vertex> orderVertices(VSet S) = 0;
-    virtual int upperBound(VSet S) = 0;
-    virtual int lowerBound(VSet S) = 0;
-    virtual bool shouldCache(VSet S) = 0;
+    virtual std::vector<Vertex> orderVertices(const VSet& S) = 0;
+    virtual int upperBound(const VSet& S) = 0;
+    virtual int lowerBound(const VSet& S) = 0;
+    virtual bool shouldCache(const VSet& S) = 0;
     virtual bool needsCleaning() = 0;
-    virtual std::vector<VSet> setsToForget(VSet S) = 0;
+    virtual std::vector<VSet> setsToForget(const VSet& S) = 0;
 
     
     
