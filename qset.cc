@@ -23,7 +23,15 @@ int sizeQ(const VSet &S, Vertex v, const Graph& G)
     std::vector<Vertex> open;
     open.push_back(v);
     
-    VSet closed;
+    int n = boost::num_vertices(G);
+    
+    //Uses more memory than VSet, but is faster
+    bool* closed = new bool[n];
+    for (int i = 0; i <n; i++)
+    {
+	closed[i] = false;
+    }
+    
     
     int numInQ = 0;
 
@@ -38,11 +46,11 @@ int sizeQ(const VSet &S, Vertex v, const Graph& G)
 	{
             Vertex u = *iter;
 	    //std::cout << "Q: found neighbour " << u << "\n";
-	    if (!closed.contains(u))
+	    if (!closed[u])
 	    {
 		//std::cout << "Q: adding " << u << " to closed\n";
 		
-                closed.insert(u);
+                closed[u] = true;
 		
 		if (u != v && S.contains(u))
 		{
@@ -57,6 +65,7 @@ int sizeQ(const VSet &S, Vertex v, const Graph& G)
 	    }
 	}
     }
+    delete[] closed;
     return numInQ;
     
 }

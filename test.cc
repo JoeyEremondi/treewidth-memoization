@@ -85,7 +85,7 @@ int main(int argc, char** argv)
 	
 	
 	
-
+	/*
 	std::cout << "Simplicial-first Memoization" << std::endl;
 	timer = new auto_cpu_timer();
 	auto memo4 = new SimplicialFirstMemo(gRand);    
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 	memo4->printStats();
 	delete memo4;
 	delete timer;
-	
+	*/
 
 	std::cout << "Basic Memoization" << std::endl;
 	timer = new auto_cpu_timer();
