@@ -86,7 +86,8 @@ int subgraphDegree(Vertex v, VSet S, const Graph& G)
     
     for (auto iter = neighbourSet.first; iter != neighbourSet.second; iter++)
     {
-	//std::cout << "Looking at neighbour " << *iter << "\n";
+	//std::cout << "Looking at neighbour: " << "\n";
+	//std::cout<< *iter << "\n";
 	
 	if (S.contains(*iter) && !seenNeighbours.contains(*iter))
 	{
@@ -111,7 +112,8 @@ VSet maxIndSetHelper(VSet S, const Graph& G)
 	return S;
     }
     
-    
+   //std::cout << "Past base case: size " << S.size() << "\n";
+
    //auto members = S.members();
 
     std::pair<Vertex, int> minDegInfo = minDegreeSubgraphVert(S, G);
@@ -187,7 +189,7 @@ VSet exactMaxIndSet(const Graph& G)
 VSet exactMaxClique(const Graph& G)
 {
     auto compInfo = complement_graph(G);
-    std::cout << "Graph complement:\n";
+    //std::cout << "Graph complement:\n";
     //boost::write_graphviz(std::cout, compInfo.first);
 
     VSet iset =  exactMaxIndSet(compInfo.first);
@@ -287,6 +289,8 @@ std::pair<Vertex, int> minDegreeSubgraphVert(VSet S, const Graph& G)
 {
     auto members = S.members();
     
+    //std::cout << "Members size " << members.size() << "\n";
+
     Vertex minDegreeVert = members[0];
     int minDeg = subgraphDegree(members[0], S, G);
 

@@ -2,7 +2,7 @@
 CC=clang
 CXX=clang++ -std=c++14
 RM=rm -f
-CPPFLAGS=-O2 -g
+CPPFLAGS=-g -O2
 LDFLAGS=-g -O2
 LDLIBS=-lm -lboost_system -lboost_timer
 
