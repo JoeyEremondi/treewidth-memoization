@@ -24,7 +24,8 @@ AbstractMemo::~AbstractMemo()
 
 int AbstractMemo::treeWidth()
 {
-    VSet S(G);
+    VSet Sall(G);
+    VSet S = Sall;
     
     //Optimization from Lemma 11
     //We don't consider any vertices in the max clique
@@ -40,7 +41,8 @@ int AbstractMemo::treeWidth()
     std::cout << "The clique: " << showSet(maxClique) << " \n";
 
     setGlobalUpperBound(S);
-    setGlobalLowerBound(S);
+    //We want all the vertex info to make our lower bound as high as we can
+    setGlobalLowerBound(Sall);
     
 
     //std::cout << "Found global upper-bound of " << globalUpperBound << "\n";
@@ -111,13 +113,14 @@ int AbstractMemo::fetchOrStore(int lowerBound, int upperBound, VSet S)
 	//And cache it if necessary
 	//TODO use DP not recursion for fast case
 	memoMisses++;
-	if (shouldCache(S))
+	if (true)//(shouldCache(S))
 	{
-	    std::pair<VSet, int> newEntry(S, naiveTW( lowerBound, upperBound, S, G));
+	    int twVal = naiveTW( lowerBound, upperBound, S);
+	    std::pair<VSet, int> newEntry(S, twVal);
 	    storedCalls->insert(newEntry);
 	    return newEntry.second;
 	} else {
-	    return naiveTW(lowerBound, upperBound, S, G);
+	    return naiveTW(lowerBound, upperBound, S);
 
 	}
 	
@@ -158,8 +161,15 @@ int AbstractMemo::subTW(int lowerBound, int upperBound, VSet S)
 }
 
 
-int AbstractMemo::naiveTW(int ourLB, int ourUB, VSet S, Graph G)
+int AbstractMemo::naiveTW(int ourLB, int ourUB, VSet S)
 {
+    /*
+    if (S.asInt() % 2047 == 0)
+    {
+	std::cout << "Stored values " << storedCalls->size() << "\n";
+	} */
+    
+
     //std::cout << "NaiveMemo Set: " << showSet(S) << "\n";
     if (S.empty())
     {
@@ -168,7 +178,7 @@ int AbstractMemo::naiveTW(int ourLB, int ourUB, VSet S, Graph G)
     
     auto maybeStored = storedCalls->find(S);
 
-    if (false)//(maybeStored != storedCalls->end())
+    if (maybeStored != storedCalls->end())
     {
 	return maybeStored->second;
     }
@@ -211,23 +221,32 @@ int AbstractMemo::naiveTW(int ourLB, int ourUB, VSet S, Graph G)
 	    int thisTW;
 	    if (qVal < minSoFar && (subLB = lowerBound(S2)) < minSoFar  )
 	    {	
+		/*
 		subUB = upperBound(S2);
 		
 		//Optimization: the upper bound of the recursive value
 		//is less than our local or global lower bound,
 		//We know the value doesn't contribute to our final value
-		if (ourLB > subUB || globalLowerBound > subUB)
+		
+		if (globalLowerBound > subUB)
 		{
+		    //TODO why doesn't this case work?
+		    std::cout << "GLB > SUB \n" << globalLowerBound << " " << subUB << "\n";
+ 
+		    return -1;//globalLowerBound;
+		} 
+		
+		if (qVal > subUB  || ourLB > subUB )//(ourLB > subUB || globalLowerBound > subUB)
+		{
+		    std::cout << "Qval vs sub UB" << ourLB << " " << subUB << "\n";
 		    thisTW = qVal;
 		} else {
-		    
-		    
-		    //subUB = upperBound(S2); //TODO do in if?
+		    */
 		    //Count this as expansion
 		    numExpanded++;
 		    int subTWVal = subTW(subLB, subUB, S2);
 		    thisTW = std::max(subTWVal, qVal );
-		}
+		    //}
 		minSoFar = std::min(minSoFar, thisTW);	    
 		//Adjust our global upper bound according to the lemma
 		globalUpperBound = 

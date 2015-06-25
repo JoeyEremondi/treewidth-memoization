@@ -78,6 +78,8 @@ int subgraphDegree(Vertex v, VSet S, const Graph& G)
 {
     int ret = 0;
     
+    VSet seenNeighbours;
+    
     //std::cout << "Getting adj vertices for " << v << "\n";
     
     auto neighbourSet = boost::adjacent_vertices(v, G);
@@ -86,9 +88,10 @@ int subgraphDegree(Vertex v, VSet S, const Graph& G)
     {
 	//std::cout << "Looking at neighbour " << *iter << "\n";
 	
-	if (S.contains(*iter))
+	if (S.contains(*iter) && !seenNeighbours.contains(*iter))
 	{
 	    ret++;
+	    seenNeighbours.insert(*iter);
 	}
 	
     }
@@ -336,16 +339,33 @@ std::pair<Vertex, int> minDegreeVertExcept(Vertex v, VSet S, const Graph& G)
 
 int MMD(VSet S, const Graph& G)
 {
+    //std::cout << "Min Degree vertex:" << minDeg(S, G) << "\n";
+    
     VSet H = S;
     int maxmin = 0;
     while (H.size() >= 2)
     {
 	Vertex v = minDegreeSubgraphVert(H, G).first;
+	//std::cout << "maxmin v degree " << subgraphDegree(v, H, G) << "\n";
 	maxmin = std::max(maxmin, subgraphDegree(v, H, G));
 	H.erase(v);
     }
 
     return maxmin;
+    
+}
+
+int minDeg(VSet S, const Graph& G)
+{
+    auto memb = S.members();
+    int minDeg = S.size();
+    for (auto iter = memb.begin(); iter != memb.end(); iter++ )
+    {
+	minDeg = std::min(minDeg, subgraphDegree(*iter, S, G));
+    }
+    
+
+    return minDeg;
     
 }
 

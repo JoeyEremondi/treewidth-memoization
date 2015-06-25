@@ -47,6 +47,7 @@ int MMD(VSet Sarg, const Graph& G);
 
 int subgraphDegree(Vertex v, VSet S, const Graph& G);
 
+int minDeg(VSet S, const Graph& G);
 
 
 

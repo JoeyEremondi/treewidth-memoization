@@ -37,7 +37,7 @@ protected:
     
     std::map<VSet,int>* storedCalls;
     int fetchOrStore(int lowerBound, int upperBound, VSet S);
-    int naiveTW(int ourLB, int ourUB, VSet S, Graph G);
+    int naiveTW(int ourLB, int ourUB, VSet S);
 
     //These should be called by any constuctors or destructors
     AbstractMemo(Graph G);

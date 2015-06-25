@@ -58,8 +58,8 @@ int main(int argc, char** argv)
     } */
     	
 
-    std::vector<std::string> inFiles({"myciel3.dgf" , "pathfinder-pp.dgf" ,  "myciel4.dgf" , "queen5_5.dgf" , "queen6_6.dgf" /*, "queen7_7.dgf"*/  });
-    //std::vector<std::string> inFiles({"myciel3.dgf" });
+    std::vector<std::string> inFiles({"myciel3.dgf" , "pathfinder-pp.dgf" ,  "myciel4.dgf" , "queen5_5.dgf" /*, "queen6_6.dgf"  , "queen7_7.dgf"*/  });
+    //std::vector<std::string> inFiles({"queen6_6.dgf" });
     //TODO make nicer loop
     for (auto iter = inFiles.begin(); iter != inFiles.end(); iter++)
     {
@@ -83,15 +83,27 @@ int main(int argc, char** argv)
 	auto_cpu_timer* timer;
 
 	
+	
+	/*
+
+	std::cout << "Simplicial-first Memoization" << std::endl;
+	timer = new auto_cpu_timer();
+	auto memo4 = new SimplicialFirstMemo(gRand);    
+	std::cout << "Treewidth: " << memo4->treeWidth() << std::endl;
+	memo4->printStats();
+	delete memo4;
+	delete timer;
+	*/
+
 	std::cout << "Basic Memoization" << std::endl;
 	timer = new auto_cpu_timer();
-
-	
 	auto memo2 = new BasicMemo(gRand);    
 	std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
 	memo2->printStats();
 	delete memo2;
 	delete timer;
+	
+	
 		
 	std::cout << "Depth-bounded Memoization" << std::endl;
 	timer = new auto_cpu_timer();
@@ -102,14 +114,8 @@ int main(int argc, char** argv)
 	delete memo3;
 	delete timer;
 	
-	std::cout << "Simplicial-first Memoization" << std::endl;
-	timer = new auto_cpu_timer();
-	auto memo4 = new SimplicialFirstMemo(gRand);    
-	std::cout << "Treewidth: " << memo4->treeWidth() << std::endl;
-	memo4->printStats();
-	delete memo4;
-	delete timer;
 	
+	/*
 	std::cout << "Heuristic UB Memoization" << std::endl;
 	timer = new auto_cpu_timer();
 	auto memo5 = new HeuristicUpperBoundMemo(gRand);    
@@ -117,7 +123,7 @@ int main(int argc, char** argv)
 	memo5->printStats();
 	delete memo5;
 	delete timer;
-	
+	*/
 	
     }
     
