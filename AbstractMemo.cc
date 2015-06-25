@@ -8,6 +8,28 @@ AbstractMemo::AbstractMemo(Graph theGraph)
 {
     G = theGraph;
     GC = complement_graph(G).first;
+
+    int n = boost::num_vertices(G);
+    
+    adjMatrix = new bool*[n];
+    
+    for (int i = 0; i < n; i++)
+    {
+	adjMatrix[i] = new bool[n];
+    }
+    
+    
+
+    for (int i = 0; i < n; i++)
+    {
+	for (int j = 0; j < n; j++)
+	{
+	    //TODO accurate numbering?
+	    adjMatrix[i][j] = boost::edge(i, j, G).second;
+	    adjMatrix[j][i] = adjMatrix[i][j];
+	}
+    } 
+    
     
     numVerts = boost::num_vertices(G);
     
@@ -21,6 +43,7 @@ AbstractMemo::AbstractMemo(Graph theGraph)
 AbstractMemo::~AbstractMemo()
 {
     delete storedCalls;
+    delete adjMatrix;
 }
 
 int AbstractMemo::treeWidth()
