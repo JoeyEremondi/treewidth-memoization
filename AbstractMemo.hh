@@ -3,6 +3,7 @@
 
 #include "qset.hh"
 #include <map>
+#include <unordered_map>
 
 //Treewidth is always positive, so we can use this in place of -Inf
 const int NO_WIDTH = -1;
@@ -35,7 +36,8 @@ protected:
 
     VSet maxClique;
     
-    std::map<VSet,int>* storedCalls;
+    //std::map<VSet,int>* storedCalls;
+    std::unordered_map<VSet,int>* storedCalls;
     int fetchOrStore(int lowerBound, int upperBound, const VSet& S);
     int naiveTW(int ourLB, int ourUB, const VSet& S);
 

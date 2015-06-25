@@ -13,7 +13,8 @@ AbstractMemo::AbstractMemo(Graph theGraph)
     
     globalUpperBound = numVerts + 1; //TODO need +1?
     
-    storedCalls = new std::map<VSet,int>();
+    //storedCalls = new std::map<VSet,int>();
+    storedCalls = new std::unordered_map<VSet,int>();
     
 }
 
@@ -117,7 +118,7 @@ int AbstractMemo::fetchOrStore(int lowerBound, int upperBound, const VSet& S)
 	{
 	    int twVal = naiveTW( lowerBound, upperBound, S);
 	    std::pair<VSet, int> newEntry(S, twVal);
-	    storedCalls->insert(newEntry);
+	    (*storedCalls)[S] = twVal;
 	    return newEntry.second;
 	} else {
 	    return naiveTW(lowerBound, upperBound, S);
