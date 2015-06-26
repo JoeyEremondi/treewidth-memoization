@@ -22,18 +22,13 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
     
     //int n = boost::num_vertices(G);
     
-    Vertex* open = new Vertex[n];
+    Vertex open[MAX_NUM_VERTICES];
     
     open[0] = v;
     int stackEnd = 0;
 
     //Uses more memory than VSet, but is faster
-    bool* closed = new bool[n];
-    for (int i = 0; i <n; i++)
-    {
-	closed[i] = false;
-    }
-    
+    bool closed[MAX_NUM_VERTICES] = {false};
     
     int numInQ = 0;
 
@@ -70,8 +65,8 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 	    }
 	}
     }
-    delete[] closed;
-    delete[] open;
+    //delete[] closed;
+    // delete[] open;
     //std::cout << "|Q| = " << numInQ << "\n";
     return numInQ;
     
