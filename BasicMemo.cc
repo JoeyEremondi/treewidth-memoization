@@ -4,9 +4,8 @@
 #include "BasicMemo.hh"
 
 //Ordered vertices: basic version doesn't order anything
-std::vector<Vertex> BasicMemo::orderVertices(const VSet& S)
+void BasicMemo::orderVertices(std::vector<Vertex>& vec )
 {
-    return S.members();
     
 }
 

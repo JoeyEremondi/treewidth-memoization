@@ -112,11 +112,11 @@ VSet maxIndSetHelper(VSet S, const Graph& G)
 	return S;
     }
     
-   //std::cout << "Past base case: size " << S.size() << "\n";
+   //std::cout << "Past base case: " << showSet(S) << "\n";
 
    //auto members = S.members();
 
-    std::pair<Vertex, int> minDegInfo = minDegreeSubgraphVert(S, G);
+    auto minDegInfo = minDegreeSubgraphVert(S, G);
     
     Vertex minDegreeVert = minDegInfo.first;
     int minDeg = minDegInfo.second;
@@ -193,7 +193,8 @@ VSet exactMaxClique(const Graph& G)
     //boost::write_graphviz(std::cout, compInfo.first);
 
     VSet iset =  exactMaxIndSet(compInfo.first);
-    auto iVec = iset.members();
+    std::vector<Vertex> iVec;
+    iset.members(iVec);
 
     //Translate the compliment vertices into our vertices
     VSet ret;
@@ -220,7 +221,8 @@ VSet approxIndSetHelper(VSet Sarg, const Graph& G)
     //Base case
    while (S.size() > 0)
     {    
-	auto members = S.members();
+	std::vector<Vertex> members;
+	S.members(members);
 	Vertex minDegreeVert = members[0];
 	int minDeg = subgraphDegree(members[0], S, G);
 
@@ -262,7 +264,8 @@ VSet approxMaxClique(const Graph& G)
 {
     auto compInfo = complement_graph(G);
     VSet iset =  approxMaxIndSet(compInfo.first);
-    auto iVec = iset.members();
+    std::vector<Vertex> iVec;
+    iset.members(iVec);
 
     //Translate the compliment vertices into our vertices
     VSet ret;
@@ -287,7 +290,8 @@ int subgraphTWLowerBound(VSet S, const Graph& G, const Graph& GC)
 
 std::pair<Vertex, int> minDegreeSubgraphVert(VSet S, const Graph& G)
 {
-    auto members = S.members();
+    std::vector<Vertex> members;
+    S.members(members);
     
     //std::cout << "Members size " << members.size() << "\n";
 
@@ -313,7 +317,8 @@ std::pair<Vertex, int> minDegreeSubgraphVert(VSet S, const Graph& G)
 //Fails if S doesn't have at least 2 vertices
 std::pair<Vertex, int> minDegreeVertExcept(Vertex v, VSet S, const Graph& G)
 {
-    auto members = S.members();
+    std::vector<Vertex> members;
+    S.members(members);
     
     Vertex minDegreeVert;
     int minDeg;
@@ -361,7 +366,8 @@ int MMD(VSet S, const Graph& G)
 
 int minDeg(VSet S, const Graph& G)
 {
-    auto memb = S.members();
+    std::vector<Vertex> memb;
+    S.members(memb);
     int minDeg = S.size();
     for (auto iter = memb.begin(); iter != memb.end(); iter++ )
     {

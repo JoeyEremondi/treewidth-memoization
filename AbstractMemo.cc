@@ -54,7 +54,8 @@ int AbstractMemo::treeWidth()
     //Optimization from Lemma 11
     //We don't consider any vertices in the max clique
     maxClique = exactMaxClique(G);
-    auto cliqueVec = maxClique.members();
+    std::vector<Vertex> cliqueVec;
+    maxClique.members(cliqueVec);
     
     for (auto iter = cliqueVec.begin(); iter != cliqueVec.end(); iter++)
     {
@@ -80,10 +81,12 @@ void AbstractMemo::setGlobalUpperBound(VSet S)
 {
     //Optimiation: set the golbal upper-bound to the TW from some linear ordering
     //First try: default ordering
-    globalUpperBound = permutTW(S, S.members(), G);
+    std::vector<Vertex> Svec;
+    S.members(Svec);
+    
+    globalUpperBound = permutTW(S, Svec, G);
     
     //Second try: order by degree ascending
-    auto Svec = S.members();
     Graph gthis = this->G;
     std::sort(Svec.begin(), Svec.end(), [this](Vertex u, Vertex v)
 			    {
@@ -94,7 +97,7 @@ void AbstractMemo::setGlobalUpperBound(VSet S)
     globalUpperBound = std::min(globalUpperBound, permutTW(S, Svec, G));
 
     //Third try: order by degree descending
-    Svec = S.members();
+    //Svec = S.members();
     std::sort(Svec.begin(), Svec.end(), [this](Vertex u, Vertex v)
 			    {
 				auto ud = boost::degree(u, this->G);
@@ -219,7 +222,9 @@ int AbstractMemo::naiveTW(int ourLB, int ourUB, const VSet& S)
 	//std::cout << "Starting with min " << minSoFar << "\n";
 	
 	//We let our implementation order the vertices
-        auto orderedVerts = this->orderVertices(S);
+	std::vector<Vertex> orderedVerts;
+	S.members(orderedVerts);
+	orderVertices(orderedVerts);
 
         for (auto iter = orderedVerts.begin(); iter != orderedVerts.end(); iter++)
         {

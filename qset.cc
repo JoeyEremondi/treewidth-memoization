@@ -75,8 +75,9 @@ std::string showSet(VSet S) {
     std::ostringstream result;
     
     result << "{";
-        
-    auto members = S.members();
+    
+    std::vector<Vertex> members;
+    S.members(members);
     
     for (auto iter = members.begin(); iter != members.end(); iter++)
         {

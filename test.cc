@@ -26,7 +26,7 @@
 
 #include "HeuristicUpperBoundMemo.hh"
 
-#include <fstream>
+#include <fstream> 
 
 #include <sstream>
 
@@ -58,8 +58,8 @@ int main(int argc, char** argv)
     } */
     	
 
-    //std::vector<std::string> inFiles({/*"myciel3.dgf" , "pathfinder-pp.dgf" ,*/  "myciel4.dgf" , "queen5_5.dgf" /*, "queen6_6.dgf"  , "queen7_7.dgf"*/  });
-    std::vector<std::string> inFiles({"queen6_6.dgf" });
+    std::vector<std::string> inFiles({/*"myciel3.dgf" , "pathfinder-pp.dgf" ,*/  "myciel4.dgf" , "queen5_5.dgf" /*, "queen6_6.dgf"  , "queen7_7.dgf"*/  });
+    //std::vector<std::string> inFiles({"queen6_6.dgf" });
     //TODO make nicer loop
     for (auto iter = inFiles.begin(); iter != inFiles.end(); iter++)
     {
@@ -85,7 +85,7 @@ int main(int argc, char** argv)
 	
 	
 	
-	/*
+	
 	std::cout << "Simplicial-first Memoization" << std::endl;
 	timer = new auto_cpu_timer();
 	auto memo4 = new SimplicialFirstMemo(gRand);    
@@ -93,7 +93,7 @@ int main(int argc, char** argv)
 	memo4->printStats();
 	delete memo4;
 	delete timer;
-	*/
+	
 
 	std::cout << "Basic Memoization" << std::endl;
 	timer = new auto_cpu_timer();

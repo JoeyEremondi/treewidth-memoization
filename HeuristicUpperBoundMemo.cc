@@ -23,7 +23,9 @@ int HeuristicUpperBoundMemo::upperBound(VSet S)
 
     return permutTW(S, Svec, G);
     }*/
-    return permutTW(S, S.members(), G);
+    std::vector<Vertex> members;
+    S.members(members);
+    return permutTW(S, members, G);
     //return BasicMemo::upperBound(S);
     
 

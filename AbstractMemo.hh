@@ -49,7 +49,7 @@ protected:
     //TODO too slow as virtual?
     virtual int subTW(int lowerBound, int upperBound, const VSet& S);
 
-    virtual std::vector<Vertex> orderVertices(const VSet& S) = 0;
+    virtual void orderVertices(std::vector<Vertex>& vec) = 0;
     virtual int upperBound(const VSet& S) = 0;
     virtual int lowerBound(const VSet& S) = 0;
     virtual bool shouldCache(const VSet& S) = 0;
