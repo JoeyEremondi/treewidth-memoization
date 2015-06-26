@@ -14,11 +14,15 @@
 int permutTW(VSet vsetArg, const std::vector<Vertex>& Svec, const Graph& G) {
     int tw = NO_WIDTH;
     VSet vs = vsetArg;
+
+    //std::cout << "PERMUTTW set " << vsetArg.size() << " vec size " << Svec.size() << "\n";
+    
+    int n = boost::num_vertices(G);
     
     for(auto current = Svec.begin(); current != Svec.end(); current++)
     {
 	vs.erase(*current);
-	int qval = sizeQ(vs, *current, G);	
+	int qval = sizeQ(n, vs, *current, G);	
         tw = std::max(tw, qval);
     }
     return tw;

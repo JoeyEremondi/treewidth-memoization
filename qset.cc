@@ -16,15 +16,18 @@
 //We start at v, and search
 //We expand vertices in S
 //And we add to our count (without expanding) for those not in S
-int sizeQ(const VSet &S, Vertex v, const Graph& G)
+int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 {
     //std::cout << "Q: starting with S = " << showSet(S) << "\n";
     
+    //int n = boost::num_vertices(G);
+    
     std::vector<Vertex> open;
-    open.push_back(v);
+    open.resize(n);
     
-    int n = boost::num_vertices(G);
-    
+    open[0] = v;
+    int stackEnd = 0;
+
     //Uses more memory than VSet, but is faster
     bool* closed = new bool[n];
     for (int i = 0; i <n; i++)
@@ -35,10 +38,12 @@ int sizeQ(const VSet &S, Vertex v, const Graph& G)
     
     int numInQ = 0;
 
-    while (!open.empty() )
+    
+
+    while (stackEnd >= 0 )
     {
-	Vertex w = open.back();
-	open.pop_back();
+	Vertex w = open[stackEnd];
+	stackEnd--;
 	auto neighbours = boost::adjacent_vertices(w,G);
 	//std::cout << "Q: expanding " << w << "\n";
 	
@@ -55,7 +60,8 @@ int sizeQ(const VSet &S, Vertex v, const Graph& G)
 		if (u != v && S.contains(u))
 		{
 		    //std::cout << "Q: adding " << u << " to queue\n";
-		    open.push_back(u);
+		    stackEnd++;
+		    open[stackEnd] = u;
 		} 
 		else if (u != v)
 		{
@@ -66,6 +72,7 @@ int sizeQ(const VSet &S, Vertex v, const Graph& G)
 	}
     }
     delete[] closed;
+    //std::cout << "|Q| = " << numInQ << "\n";
     return numInQ;
     
 }

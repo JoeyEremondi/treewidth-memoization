@@ -240,7 +240,7 @@ int AbstractMemo::naiveTW(int ourLB, int ourUB, const VSet& S)
             S2.erase(v);
             
             
-            int qVal = sizeQ(S2, v, G);
+            int qVal = sizeQ(numVerts, S2, v, G);
 
 	    //Optimization: if our Q value, or the treewidth lower bound, is worse
 	    //than our upper bound so far, don't bother recursively expanding
