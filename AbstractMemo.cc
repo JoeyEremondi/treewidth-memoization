@@ -54,7 +54,7 @@ int AbstractMemo::treeWidth()
     //Optimization from Lemma 11
     //We don't consider any vertices in the max clique
     maxClique = exactMaxClique(G);
-    std::vector<Vertex> cliqueVec;
+    std::vector<Vertex> cliqueVec(maxClique.size());
     maxClique.members(cliqueVec);
     
     for (auto iter = cliqueVec.begin(); iter != cliqueVec.end(); iter++)
@@ -81,7 +81,7 @@ void AbstractMemo::setGlobalUpperBound(VSet S)
 {
     //Optimiation: set the golbal upper-bound to the TW from some linear ordering
     //First try: default ordering
-    std::vector<Vertex> Svec;
+    std::vector<Vertex> Svec(S.size());
     S.members(Svec);
     
     globalUpperBound = permutTW(S, Svec, G);
@@ -222,7 +222,7 @@ int AbstractMemo::naiveTW(int ourLB, int ourUB, const VSet& S)
 	//std::cout << "Starting with min " << minSoFar << "\n";
 	
 	//We let our implementation order the vertices
-	std::vector<Vertex> orderedVerts;
+	std::vector<Vertex> orderedVerts(S.size());
 	S.members(orderedVerts);
 	orderVertices(orderedVerts);
 

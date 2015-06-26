@@ -22,8 +22,7 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
     
     //int n = boost::num_vertices(G);
     
-    std::vector<Vertex> open;
-    open.resize(n);
+    Vertex* open = new Vertex[n];
     
     open[0] = v;
     int stackEnd = 0;
@@ -72,6 +71,7 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 	}
     }
     delete[] closed;
+    delete[] open;
     //std::cout << "|Q| = " << numInQ << "\n";
     return numInQ;
     
