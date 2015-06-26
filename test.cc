@@ -31,7 +31,7 @@
 #include <sstream>
 
 #include "DIMACS.hh"
-
+#include "BottomUpTW.hh"
 
 using namespace boost::timer;
 using namespace boost::graph;
@@ -58,7 +58,7 @@ int main(int argc, char** argv)
     } */
     	
 
-    std::vector<std::string> inFiles({/*"myciel3.dgf" , "pathfinder-pp.dgf" ,*/  "myciel4.dgf" , "queen5_5.dgf" /*, "queen6_6.dgf"  , "queen7_7.dgf"*/  });
+    std::vector<std::string> inFiles({/*"myciel3.dgf" , "pathfinder-pp.dgf" ,*/  "myciel4.dgf" , "queen5_5.dgf" , "queen6_6.dgf"/*  , "queen7_7.dgf"*/  });
     //std::vector<std::string> inFiles({"queen6_6.dgf" });
     //TODO make nicer loop
     for (auto iter = inFiles.begin(); iter != inFiles.end(); iter++)
@@ -84,7 +84,10 @@ int main(int argc, char** argv)
 
 	
 	
-	
+	std::cout << "Bottom-up Memoization" << std::endl;
+	timer = new auto_cpu_timer();
+	std::cout << "Treewidth: " << bottomUpTW(gRand) << std::endl;
+	delete timer;
 	
 	std::cout << "Simplicial-first Memoization" << std::endl;
 	timer = new auto_cpu_timer();
