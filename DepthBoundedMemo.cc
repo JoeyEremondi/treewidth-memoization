@@ -6,14 +6,14 @@
 
 bool DepthBoundedMemo::shouldCache(std::set<Vertex> S)
 {
-    return S.size() >= bound;
+	return S.size() >= bound;
 }
 
 
 DepthBoundedMemo::DepthBoundedMemo(int boundParam, Graph G) : BasicMemo(G)
 {
-    bound = boundParam;
-    
+	bound = boundParam;
+
 }
 
 DepthBoundedMemo::~DepthBoundedMemo()

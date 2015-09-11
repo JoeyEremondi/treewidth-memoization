@@ -9,6 +9,8 @@
 #include "VSet.hh"
 #include "graphTypes.hh"
 
+extern int numQCalled;
+
 
 //Adapted from http://stackoverflow.com/questions/14470566/how-to-traverse-graph-in-boost-use-bfs
 

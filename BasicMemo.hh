@@ -8,18 +8,18 @@
 
 class BasicMemo : public AbstractMemo
 {
-    //No no methods, we just implement the virtual ones from AbstractMemo
-    //We can use the default constructor and destructor
+	//No no methods, we just implement the virtual ones from AbstractMemo
+	//We can use the default constructor and destructor
 protected:
-    void orderVertices(std::vector<Vertex>& vec);
-    int upperBound(const VSet& S) ;
-    int lowerBound(const VSet& S) ;
-    bool shouldCache(const VSet& S) ;
-    bool needsCleaning() ;
-    std::vector<VSet> setsToForget(const VSet& S) ;
+	void orderVertices(std::vector<Vertex>& vec);
+	int upperBound(const VSet& S);
+	int lowerBound(const VSet& S);
+	bool shouldCache(const VSet& S);
+	bool needsCleaning();
+	std::vector<VSet> setsToForget(const VSet& S);
 public:
-    BasicMemo(Graph G);
-    ~BasicMemo();
+	BasicMemo(Graph G);
+	~BasicMemo();
 };
 
 #endif   

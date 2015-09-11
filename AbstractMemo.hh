@@ -16,55 +16,55 @@ This lets us tune our heuristics without changing the core algorithm.
 class AbstractMemo
 {
 private:
-    void setGlobalUpperBound(VSet S);
-    void setGlobalLowerBound(VSet S);
+	void setGlobalUpperBound(VSet S);
+	void setGlobalLowerBound(VSet S);
 
 protected:
-    Graph G;
-    Graph GC;
-    bool** adjMatrix;
-    
-    int numExpanded = 0;
-    int memoMisses = 0;
-    int memoHits = 0;
+	Graph G;
+	Graph GC;
+	bool** adjMatrix;
 
-    int numVerts;
+	int numExpanded = 0;
+	int memoMisses = 0;
+	int memoHits = 0;
 
-    int recursionDepth = 0;
+	int numVerts;
 
-    int globalUpperBound;
-    int globalLowerBound;
+	int recursionDepth = 0;
 
-    VSet maxClique;
-    
-    //std::map<VSet,int>* storedCalls;
-    std::unordered_map<VSet,int>* storedCalls;
-    int fetchOrStore(int lowerBound, int upperBound, const VSet& S);
-    int naiveTW(int ourLB, int ourUB, const VSet& S);
+	int globalUpperBound;
+	int globalLowerBound;
 
-    //These should be called by any constuctors or destructors
-    AbstractMemo(Graph G);
-    ~AbstractMemo();
-    
-    //TODO too slow as virtual?
-    virtual int subTW(int lowerBound, int upperBound, const VSet& S);
+	VSet maxClique;
 
-    virtual void orderVertices(std::vector<Vertex>& vec) = 0;
-    virtual int upperBound(const VSet& S) = 0;
-    virtual int lowerBound(const VSet& S) = 0;
-    virtual bool shouldCache(const VSet& S) = 0;
-    virtual bool needsCleaning() = 0;
-    virtual std::vector<VSet> setsToForget(const VSet& S) = 0;
+	//std::map<VSet,int>* storedCalls;
+	std::unordered_map<VSet, int>* storedCalls;
+	int fetchOrStore(int lowerBound, int upperBound, const VSet& S);
+	int naiveTW(int ourLB, int ourUB, const VSet& S);
 
-    
-    
-    
+	//These should be called by any constuctors or destructors
+	AbstractMemo(Graph G);
+	~AbstractMemo();
+
+	//TODO too slow as virtual?
+	virtual int subTW(int lowerBound, int upperBound, const VSet& S);
+
+	virtual void orderVertices(std::vector<Vertex>& vec) = 0;
+	virtual int upperBound(const VSet& S) = 0;
+	virtual int lowerBound(const VSet& S) = 0;
+	virtual bool shouldCache(const VSet& S) = 0;
+	virtual bool needsCleaning() = 0;
+	virtual std::vector<VSet> setsToForget(const VSet& S) = 0;
+
+
+
+
 public:
-    int treeWidth();
-    void printStats();
-    
-    
-    
+	int treeWidth();
+	void printStats();
+
+
+
 };
 
 #endif   

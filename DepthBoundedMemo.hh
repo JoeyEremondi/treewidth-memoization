@@ -7,15 +7,15 @@
 
 class DepthBoundedMemo : public BasicMemo
 {
-    //We have an integer for the size of the smallest sets we bother caching
+	//We have an integer for the size of the smallest sets we bother caching
 protected:
-    int bound;
+	int bound;
 
-    bool shouldCache(std::set<Vertex> S) ;
+	bool shouldCache(std::set<Vertex> S);
 public:
-    DepthBoundedMemo(int boundParam, Graph G);
-    ~DepthBoundedMemo();
-    
+	DepthBoundedMemo(int boundParam, Graph G);
+	~DepthBoundedMemo();
+
 };
 
 #endif   
