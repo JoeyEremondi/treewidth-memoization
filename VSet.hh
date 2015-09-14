@@ -41,6 +41,8 @@ public:
 	bool empty() const;
 	int size() const;
 	void insert(Vertex v);
+	Vertex first() const;
+	Vertex firstNotContained(int numVerts) const;
 
 	//Write into the given vector
 	void members(std::vector<Vertex>& vec) const;

@@ -1,10 +1,12 @@
 #include <boost/spirit/include/qi.hpp>
 #include <boost/spirit/include/phoenix.hpp>
 #include <boost/spirit/include/qi_match.hpp>
-
+#include <boost/graph/adjacency_list.hpp>
 
 #include "qset.hh"
 #include "DIMACS.hh"
+#include <vector>
+#include <algorithm>
 
 /*
 std::pair<int, int> coloring_problem_size(std::istream& dimacs) {
@@ -44,6 +46,7 @@ std::pair<int, int> coloring_problem_size(std::istream& dimacs) {
 
 	//Taken from http://stackoverflow.com/questions/30415388/how-to-read-dimacs-vertex-coloring-graphs-in-c/30446685#30446685
 	//Special thanks to user sehe
+
 bool read_coloring_problem(std::istream& dimacs, Graph& g) {
 	size_t vertices = 0, edges = 0;
 
@@ -98,15 +101,30 @@ bool read_coloring_problem(std::istream& dimacs, Graph& g) {
 						newNums.insert(std::pair<Vertex, Vertex>(to, newTo));
 
 					}
-
-
-					if (add_edge(newFrom, newTo, g).second)
+					//Don't insert if reverse is already there, our graphs are undirected
+					bool alreadyHaveEdge = false;
+					auto vertexIterPair = boost::vertices(g);
+					bool haveTo = std::find(vertexIterPair.first, vertexIterPair.second, newTo) != vertexIterPair.second;
+					bool haveFrom = std::find(vertexIterPair.first, vertexIterPair.second, newFrom) != vertexIterPair.second;
+					if (haveTo && haveFrom)
+					{
+						if (boost::edge(newTo, newFrom, g).second)
+						{
+							alreadyHaveEdge = true;
+						}
+					}
+					if (alreadyHaveEdge)
+					{
+						break;
+					}
+					else if (add_edge(newFrom, newTo, g).second)
 					{
 						//std::cout << "Adding edge " << newFrom << " " << newTo << "\n";
 						break;
 					}
-
 				}
+
+
 				return false;
 
 			case 'n':
@@ -122,3 +140,4 @@ bool read_coloring_problem(std::istream& dimacs, Graph& g) {
 
 	return !(edges || !dimacs.eof());
 }
+

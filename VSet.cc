@@ -125,3 +125,34 @@ unsigned long VSet::asInt() const
 
 }
 
+Vertex VSet::first() const
+{
+	for (int i = 0; i < MAX_NUM_VERTICES; i++)
+	{
+		//Check if the ith bit is set. If it is, add that to our vector
+		if (bitVec[i])
+		{
+			//std::cout << "Setting membres pos " << vecPos << " to " << i << "\n";
+
+			return i;
+		}
+
+	}
+}
+
+Vertex VSet::firstNotContained(int numVerts) const
+{
+	for (int i = 0; i < numVerts; i++)
+	{
+		//Check if the ith bit is set. If it is, add that to our vector
+		if (!bitVec[i])
+		{
+			//std::cout << "Setting membres pos " << vecPos << " to " << i << "\n";
+
+			return i;
+		}
+
+	}
+}
+
+

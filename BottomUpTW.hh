@@ -7,7 +7,7 @@
 
 int bottomUpTW(Graph G);
 
-int bottomUpTWFromSet(const Graph& G, const VSet& SStart, int upperBound);
+int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int upperBound);
 
 int calcUpperBound(Graph G, VSet S);
 

@@ -78,6 +78,7 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 }
 
 
+
 std::string showSet(VSet S) {
 	std::ostringstream result;
 
