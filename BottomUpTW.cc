@@ -127,6 +127,9 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 			Vertex firstSet = S.first();
 
+			std::vector<int> qSizes(nGraph);
+			findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
+
 			for (auto x = vertInfo.begin(); x != vertInfo.end(); x++)
 			{
 				if (!S.contains(*x) && !clique.contains(*x) && (*x) < firstSet ) //TODO check if in clique here?
@@ -137,8 +140,9 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 					VSet SUx = S;
 					SUx.insert(*x);
 
-					int q = sizeQ(n, S, *x, G);
-					//int rr = maybeMin(r, q);
+					int q = qSizes[*x];
+					//int q = sizeQ(n, S, *x, G);
+
 					int rr = std::max(r, q);
 
 					if (rr >= nGraph - i - 1 && rr < minTW) {
