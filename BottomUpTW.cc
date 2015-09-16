@@ -98,9 +98,9 @@ int maybeMin(int x, int y)
 
 int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globalUpperBound)
 {
-	std::unordered_map<VSet, std::pair<int, std::vector<Vertex>>> TW[MAX_NUM_VERTICES];
+	std::unordered_map<VSet, int> TW[MAX_NUM_VERTICES];
 	VSet emptySet;
-	TW[0][emptySet] = std::pair<int, std::vector<Vertex>>(NO_WIDTH, std::vector<Vertex>());
+	TW[0][emptySet] = NO_WIDTH;
 
 	//TODO remove
 	//globalUpperBound = 26;
@@ -124,8 +124,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 		for (auto pair = TW[i - 1].begin(); pair != TW[i - 1].end(); pair++)
 		{
 			VSet S = pair->first;
-			int r = pair->second.first;
-			auto oldSeq = pair->second.second;
+			int r = pair->second;
 
 			//Vertex firstSet = S.first();
 
@@ -158,9 +157,9 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 						auto searchInfo = TW[i].find(SUx);
 						if (searchInfo == TW[i].end() || rr < r )
 						{
-							std::vector<Vertex> newSeq(oldSeq);
-							newSeq.push_back(v);
-							TW[i][SUx] = std::pair<int, std::vector<Vertex>>(rr, newSeq);
+							//std::vector<Vertex> newSeq(oldSeq);
+							//newSeq.push_back(v);
+							TW[i][SUx] = rr;
 						}
 						
 
@@ -188,8 +187,8 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 	{
 		return upperBound;
 	}
-	std::cout << "Found sequence: " << showSet(searchInfo->second.second) << "\n";
-	return searchInfo->second.first;
+	//std::cout << "Found sequence: " << showSet(searchInfo->second.second) << "\n";
+	return searchInfo->second;
 
 
 
