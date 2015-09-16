@@ -151,4 +151,14 @@ Vertex VSet::firstNotContained(int numVerts) const
 	}
 }
 
+VSet VSet::setUnion(const VSet& that) const
+{
+	auto newBitVec = this->bitVec | that.bitVec;
+	auto newCount = this->currentSize + that.currentSize - (this->bitVec & that.bitVec).count();
+	VSet ret;
+	ret.bitVec = newBitVec;
+	ret.currentSize = newCount;
+	return ret;
+}
+
 

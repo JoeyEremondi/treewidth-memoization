@@ -50,6 +50,8 @@ public:
 
 	std::size_t operator()() const;
 
+	VSet setUnion(const VSet& that) const;
+
 
 
 };
@@ -73,7 +75,5 @@ inline bool operator> (const VSet& lhs, const VSet& rhs) { return rhs < lhs; }
 inline bool operator<=(const VSet& lhs, const VSet& rhs) { return !(lhs > rhs); }
 inline bool operator>=(const VSet& lhs, const VSet& rhs) { return !(lhs < rhs); }
 inline bool operator==(const VSet& lhs, const VSet& rhs) { return lhs.asInt() == rhs.asInt(); }
-
-
 
 #endif
