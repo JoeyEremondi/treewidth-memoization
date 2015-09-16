@@ -89,10 +89,10 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 	VSet globalUnseen = S;
 
 	//Store the set of vertices each connected component can reach
-	std::vector<std::vector<Vertex>> canReach(n+1);
+	std::vector<VSet> canReach(n);
 
 	//For each vertex not in S, store which connected components it connects to
-	std::vector<std::vector<Vertex>> reachableFrom(n+1);
+	std::vector<std::vector<Vertex>> reachableFrom(n);
 
 	//If S is empty: then we just see how many vertices 
 	if (S.empty())
@@ -153,7 +153,7 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 						{
 							//Mark that this CC and our vertex u, not in s, can reach each other
 							reachableFrom[u].push_back(currentCC);
-							canReach[currentCC].push_back(u);
+							canReach[currentCC].insert(u);
 							//std::cout << "Reached " << u << " from " << w << " in CC " << currentCC << "\n";
 						}
 					}
@@ -172,11 +172,7 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 		VSet allReachableVerts;
 		for (auto connComp = reachableFrom[v].begin(); connComp != reachableFrom[v].end(); connComp++)
 		{
-			for (auto u = canReach[*connComp].begin(); u != canReach[*connComp].end(); u++)
-			{
-				allReachableVerts.insert(*u);
-				//std::cout << "Start vert " << v << " q set has " << *u << "\n";
-			}
+			allReachableVerts.addAll(canReach[*connComp]);
 		}
 
 		auto& outEdges = boost::out_edges(v, G);

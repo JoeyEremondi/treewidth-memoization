@@ -147,4 +147,8 @@ VSet VSet::setUnion(const VSet& that) const
 	return ret;
 }
 
+void VSet::addAll(const VSet& that)
+{
+	this->bitVec |= that.bitVec;
+}
 

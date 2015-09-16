@@ -51,6 +51,7 @@ public:
 	std::size_t operator()() const;
 
 	VSet setUnion(const VSet& that) const;
+	void addAll(const VSet& that);
 
 
 
