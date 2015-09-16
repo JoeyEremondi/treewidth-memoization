@@ -15,7 +15,7 @@ int bottomUpTW(Graph G)
 	std::vector<Vertex> cliqueVec(maxClique.size());
 	maxClique.members(cliqueVec);
 
-	for (auto iter = cliqueVec.begin(); iter != cliqueVec.end(); iter++)
+	for (auto iter = cliqueVec.begin(); iter != cliqueVec.end(); ++iter)
 	{
 		S.erase(*iter);
 	}
@@ -65,7 +65,7 @@ int calcUpperBound(Graph G, VSet S)
 std::string showLayer(std::unordered_map<VSet, int> TW)
 {
 	std::ostringstream out;
-	for (auto iter = TW.begin(); iter != TW.end(); iter++)
+	for (auto iter = TW.begin(); iter != TW.end(); ++iter)
 	{
 		out << "{" << showSet(iter->first) << "=" << iter->second << "}, ";
 	}
@@ -116,7 +116,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 	int upperBound = globalUpperBound;
 
-	for (int i = 1; i < SStart.size(); i++)
+	for (int i = 1; i < SStart.size(); ++i)
 	{
 		std::cout << "Level " << i << "\n";
 		//std::cout << "Num Q " << numQCalled << "\n";
@@ -128,7 +128,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 
 		auto twLoopEnd = TW[i - 1].end();
-		for (auto pair = TW[i - 1].begin(); pair != twLoopEnd; pair++)
+		for (auto pair = TW[i - 1].begin(); pair != twLoopEnd; ++pair)
 		{
 			VSet S = pair->first;
 			int r = pair->second;
@@ -138,7 +138,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 			std::vector<int> qSizes(nGraph);
 			findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
 
-			for (auto x = vertInfoStart; x != vertInfoEnd; x++)
+			for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
 			{
 				Vertex v = *x;
 				if ( (!S.contains(v)) && (!clique.contains(v)) /*&& v < firstSet*/ ) //TODO check if in clique here?
@@ -182,7 +182,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 		//Delete any that we falsely added, that are above our new upper bound
 		auto loopEnd = currentTW.end();
-		for (auto pair = currentTW.begin(); pair != loopEnd; pair++)
+		for (auto pair = currentTW.begin(); pair != loopEnd; ++pair)
 		{
 			if (pair->second < upperBound)
 			{

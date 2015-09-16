@@ -45,7 +45,7 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 		auto& outEdges = boost::out_edges(w, G);
 		//std::cout << "Q: expanding " << w << "\n";
 
-		for (auto iter = outEdges.first; iter != outEdges.second; iter++)
+		for (auto iter = outEdges.first; iter != outEdges.second; ++iter)
 		{
 			Edge e = *iter;
 			Vertex u = boost::target(e, G);
@@ -128,13 +128,12 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 				globalUnseen.erase(w);
 
 
-				auto& outEdges = boost::out_edges(w, G);
+				auto outEdges = boost::out_edges(w, G);
 				//std::cout << "Q: expanding " << w << "\n";
 
-				for (auto iter = outEdges.first; iter != outEdges.second; iter++)
+				for (auto iter = outEdges.first; iter != outEdges.second; ++iter)
 				{
-					Edge e = *iter;
-					Vertex u = boost::target(e, G);
+					Vertex u = boost::target(*iter, G);
 
 
 					//std::cout << "Q: found neighbour " << u << "\n";
@@ -169,23 +168,23 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 	//and take the number of elements
 	//We also add in any vertices immediately adjacent to v which aren't in S
 	auto vertInfo = vertices(G);
-	for (auto iter = vertInfo.first; iter != vertInfo.second; iter++)
+	for (auto iter = vertInfo.first; iter != vertInfo.second; ++iter)
 	{
 		Vertex v = *iter;
 		VSet allReachableVerts;
 		auto loopEnd = reachableFrom[v].end();
-		for (auto connComp = reachableFrom[v].begin(); connComp != loopEnd; connComp++)
+		for (auto connComp = reachableFrom[v].begin(); connComp != loopEnd; ++connComp)
 		{
 			allReachableVerts.addAll(canReach[*connComp]);
 		}
 
-		auto& outEdges = boost::out_edges(v, G);
+		auto outEdges = boost::out_edges(v, G);
 		//std::cout << "Q: expanding " << w << "\n";
 
-		for (auto iter = outEdges.first; iter != outEdges.second; iter++)
+		for (auto iter = outEdges.first; iter != outEdges.second; ++iter)
 		{
-			Edge e = *iter;
-			Vertex u = boost::target(e, G);
+			//Edge e = *iter;
+			Vertex u = boost::target(*iter, G);
 			if (!S.contains(u))
 			{
 				allReachableVerts.insert(u);
@@ -211,7 +210,7 @@ std::string showSet(VSet S) {
 	std::vector<Vertex> members;
 	S.members(members);
 
-	for (auto iter = members.begin(); iter != members.end(); iter++)
+	for (auto iter = members.begin(); iter != members.end(); ++iter)
 	{
 		result << *iter << " ; ";
 	}

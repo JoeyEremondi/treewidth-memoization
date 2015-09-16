@@ -13,7 +13,7 @@ VSet::VSet(const Graph &G)
 {
 	auto iterInfo = boost::vertices(G);
 	//Just go through and set the bit for each vertex to 1
-	for (auto iter = iterInfo.first; iter != iterInfo.second; iter++)
+	for (auto iter = iterInfo.first; iter != iterInfo.second; ++iter)
 	{
 		bitVec[*iter] = true;
 
@@ -32,7 +32,7 @@ VSet::VSet(const VSet &S)
 VSet::VSet(const std::vector<Vertex>& vec)
 {
 	auto loopEnd = vec.end();
-	for (auto iter = vec.begin(); iter != loopEnd; iter++)
+	for (auto iter = vec.begin(); iter != loopEnd; ++iter)
 	{
 		//bitVec.set(*iter, true);
 		bitVec[*iter] = true;
@@ -48,7 +48,7 @@ void VSet::members(std::vector<Vertex>& vec) const
 
 	int vecPos = 0;
 
-	for (int i = 0; i < MAX_NUM_VERTICES; i++)
+	for (int i = 0; i < MAX_NUM_VERTICES; ++i)
 	{
 		//Check if the ith bit is set. If it is, add that to our vector
 		if (bitVec[i])
@@ -82,7 +82,7 @@ unsigned long long VSet::asInt() const
 
 Vertex VSet::first() const
 {
-	for (int i = 0; i < MAX_NUM_VERTICES; i++)
+	for (int i = 0; i < MAX_NUM_VERTICES; ++i)
 	{
 		//Check if the ith bit is set. If it is, add that to our vector
 		if (bitVec[i])
@@ -96,7 +96,7 @@ Vertex VSet::first() const
 
 Vertex VSet::firstNotContained(int numVerts) const
 {
-	for (int i = 0; i < numVerts; i++)
+	for (int i = 0; i < numVerts; ++i)
 	{
 		//Check if the ith bit is set. If it is, add that to our vector
 		if (!bitVec[i])
