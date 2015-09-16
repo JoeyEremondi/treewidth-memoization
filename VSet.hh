@@ -36,11 +36,14 @@ public:
 	//Convert a vector to its integer representation
 	unsigned long long asInt() const;
 
-	void erase(Vertex v);
-	bool contains(Vertex v) const;
-	bool empty() const;
-	int size() const;
-	void insert(Vertex v);
+	inline void VSet::erase(Vertex v) { bitVec[v] = false; }
+	inline bool VSet::contains(Vertex v) const { return bitVec[v]; };
+	inline bool VSet::empty() const { return bitVec.none(); }
+	inline int VSet::size() const { return bitVec.count(); }
+	inline void VSet::insert(Vertex v) { bitVec[v] = true; }
+	inline void addAll(const VSet& that) { bitVec |= that.bitVec; }
+
+
 	Vertex first() const;
 	Vertex firstNotContained(int numVerts) const;
 
@@ -51,7 +54,7 @@ public:
 	std::size_t operator()() const;
 
 	VSet setUnion(const VSet& that) const;
-	void addAll(const VSet& that);
+	
 
 
 

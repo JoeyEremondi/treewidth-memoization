@@ -41,23 +41,6 @@ VSet::VSet(const std::vector<Vertex>& vec)
 }
 
 
-void VSet::insert(Vertex v)
-{
-	bitVec[v] = true;
-
-}
-
-void VSet::erase(Vertex v)
-{
-	bitVec[v] = false;
-
-}
-
-bool VSet::contains(Vertex v) const
-{
-	return bitVec[v];
-
-}
 
 void VSet::members(std::vector<Vertex>& vec) const
 {
@@ -89,19 +72,6 @@ bitSet VSet::getBitVec() const
 }
 */
 
-//TODO keep counter
-bool VSet::empty() const
-{
-	return bitVec.none();
-
-}
-
-int VSet::size() const
-{
-	return bitVec.count();
-
-
-}
 
 unsigned long long VSet::asInt() const
 {
@@ -146,9 +116,3 @@ VSet VSet::setUnion(const VSet& that) const
 	ret.bitVec = newBitVec;
 	return ret;
 }
-
-void VSet::addAll(const VSet& that)
-{
-	this->bitVec |= that.bitVec;
-}
-
