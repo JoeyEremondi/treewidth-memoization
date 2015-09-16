@@ -18,9 +18,9 @@ typedef std::bitset<MAX_NUM_VERTICES> bitSet;
 //Memory efficient storage of subsets of vertices in a graph
 class VSet
 {
-protected:
+public:
 	//bitSet bitVec = 0;
-	bool bitVec[MAX_NUM_VERTICES] = { false };
+	std::bitset<MAX_NUM_VERTICES> bitVec = { false };
 	int currentSize = 0;
 
 public:
@@ -34,7 +34,7 @@ public:
 	VSet(const std::vector<Vertex>& vec);
 
 	//Convert a vector to its integer representation
-	unsigned long asInt() const;
+	unsigned long long asInt() const;
 
 	void erase(Vertex v);
 	bool contains(Vertex v) const;
@@ -59,7 +59,7 @@ namespace std {
 	{
 		size_t operator()(const VSet & S) const
 		{
-			return S.asInt();
+			return hash<std::bitset<MAX_NUM_VERTICES>>()(S.bitVec);;
 		}
 	};
 }

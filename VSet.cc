@@ -25,7 +25,8 @@ VSet::VSet(const Graph &G)
 VSet::VSet(const VSet &S)
 {
 	currentSize = S.currentSize;
-	memcpy(bitVec, S.bitVec, MAX_NUM_VERTICES);
+	bitVec = S.bitVec;
+	//memcpy(bitVec, S.bitVec, MAX_NUM_VERTICES);
 
 
 }
@@ -113,14 +114,9 @@ int VSet::size() const
 
 }
 
-unsigned long VSet::asInt() const
+unsigned long long VSet::asInt() const
 {
-	unsigned long ret = 0;
-	for (int i = 0; i < MAX_NUM_VERTICES; i++)
-	{
-		ret |= bitVec[i] << i;
-	}
-	return ret;
+	return bitVec.to_ullong();
 
 
 }
