@@ -93,6 +93,8 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 
 	//For each vertex not in S, store which connected components it connects to
 	std::vector<std::vector<Vertex>> reachableFrom(n);
+	//Also store it as a set, to keep the vector as small as possible
+	std::vector<VSet> reachableFromSet(n);
 
 	//If S is empty: then we just see how many vertices 
 	if (S.empty())
@@ -149,10 +151,11 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 
 
 						}
-						else
+						else if (!reachableFromSet[u].contains(currentCC))
 						{
 							//Mark that this CC and our vertex u, not in s, can reach each other
 							reachableFrom[u].push_back(currentCC);
+							reachableFromSet[u].insert(currentCC);
 							canReach[currentCC].insert(u);
 							//std::cout << "Reached " << u << " from " << w << " in CC " << currentCC << "\n";
 						}
@@ -170,7 +173,8 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 	{
 		Vertex v = *iter;
 		VSet allReachableVerts;
-		for (auto connComp = reachableFrom[v].begin(); connComp != reachableFrom[v].end(); connComp++)
+		auto loopEnd = reachableFrom[v].end();
+		for (auto connComp = reachableFrom[v].begin(); connComp != loopEnd; connComp++)
 		{
 			allReachableVerts.addAll(canReach[*connComp]);
 		}

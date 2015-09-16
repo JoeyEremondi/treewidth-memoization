@@ -31,7 +31,8 @@ VSet::VSet(const VSet &S)
 
 VSet::VSet(const std::vector<Vertex>& vec)
 {
-	for (auto iter = vec.begin(); iter != vec.end(); iter++)
+	auto loopEnd = vec.end();
+	for (auto iter = vec.begin(); iter != loopEnd; iter++)
 	{
 		//bitVec.set(*iter, true);
 		bitVec[*iter] = true;
@@ -116,12 +117,11 @@ Vertex VSet::first() const
 		//Check if the ith bit is set. If it is, add that to our vector
 		if (bitVec[i])
 		{
-			//std::cout << "Setting membres pos " << vecPos << " to " << i << "\n";
-
 			return i;
 		}
 
 	}
+	return -1; //TODO better error?
 }
 
 Vertex VSet::firstNotContained(int numVerts) const

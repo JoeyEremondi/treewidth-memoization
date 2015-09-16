@@ -109,7 +109,10 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 	int nGraph = boost::num_vertices(G);
 
 	std::vector<Vertex> vertInfo;
+	
 	SStart.members(vertInfo); // boost::vertices(G);
+	auto vertInfoStart = vertInfo.begin();
+	auto vertInfoEnd = vertInfo.end();
 
 	int upperBound = globalUpperBound;
 
@@ -121,7 +124,11 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 		//TODO what is this? Taken from Java version
 		int minTW = upperBound;
 
-		for (auto pair = TW[i - 1].begin(); pair != TW[i - 1].end(); pair++)
+		std::unordered_map<VSet, int> currentTW;
+
+
+		auto twLoopEnd = TW[i - 1].end();
+		for (auto pair = TW[i - 1].begin(); pair != twLoopEnd; pair++)
 		{
 			VSet S = pair->first;
 			int r = pair->second;
@@ -131,7 +138,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 			std::vector<int> qSizes(nGraph);
 			findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
 
-			for (auto x = vertInfo.begin(); x != vertInfo.end(); x++)
+			for (auto x = vertInfoStart; x != vertInfoEnd; x++)
 			{
 				Vertex v = *x;
 				if ( (!S.contains(v)) && (!clique.contains(v)) /*&& v < firstSet*/ ) //TODO check if in clique here?
@@ -154,12 +161,12 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 					if (rr < upperBound)
 					{
-						auto searchInfo = TW[i].find(SUx);
-						if (searchInfo == TW[i].end() || rr < r )
+						auto searchInfo = currentTW.find(SUx);
+						if (searchInfo == currentTW.end() || rr < r )
 						{
 							//std::vector<Vertex> newSeq(oldSeq);
 							//newSeq.push_back(v);
-							TW[i][SUx] = rr;
+							currentTW[SUx] = rr;
 						}
 						
 
@@ -172,6 +179,16 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 		//TODO right place in loop?
 		upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
+
+		//Delete any that we falsely added, that are above our new upper bound
+		auto loopEnd = currentTW.end();
+		for (auto pair = currentTW.begin(); pair != loopEnd; pair++)
+		{
+			if (pair->second < upperBound)
+			{
+				TW[i][pair->first] = pair->second;
+			}
+		}
 
 		std::cout << "TW i size: " << i << " " << TW[i].size() << "\n";
 		if (i < 3)
