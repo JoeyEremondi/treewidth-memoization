@@ -81,7 +81,7 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 {
 	numQCalled++;
 
-	//std::cout << "Q: starting with S = " << showSet(S) << "\n";
+	//std::cout << "Multi Q: starting with S = " << showSet(S) << "\n";
 
 	//int n = boost::num_vertices(G);
 
@@ -94,57 +94,68 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 	//For each vertex not in S, store which connected components it connects to
 	std::vector<std::vector<Vertex>> reachableFrom(n+1);
 
-	while (!globalUnseen.empty())
+	//If S is empty: then we just see how many vertices 
+	if (S.empty())
 	{
-		std::vector<Vertex> open(n);
 
-		Vertex first = globalUnseen.first();
-		Vertex currentCC = first;
-
-		open.push_back(first);
-
-
-		//Vertices we've already seen
-		VSet closed;
-
-
-		while (open.size() > 0)
+	}
+	else
+	{
+		while (!globalUnseen.empty())
 		{
-			Vertex w = open.back();
-			open.pop_back();
+			std::vector<Vertex> open;
 
-			//Mark that we've seen this vertex in our connected component search
-			globalUnseen.erase(w);
+			Vertex first = globalUnseen.first();
+			Vertex currentCC = first;
+
+			//std::cout << "CC " << currentCC << "\n";
+
+			open.push_back(first);
 
 
-			auto& outEdges = boost::out_edges(w, G);
-			//std::cout << "Q: expanding " << w << "\n";
+			//Vertices we've already seen
+			VSet closed;
 
-			for (auto iter = outEdges.first; iter != outEdges.second; iter++)
+
+			while (open.size() > 0)
 			{
-				Edge e = *iter;
-				Vertex u = boost::target(e, G);
+				Vertex w = open.back();
+				open.pop_back();
+
+				//Mark that we've seen this vertex in our connected component search
+				globalUnseen.erase(w);
 
 
-				//std::cout << "Q: found neighbour " << u << "\n";
-				if (!closed.contains(u))
+				auto& outEdges = boost::out_edges(w, G);
+				//std::cout << "Q: expanding " << w << "\n";
+
+				for (auto iter = outEdges.first; iter != outEdges.second; iter++)
 				{
-					//std::cout << "Q: adding " << u << " to closed\n";
+					Edge e = *iter;
+					Vertex u = boost::target(e, G);
 
-					closed.insert(u);
 
-					if (S.contains(u))
+					//std::cout << "Q: found neighbour " << u << "\n";
+					if (!closed.contains(u))
 					{
-						//std::cout << "Q: adding " << u << " to queue\n";
-						open.push_back(u);
+						//std::cout << "Q: adding " << u << " to closed\n";
+
+						closed.insert(u);
+
+						if (S.contains(u))
+						{
+							//std::cout << "Q: adding " << u << " to queue\n";
+							open.push_back(u);
 
 
-					}
-					else
-					{
-						//Mark that this CC and our vertex u, not in s, can reach each other
-						reachableFrom[u].push_back(currentCC);
-						canReach[currentCC].push_back(u);
+						}
+						else
+						{
+							//Mark that this CC and our vertex u, not in s, can reach each other
+							reachableFrom[u].push_back(currentCC);
+							canReach[currentCC].push_back(u);
+							//std::cout << "Reached " << u << " from " << w << " in CC " << currentCC << "\n";
+						}
 					}
 				}
 			}
@@ -153,6 +164,7 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 
 	//For each vertex, we union the reachable vertices from each connected component
 	//and take the number of elements
+	//We also add in any vertices immediately adjacent to v which aren't in S
 	auto vertInfo = vertices(G);
 	for (auto iter = vertInfo.first; iter != vertInfo.second; iter++)
 	{
@@ -163,8 +175,24 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 			for (auto u = canReach[*connComp].begin(); u != canReach[*connComp].end(); u++)
 			{
 				allReachableVerts.insert(*u);
+				//std::cout << "Start vert " << v << " q set has " << *u << "\n";
 			}
 		}
+
+		auto& outEdges = boost::out_edges(v, G);
+		//std::cout << "Q: expanding " << w << "\n";
+
+		for (auto iter = outEdges.first; iter != outEdges.second; iter++)
+		{
+			Edge e = *iter;
+			Vertex u = boost::target(e, G);
+			if (!S.contains(u))
+			{
+				allReachableVerts.insert(u);
+;			}
+		}
+
+		//std::cout << "VSet for " << v << " size " << allReachableVerts.size() << " set " << showSet(allReachableVerts) << "\n";
 
 		allReachableVerts.erase(v);
 		outValues[v] = allReachableVerts.size();

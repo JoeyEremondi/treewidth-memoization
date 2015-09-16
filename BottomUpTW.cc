@@ -4,6 +4,7 @@
 #include <iostream>
 #include <string>
 #include <sstream> // for ostringstream
+#include <cassert>
 
 int bottomUpTW(Graph G)
 {
@@ -97,12 +98,12 @@ int maybeMin(int x, int y)
 
 int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globalUpperBound)
 {
-	std::unordered_map<VSet, int> TW[MAX_NUM_VERTICES];
+	std::unordered_map<VSet, std::pair<int, std::vector<Vertex>>> TW[MAX_NUM_VERTICES];
 	VSet emptySet;
-	TW[0][emptySet] = NO_WIDTH;
+	TW[0][emptySet] = std::pair<int, std::vector<Vertex>>(NO_WIDTH, std::vector<Vertex>());
 
 	//TODO remove
-	globalUpperBound = 26;
+	//globalUpperBound = 26;
 
 	int n = SStart.size();// boost::num_vertices(G);
 	int nGraph = boost::num_vertices(G);
@@ -122,26 +123,29 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 		for (auto pair = TW[i - 1].begin(); pair != TW[i - 1].end(); pair++)
 		{
-			VSet S = (*pair).first;
-			int r = (*pair).second;
+			VSet S = pair->first;
+			int r = pair->second.first;
+			auto oldSeq = pair->second.second;
 
-			Vertex firstSet = S.first();
+			//Vertex firstSet = S.first();
 
 			std::vector<int> qSizes(nGraph);
 			findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
 
 			for (auto x = vertInfo.begin(); x != vertInfo.end(); x++)
 			{
-				if (!S.contains(*x) && !clique.contains(*x) && (*x) < firstSet ) //TODO check if in clique here?
+				Vertex v = *x;
+				if ( (!S.contains(v)) && (!clique.contains(v)) /*&& v < firstSet*/ ) //TODO check if in clique here?
 				{
 
 					
 
 					VSet SUx = S;
-					SUx.insert(*x);
+					SUx.insert(v);
 
-					int q = qSizes[*x];
-					//int q = sizeQ(n, S, *x, G);
+					int q = qSizes[v];
+					//int qOld = sizeQ(nGraph, S, v, G);
+					//assert(q == qOld);
 
 					int rr = std::max(r, q);
 
@@ -152,14 +156,13 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 					if (rr < upperBound)
 					{
 						auto searchInfo = TW[i].find(SUx);
-						if (searchInfo == TW[i].end())
+						if (searchInfo == TW[i].end() || rr < r )
 						{
-							TW[i][SUx] = rr;
+							std::vector<Vertex> newSeq(oldSeq);
+							newSeq.push_back(v);
+							TW[i][SUx] = std::pair<int, std::vector<Vertex>>(rr, newSeq);
 						}
-						else {
-							TW[i][SUx] = std::min(searchInfo->second, rr);
-						}
-
+						
 
 					}
 				}
@@ -185,7 +188,8 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 	{
 		return upperBound;
 	}
-	return searchInfo->second;
+	std::cout << "Found sequence: " << showSet(searchInfo->second.second) << "\n";
+	return searchInfo->second.first;
 
 
 

@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 
 
 	//std::vector<std::string> inFiles({/*"myciel3.dgf" , "pathfinder-pp.dgf" ,*/  "myciel4.dgf" , "queen5_5.dgf" , "queen6_6.dgf"/*  , "queen7_7.dgf"*/  });
-	std::vector<std::string> inFiles({ "queen6_6.dgf" });
+	std::vector<std::string> inFiles({ "queen7_7.dgf" });
 	//std::vector<std::string> inFiles({"queen6_6.dgf" });
 	//TODO make nicer loop
 	for (auto iter = inFiles.begin(); iter != inFiles.end(); iter++)
@@ -71,12 +71,13 @@ int main(int argc, char** argv)
 		inGraphFile.open("testGraphs/" + *iter);
 		std::cout << "\n\n***********\nTesting on graph " << *iter << "\n***********\n";
 
-
+		std::ofstream outGraph;
+		outGraph.open("graphOut.dot");
 
 		Graph gRand;
 
 		read_coloring_problem(inGraphFile, gRand);
-		//boost::write_graphviz(std::cout, gRand);
+		boost::write_graphviz(outGraph, gRand);
 		inGraphFile.close();
 
 		//boost::generate_random_graph(gRand, vc, ec, rng, true, true);
