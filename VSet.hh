@@ -20,8 +20,8 @@ class VSet
 {
 public:
 	//bitSet bitVec = 0;
-	std::bitset<MAX_NUM_VERTICES> bitVec = { false };
-	int currentSize = 0;
+	std::bitset<MAX_NUM_VERTICES> bitVec;
+	//int currentSize = 0;
 
 public:
 	//Empty set

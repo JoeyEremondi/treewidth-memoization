@@ -16,7 +16,6 @@ VSet::VSet(const Graph &G)
 	for (auto iter = iterInfo.first; iter != iterInfo.second; iter++)
 	{
 		bitVec[*iter] = true;
-		currentSize++;
 
 	}
 
@@ -24,7 +23,6 @@ VSet::VSet(const Graph &G)
 
 VSet::VSet(const VSet &S)
 {
-	currentSize = S.currentSize;
 	bitVec = S.bitVec;
 	//memcpy(bitVec, S.bitVec, MAX_NUM_VERTICES);
 
@@ -37,7 +35,6 @@ VSet::VSet(const std::vector<Vertex>& vec)
 	{
 		//bitVec.set(*iter, true);
 		bitVec[*iter] = true;
-		currentSize++;
 	}
 
 }
@@ -45,21 +42,12 @@ VSet::VSet(const std::vector<Vertex>& vec)
 
 void VSet::insert(Vertex v)
 {
-	//TODO too slow?
-	if (!bitVec[v])
-	{
-		currentSize++;
-	}
 	bitVec[v] = true;
 
 }
 
 void VSet::erase(Vertex v)
 {
-	if (bitVec[v])
-	{
-		currentSize--;
-	}
 	bitVec[v] = false;
 
 }
@@ -72,7 +60,7 @@ bool VSet::contains(Vertex v) const
 
 void VSet::members(std::vector<Vertex>& vec) const
 {
-	vec.resize(currentSize);
+	vec.resize(bitVec.count());
 
 	int vecPos = 0;
 
@@ -103,13 +91,13 @@ bitSet VSet::getBitVec() const
 //TODO keep counter
 bool VSet::empty() const
 {
-	return currentSize == 0;
+	return bitVec.none();
 
 }
 
 int VSet::size() const
 {
-	return currentSize;
+	return bitVec.count();
 
 
 }
@@ -154,10 +142,8 @@ Vertex VSet::firstNotContained(int numVerts) const
 VSet VSet::setUnion(const VSet& that) const
 {
 	auto newBitVec = this->bitVec | that.bitVec;
-	auto newCount = this->currentSize + that.currentSize - (this->bitVec & that.bitVec).count();
 	VSet ret;
 	ret.bitVec = newBitVec;
-	ret.currentSize = newCount;
 	return ret;
 }
 
