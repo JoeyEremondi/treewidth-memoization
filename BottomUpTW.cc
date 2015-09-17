@@ -36,6 +36,7 @@ int calcUpperBound(Graph G, VSet S)
 	S.members(Svec);
 
 	int globalUpperBound = permutTW(S, Svec, G);
+	
 
 	//Second try: order by degree ascending
 	std::sort(Svec.begin(), Svec.end(), [G](Vertex u, Vertex v)
@@ -99,24 +100,39 @@ int maybeMin(int x, int y)
 int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globalUpperBound)
 {
 	std::unordered_map<VSet, int> TW[MAX_NUM_VERTICES];
+	
 	VSet emptySet;
 	TW[0][emptySet] = NO_WIDTH;
 
 	//TODO remove
 	//globalUpperBound = 26;
 
-	int n = SStart.size();// boost::num_vertices(G);
+	
 	int nGraph = boost::num_vertices(G);
+	//int n = nGraph;
+	int n = SStart.size();
+
 
 	std::vector<Vertex> vertInfo;
-	
+
+	auto allVertInfo = boost::vertices(G);
+	std::vector<Vertex> allVerts(allVertInfo.first, allVertInfo.second);
+	//VSet SStart(allVerts);
+
+
 	SStart.members(vertInfo); // boost::vertices(G);
 	auto vertInfoStart = vertInfo.begin();
 	auto vertInfoEnd = vertInfo.end();
 
+	//VSet clique;
+
+	
+
 	int upperBound = globalUpperBound;
 
-	for (int i = 1; i < SStart.size(); ++i)
+	std::cout << "CLIQUE: " << showSet(clique) << "\n";
+
+	for (int i = 1; i <= nGraph - clique.size(); ++i)
 	{
 		std::cout << "Level " << i << "\n";
 		//std::cout << "Num Q " << numQCalled << "\n";
@@ -143,10 +159,10 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 			for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
 			{
 				Vertex v = *x;
-				if ( (!S.contains(v)) && (!clique.contains(v)) /*&& v < firstSet*/ ) //TODO check if in clique here?
+				if ((!S.contains(v)) && (!clique.contains(v)) /*&& v < firstSet*/) //TODO check if in clique here?
 				{
 
-					
+
 
 					VSet SUx = S;
 					SUx.insert(v);
@@ -155,7 +171,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 					//int trueQ = qCheck(nGraph, S, v, G);
 					//int qOld = sizeQ(nGraph, S, v, G);
 					//assert(q == trueQ);
-					
+
 
 					int rr = std::max(r, q);
 
@@ -166,13 +182,13 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 					if (rr < upperBound)
 					{
 						auto searchInfo = currentTW.find(SUx);
-						if (searchInfo == currentTW.end() || rr < r )
+						if (searchInfo == currentTW.end() || rr < searchInfo->second)
 						{
 							//std::vector<Vertex> newSeq(oldSeq);
 							//newSeq.push_back(v);
 							currentTW[SUx] = rr;
 						}
-						
+
 
 					}
 				}
@@ -182,7 +198,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 		}
 
 		//TODO right place in loop?
-		//upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
+		upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
 		//std::cout << "New upper bound " << upperBound << "\n";
 
 		//Delete any that we falsely added, that are above our new upper bound
@@ -196,16 +212,17 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 		}
 
 		std::cout << "TW i size: " << i << " " << TW[i].size() << "\n";
-		if (i < 3)
+		/*if (true)
 		{
-			
-			//std::cout << "TW i: " << i << " " << showLayer(TW[i]) << "\n";
-		}
-		//std::cout << "TW i: " << i << " " << TW[i].size() << "\n";
+
+			std::cout << "TW i: " << i << " " << showLayer(TW[i]) << "\n";
+		} */
 	}
 
-	auto searchInfo = TW[SStart.size()].find(SStart);
-	if (searchInfo == TW[SStart.size()].end())
+	std::cout << "Num Q " << numQCalled << "\n";
+
+	auto searchInfo = TW[nGraph - clique.size()].find(SStart);
+	if (searchInfo == TW[nGraph - clique.size()].end())
 	{
 		return upperBound;
 	}
