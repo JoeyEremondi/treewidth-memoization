@@ -44,18 +44,18 @@ VSet::VSet(const std::vector<Vertex>& vec)
 
 void VSet::members(std::vector<Vertex>& vec) const
 {
-	vec.resize(bitVec.count());
+	auto ourCount = bitVec.count();
+	vec.resize(ourCount);
 
 	int vecPos = 0;
-
-	for (int i = 0; i < MAX_NUM_VERTICES; ++i)
+	int numAdded = 0;
+	for (int i = 0; vecPos < ourCount; ++i)
 	{
 		//Check if the ith bit is set. If it is, add that to our vector
 		if (bitVec[i])
 		{
 			//std::cout << "Setting membres pos " << vecPos << " to " << i << "\n";
-
-			vec[vecPos] = ((Vertex)i);
+			vec[vecPos] = i;
 			vecPos++;
 		}
 

@@ -133,6 +133,8 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 			VSet S = pair->first;
 			int r = pair->second;
 
+			//std::cout << "On set " << showSet(S);
+
 			//Vertex firstSet = S.first();
 
 			std::vector<int> qSizes(nGraph);
@@ -150,8 +152,10 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 					SUx.insert(v);
 
 					int q = qSizes[v];
+					//int trueQ = qCheck(nGraph, S, v, G);
 					//int qOld = sizeQ(nGraph, S, v, G);
-					//assert(q == qOld);
+					//assert(q == trueQ);
+					
 
 					int rr = std::max(r, q);
 

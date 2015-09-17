@@ -11,6 +11,10 @@
 #include "qset.hh"
 #include "graphTypes.hh"
 
+#include <boost/graph/visitors.hpp>
+#include <boost/graph/breadth_first_search.hpp>
+#include <boost/graph/subgraph.hpp>
+
 int numQCalled = 0;
 
 
@@ -198,6 +202,53 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 	}
 	
 
+}
+
+int qCheck(int n, VSet S, Vertex v, Graph G)
+{
+	int numInQ = 0;
+	auto vertInfo = vertices(G);
+	auto edgeInfo = edges(G);
+	for (auto iter = vertInfo.first; iter != vertInfo.second; iter++)
+	{
+		Vertex u = *iter;
+		if (u != v && !S.contains(u))
+		{
+			VSet inducingSet = S;
+			inducingSet.insert(v);
+			inducingSet.insert(u);
+			std::vector<Vertex> members;
+			inducingSet.members(members);
+
+			Graph GG;
+			for (auto addVert = vertInfo.first; addVert != vertInfo.second; addVert++)
+			{
+					boost::add_vertex(GG);
+			}
+
+			for (auto edgeIter = edgeInfo.first; edgeIter != edgeInfo.second; edgeIter++)
+			{
+				Vertex from = boost::source(*edgeIter, G); 
+				Vertex to = boost::target(*edgeIter, G);
+				if (inducingSet.contains(to) && inducingSet.contains(from))
+				{
+					boost::add_edge(to, from, GG);
+				}
+			}
+
+			std::vector<int> distances(boost::num_vertices(G) + 1);
+			boost::breadth_first_search(GG,
+				v,
+				boost::visitor(boost::make_bfs_visitor(boost::record_distances(&distances[0], boost::on_tree_edge()))));
+			if (distances[u] != 0)
+			{
+				numInQ++;
+			}
+
+		}
+		
+	}
+	return numInQ;
 }
 
 

@@ -20,6 +20,8 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph &G);
 
 void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValues);
 
+int qCheck(int n, VSet S, Vertex v, Graph G);
+
 std::string showSet(VSet S);
 
 
