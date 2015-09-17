@@ -182,7 +182,8 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 		}
 
 		//TODO right place in loop?
-		upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
+		//upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
+		//std::cout << "New upper bound " << upperBound << "\n";
 
 		//Delete any that we falsely added, that are above our new upper bound
 		auto loopEnd = currentTW.end();
