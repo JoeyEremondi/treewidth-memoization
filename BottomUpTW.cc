@@ -99,10 +99,11 @@ int maybeMin(int x, int y)
 
 int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globalUpperBound)
 {
-	std::unordered_map<VSet, int> TW[MAX_NUM_VERTICES];
+	std::unordered_map<VSet, int>* TW[MAX_NUM_VERTICES];
 	
 	VSet emptySet;
-	TW[0][emptySet] = NO_WIDTH;
+	TW[0] = new std::unordered_map<VSet, int>();
+	(*TW[0])[emptySet] = NO_WIDTH;
 
 	//TODO remove
 	//globalUpperBound = 26;
@@ -137,14 +138,17 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 		std::cout << "Level " << i << "\n";
 		//std::cout << "Num Q " << numQCalled << "\n";
 
+		//Initialize our dictionary at this level
+		TW[i] = new std::unordered_map<VSet, int>();
+
 		//TODO what is this? Taken from Java version
 		int minTW = upperBound;
 
 		std::unordered_map<VSet, int> currentTW;
 
 
-		auto twLoopEnd = TW[i - 1].end();
-		for (auto pair = TW[i - 1].begin(); pair != twLoopEnd; ++pair)
+		auto twLoopEnd = TW[i - 1]->end();
+		for (auto pair = TW[i - 1]->begin(); pair != twLoopEnd; ++pair)
 		{
 			VSet S = pair->first;
 			int r = pair->second;
@@ -207,11 +211,14 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 		{
 			if (pair->second < upperBound)
 			{
-				TW[i][pair->first] = pair->second;
+				(*TW[i])[pair->first] = pair->second;
 			}
 		}
 
-		std::cout << "TW i size: " << i << " " << TW[i].size() << "\n";
+		//De-allocate our old level of the tree, to save space
+		delete TW[i - 1];
+
+		std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
 		/*if (true)
 		{
 
@@ -221,8 +228,8 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 	std::cout << "Num Q " << numQCalled << "\n";
 
-	auto searchInfo = TW[nGraph - clique.size()].find(SStart);
-	if (searchInfo == TW[nGraph - clique.size()].end())
+	auto searchInfo = TW[nGraph - clique.size()]->find(SStart);
+	if (searchInfo == TW[nGraph - clique.size()]->end())
 	{
 		return upperBound;
 	}
