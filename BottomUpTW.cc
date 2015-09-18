@@ -135,7 +135,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 	for (int i = 1; i <= nGraph - clique.size(); ++i)
 	{
-		std::cout << "Level " << i << "\n";
+		//std::cout << "Level " << i << "\n";
 		//std::cout << "Num Q " << numQCalled << "\n";
 
 		//Initialize our dictionary at this level
@@ -226,7 +226,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 		//De-allocate our old level of the tree, to save space
 		delete TW[i - 1];
 
-		std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
+		//std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
 		/*if (true)
 		{
 
@@ -234,7 +234,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 		} */
 	}
 
-	std::cout << "Num Q " << numQCalled << "\n";
+	//std::cout << "Num Q " << numQCalled << "\n";
 
 	auto searchInfo = TW[nGraph - clique.size()]->find(SStart);
 	if (searchInfo == TW[nGraph - clique.size()]->end())

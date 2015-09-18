@@ -15,8 +15,6 @@
 #include <boost/graph/breadth_first_search.hpp>
 #include <boost/graph/subgraph.hpp>
 
-int numQCalled = 0;
-
 
 //Basically just a DFS
 //We start at v, and search
@@ -24,8 +22,6 @@ int numQCalled = 0;
 //And we add to our count (without expanding) for those not in S
 int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 {
-	numQCalled++;
-
 	//std::cout << "Q: starting with S = " << showSet(S) << "\n";
 
 	//int n = boost::num_vertices(G);
@@ -46,7 +42,7 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 	{
 		Vertex w = open[stackEnd];
 		stackEnd--;
-		auto& outEdges = boost::out_edges(w, G);
+		auto outEdges = boost::out_edges(w, G);
 		//std::cout << "Q: expanding " << w << "\n";
 
 		for (auto iter = outEdges.first; iter != outEdges.second; ++iter)
@@ -83,8 +79,6 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 
 void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValues)
 {
-	numQCalled++;
-
 	//std::cout << "Multi Q: starting with S = " << showSet(S) << "\n";
 
 	//int n = boost::num_vertices(G);

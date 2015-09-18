@@ -36,11 +36,11 @@ public:
 	//Convert a vector to its integer representation
 	unsigned long long asInt() const;
 
-	inline void VSet::erase(Vertex v) { bitVec[v] = false; }
-	inline bool VSet::contains(Vertex v) const { return bitVec[v]; };
-	inline bool VSet::empty() const { return bitVec.none(); }
-	inline int VSet::size() const { return bitVec.count(); }
-	inline void VSet::insert(Vertex v) { bitVec[v] = true; }
+	inline void erase(Vertex v) { bitVec[v] = false; }
+	inline bool contains(Vertex v) const { return bitVec[v]; };
+	inline bool empty() const { return bitVec.none(); }
+	inline int size() const { return bitVec.count(); }
+	inline void insert(Vertex v) { bitVec[v] = true; }
 	inline void addAll(const VSet& that) { bitVec |= that.bitVec; }
 
 
