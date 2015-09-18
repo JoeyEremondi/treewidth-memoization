@@ -146,6 +146,8 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 		std::unordered_map<VSet, int> currentTW;
 
+		//Store the |Q| values, overwritten each layer
+		std::vector<int> qSizes(nGraph);
 
 		auto twLoopEnd = TW[i - 1]->end();
 		for (auto pair = TW[i - 1]->begin(); pair != twLoopEnd; ++pair)
@@ -155,15 +157,14 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 			//std::cout << "On set " << showSet(S);
 
-			//Vertex firstSet = S.first();
+			Vertex firstSet = S.first();
 
-			std::vector<int> qSizes(nGraph);
 			findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
 
 			for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
 			{
 				Vertex v = *x;
-				if ((!S.contains(v)) && (!clique.contains(v)) /*&& v < firstSet*/) //TODO check if in clique here?
+				if ((!S.contains(v)) /*&& (!clique.contains(v)) && v < firstSet*/) //TODO check if in clique here?
 				{
 
 
@@ -179,9 +180,10 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 					int rr = std::max(r, q);
 
-					if (rr >= nGraph - i - 1 && rr < minTW) {
-						minTW = rr;
-					}
+					//if (rr >= nGraph - i - 1 && rr < minTW) {
+						minTW = std::min(minTW, rr);
+						upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
+					//}
 
 					if (rr < upperBound)
 					{
@@ -198,11 +200,12 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 				}
 
 			}
+			
 
 		}
 
 		//TODO right place in loop?
-		upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
+		//upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
 		//std::cout << "New upper bound " << upperBound << "\n";
 
 		//Delete any that we falsely added, that are above our new upper bound

@@ -95,8 +95,14 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 	//Store the set of vertices each connected component can reach
 	std::vector<VSet> canReach(n);
 
+
 	//For each vertex not in S, store which connected components it connects to
 	std::vector<std::vector<Vertex>> reachableFrom(n);
+	for (int i = 0; i < n; i++)
+	{
+		reachableFrom[i].reserve(n);
+	}
+
 	//Also store it as a set, to keep the vector as small as possible
 	std::vector<VSet> reachableFromSet(n);
 
