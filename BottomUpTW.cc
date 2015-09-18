@@ -99,7 +99,7 @@ int maybeMin(int x, int y)
 
 int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globalUpperBound)
 {
-	std::unordered_map<VSet, int>* TW[MAX_NUM_VERTICES];
+	auto TW = new std::unordered_map<VSet, int>*[VSet::maxNumVerts];
 	
 	VSet emptySet;
 	TW[0] = new std::unordered_map<VSet, int>();
@@ -208,25 +208,12 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 		}
 
-		//TODO right place in loop?
-		//upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
-		//std::cout << "New upper bound " << upperBound << "\n";
 
-		//Delete any that we falsely added, that are above our new upper bound
-		/*
-		auto loopEnd = currentTW.end();
-		for (auto pair = currentTW.begin(); pair != loopEnd; ++pair)
-		{
-			if (pair->second < upperBound)
-			{
-				(*TW[i])[pair->first] = pair->second;
-			}
-		}*/
 
 		//De-allocate our old level of the tree, to save space
 		delete TW[i - 1];
 
-		//std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
+		std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
 		/*if (true)
 		{
 

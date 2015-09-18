@@ -63,7 +63,7 @@ int main(int argc, char** argv)
 	} */
 
 
-	std::vector<std::string> inFiles; 
+	std::vector<std::string> filesInDir;
 	//({"myciel3.dgf" , "pathfinder-pp.dgf" ,  "myciel4.dgf" , "queen5_5.dgf" , "queen6_6.dgf"  , "queen7_7.dgf"  });
 
 	auto dirIter = boost::filesystem::directory_iterator("testGraphs");
@@ -74,13 +74,18 @@ int main(int argc, char** argv)
 		auto fileName = graphFile->path().filename().string();
 		if (graphFile->path().extension() == ".dgf")
 		{
-			inFiles.push_back(fileName);
+			filesInDir.push_back(fileName);
 		}
-		
+
 	}
-	//std::vector<std::string> inFiles({ "queen7_7.dgf" });
+
+	//separate variable makes switching for testing easier
+	//std::vector<std::string>& inFiles = filesInDir;
+
+	std::vector<std::string> inFiles({ "queen7_7.dgf" });
 	//std::vector<std::string> inFiles({"queen6_6.dgf" });
-	//TODO make nicer loop
+
+
 	for (auto iter = inFiles.begin(); iter != inFiles.end(); iter++)
 	{
 
@@ -97,69 +102,64 @@ int main(int argc, char** argv)
 		//boost::write_graphviz(outGraph, gRand);
 		inGraphFile.close();
 
-		if (boost::num_vertices(gRand) < MAX_NUM_VERTICES)
-		{
+		//TODO better place for this?
+		VSet::maxNumVerts = boost::num_vertices(gRand) + 1;
 
-			std::cout << "Num Vertices: " << boost::num_vertices(gRand) << "\n";
-			std::cout << "Num Edges: " << boost::num_edges(gRand) << "\n\n";
+		std::cout << "Num Vertices: " << boost::num_vertices(gRand) << "\n";
+		std::cout << "Num Edges: " << boost::num_edges(gRand) << "\n\n";
 
-			//boost::generate_random_graph(gRand, vc, ec, rng, true, true);
-
-
-
-			auto_cpu_timer* timer;
+		//boost::generate_random_graph(gRand, vc, ec, rng, true, true);
 
 
 
-			std::cout << "Bottom-up Memoization" << std::endl;
-			timer = new auto_cpu_timer();
-			std::cout << "Treewidth: " << bottomUpTW(gRand) << std::endl;
-			delete timer;
-			/*
-			std::cout << "Simplicial-first Memoization" << std::endl;
-			timer = new auto_cpu_timer();
-			auto memo4 = new SimplicialFirstMemo(gRand);
-			std::cout << "Treewidth: " << memo4->treeWidth() << std::endl;
-			memo4->printStats();
-			delete memo4;
-			delete timer;
+		auto_cpu_timer* timer;
 
 
 
-			std::cout << "Basic Memoization" << std::endl;
-			timer = new auto_cpu_timer();
-			auto memo2 = new BasicMemo(gRand);
-			std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
-			memo2->printStats();
-			delete memo2;
-			delete timer;
+		std::cout << "Bottom-up Memoization" << std::endl;
+		timer = new auto_cpu_timer();
+		std::cout << "Treewidth: " << bottomUpTW(gRand) << std::endl;
+		delete timer;
+		/*
+		std::cout << "Simplicial-first Memoization" << std::endl;
+		timer = new auto_cpu_timer();
+		auto memo4 = new SimplicialFirstMemo(gRand);
+		std::cout << "Treewidth: " << memo4->treeWidth() << std::endl;
+		memo4->printStats();
+		delete memo4;
+		delete timer;
 
 
 
-			std::cout << "Depth-bounded Memoization" << std::endl;
-			timer = new auto_cpu_timer();
-
-			auto memo3 = new DepthBoundedMemo(5, gRand);
-			std::cout << "Treewidth: " << memo3->treeWidth() << std::endl;
-			memo3->printStats();
-			delete memo3;
-			delete timer;
-
+		std::cout << "Basic Memoization" << std::endl;
+		timer = new auto_cpu_timer();
+		auto memo2 = new BasicMemo(gRand);
+		std::cout << "Treewidth: " << memo2->treeWidth() << std::endl;
+		memo2->printStats();
+		delete memo2;
+		delete timer;
 
 
-			std::cout << "Heuristic UB Memoization" << std::endl;
-			timer = new auto_cpu_timer();
-			auto memo5 = new HeuristicUpperBoundMemo(gRand);
-			std::cout << "Treewidth: " << memo5->treeWidth() << std::endl;
-			memo5->printStats();
-			delete memo5;
-			delete timer;
-			*/
-		}
-		else
-		{
-			std::cout << "GRAPH TOO BIG!";
-		}
+
+		std::cout << "Depth-bounded Memoization" << std::endl;
+		timer = new auto_cpu_timer();
+
+		auto memo3 = new DepthBoundedMemo(5, gRand);
+		std::cout << "Treewidth: " << memo3->treeWidth() << std::endl;
+		memo3->printStats();
+		delete memo3;
+		delete timer;
+
+
+
+		std::cout << "Heuristic UB Memoization" << std::endl;
+		timer = new auto_cpu_timer();
+		auto memo5 = new HeuristicUpperBoundMemo(gRand);
+		std::cout << "Treewidth: " << memo5->treeWidth() << std::endl;
+		memo5->printStats();
+		delete memo5;
+		delete timer;
+		*/
 
 
 	}

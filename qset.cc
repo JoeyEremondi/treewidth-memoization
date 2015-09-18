@@ -26,22 +26,22 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 
 	//int n = boost::num_vertices(G);
 
-	Vertex open[MAX_NUM_VERTICES];
-
-	open[0] = v;
-	int stackEnd = 0;
+	std::vector<Vertex> open; //TODO replace
+	open.reserve(n);
+	open.push_back(v);
 
 	//Uses more memory than VSet, but is faster
-	bool closed[MAX_NUM_VERTICES] = { false };
+	VSet closed; //TODO replace
 
 	int numInQ = 0;
 
 
 
-	while (stackEnd >= 0)
+	while (!open.empty())
 	{
-		Vertex w = open[stackEnd];
-		stackEnd--;
+		Vertex w = open.back();
+		open.pop_back();
+
 		auto outEdges = boost::out_edges(w, G);
 		//std::cout << "Q: expanding " << w << "\n";
 
@@ -50,17 +50,16 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 			Edge e = *iter;
 			Vertex u = boost::target(e, G);
 			//std::cout << "Q: found neighbour " << u << "\n";
-			if (!closed[u])
+			if (!closed.contains(u))
 			{
 				//std::cout << "Q: adding " << u << " to closed\n";
 
-				closed[u] = true;
+				closed.insert(u);
 
 				if (u != v && S.contains(u))
 				{
 					//std::cout << "Q: adding " << u << " to queue\n";
-					stackEnd++;
-					open[stackEnd] = u;
+					open.push_back(u);
 				}
 				else if (u != v)
 				{

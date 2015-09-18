@@ -4,14 +4,18 @@
 
 //TODO use bitset underneath?
 
+int VSet::maxNumVerts = 64; //TODO sensible default?
+
 VSet::VSet()
 {
+	bitVec.resize(maxNumVerts);
 }
 
 
 VSet::VSet(const Graph &G)
 {
 	auto iterInfo = boost::vertices(G);
+	bitVec.resize(boost::num_vertices(G));
 	//Just go through and set the bit for each vertex to 1
 	for (auto iter = iterInfo.first; iter != iterInfo.second; ++iter)
 	{
@@ -73,25 +77,10 @@ bitSet VSet::getBitVec() const
 */
 
 
-unsigned long long VSet::asInt() const
-{
-	return bitVec.to_ullong();
-
-
-}
 
 Vertex VSet::first() const
 {
-	for (int i = 0; i < MAX_NUM_VERTICES; ++i)
-	{
-		//Check if the ith bit is set. If it is, add that to our vector
-		if (bitVec[i])
-		{
-			return i;
-		}
-
-	}
-	return -1; //TODO better error?
+	return bitVec.find_first();
 }
 
 Vertex VSet::firstNotContained(int numVerts) const

@@ -3,24 +3,26 @@
 
 //We gain speed by using fixed-size bitsets to store sets of vertices
 //This can be changed using compile-time parameters
-#ifndef MAX_NUM_VERTICES
-#define MAX_NUM_VERTICES 64
-#endif
+//#ifndef MAX_NUM_VERTICES
+//#define MAX_NUM_VERTICES 64
+//#endif
 
 
 #include <bitset>
 #include <vector>
 #include <unordered_map>
 #include "graphTypes.hh"
+#define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
+#include "boost/dynamic_bitset.hpp"
 
-typedef std::bitset<MAX_NUM_VERTICES> bitSet;
+typedef boost::dynamic_bitset<unsigned long> bitSet;
 
 //Memory efficient storage of subsets of vertices in a graph
 class VSet
 {
 public:
 	//bitSet bitVec = 0;
-	std::bitset<MAX_NUM_VERTICES> bitVec;
+	boost::dynamic_bitset<unsigned long long> bitVec;
 	//int currentSize = 0;
 
 public:
@@ -34,7 +36,7 @@ public:
 	VSet(const std::vector<Vertex>& vec);
 
 	//Convert a vector to its integer representation
-	unsigned long long asInt() const;
+	//unsigned long long asInt() const;
 
 	inline void erase(Vertex v) { bitVec[v] = false; }
 	inline bool contains(Vertex v) const { return bitVec[v]; };
@@ -54,6 +56,8 @@ public:
 	std::size_t operator()() const;
 
 	VSet setUnion(const VSet& that) const;
+
+	static int maxNumVerts;
 	
 
 
@@ -65,19 +69,20 @@ namespace std {
 	{
 		size_t operator()(const VSet & S) const
 		{
-			return hash<std::bitset<MAX_NUM_VERTICES>>()(S.bitVec);;
+			return boost::hash_value(S.bitVec.m_bits);
 		}
 	};
 }
 
+
 inline bool operator< (const VSet& lhs, const VSet& rhs) {
-	return lhs.asInt() < rhs.asInt();
+	return lhs.bitVec < rhs.bitVec;
 
 
 }
 inline bool operator> (const VSet& lhs, const VSet& rhs) { return rhs < lhs; }
 inline bool operator<=(const VSet& lhs, const VSet& rhs) { return !(lhs > rhs); }
 inline bool operator>=(const VSet& lhs, const VSet& rhs) { return !(lhs < rhs); }
-inline bool operator==(const VSet& lhs, const VSet& rhs) { return lhs.asInt() == rhs.asInt(); }
+inline bool operator==(const VSet& lhs, const VSet& rhs) { return lhs.bitVec == rhs.bitVec; }
 
 #endif
