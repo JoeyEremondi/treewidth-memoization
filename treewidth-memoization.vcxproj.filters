@@ -89,5 +89,8 @@
     <ClInclude Include="graphTypes.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="TopDownTW.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

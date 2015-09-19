@@ -22,7 +22,7 @@ int bottomUpTW(Graph G)
 
 	int upperBound = calcUpperBound(G, S);
 
-	return bottomUpTWFromSet(maxClique, G, S, upperBound);
+	return bottomUpTWFromSet(G, S, upperBound);
 
 
 
@@ -97,7 +97,7 @@ int maybeMin(int x, int y)
 	return std::min(x, y);
 }
 
-int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globalUpperBound)
+int bottomUpTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound)
 {
 	auto TW = new std::unordered_map<VSet, int>*[VSet::maxNumVerts];
 	
@@ -111,7 +111,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 	
 	int nGraph = boost::num_vertices(G);
 	//int n = nGraph;
-	int n = SStart.size();
+	int nSet = SStart.size();
 
 
 	std::vector<Vertex> vertInfo;
@@ -131,9 +131,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 	int upperBound = globalUpperBound;
 
-	std::cout << "CLIQUE: " << showSet(clique) << "\n";
-
-	for (int i = 1; i <= nGraph - clique.size(); ++i)
+	for (int i = 1; i <= nSet; ++i)
 	{
 		//std::cout << "Level " << i << "\n";
 		//std::cout << "Num Q " << numQCalled << "\n";
@@ -213,7 +211,7 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 		//De-allocate our old level of the tree, to save space
 		delete TW[i - 1];
 
-		std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
+		//std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
 		/*if (true)
 		{
 
@@ -223,12 +221,17 @@ int bottomUpTWFromSet(VSet clique, const Graph& G, const VSet& SStart, int globa
 
 	//std::cout << "Num Q " << numQCalled << "\n";
 
-	auto searchInfo = TW[nGraph - clique.size()]->find(SStart);
-	if (searchInfo == TW[nGraph - clique.size()]->end())
+	
+
+	auto searchInfo = TW[nSet]->find(SStart);
+	if (searchInfo == TW[nSet]->end())
 	{
+		delete TW[nSet];
+		delete[] TW;
 		return upperBound;
 	}
-	//std::cout << "Found sequence: " << showSet(searchInfo->second.second) << "\n";
+	delete TW[nSet];
+	delete[] TW;
 	return searchInfo->second;
 
 
