@@ -150,7 +150,7 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 						{
 							//std::cout << "Q: adding " << u << " to queue\n";
 							open.push_back(u);
-
+							reachableFrom[u].push_back(currentCC);
 
 						}
 						else if (!reachableFromSet[u].contains(currentCC))
@@ -176,6 +176,8 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 		Vertex v = *iter;
 		VSet allReachableVerts;
 		auto loopEnd = reachableFrom[v].end();
+
+
 		for (auto connComp = reachableFrom[v].begin(); connComp != loopEnd; ++connComp)
 		{
 			allReachableVerts.addAll(canReach[*connComp]);
@@ -184,6 +186,7 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 		auto outEdges = boost::out_edges(v, G);
 		//std::cout << "Q: expanding " << w << "\n";
 
+		//Every edge of our current vertex is also in its Q set, unless it's in S
 		for (auto iter = outEdges.first; iter != outEdges.second; ++iter)
 		{
 			//Edge e = *iter;
@@ -193,8 +196,6 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 				allReachableVerts.insert(u);
 ;			}
 		}
-
-		//std::cout << "VSet for " << v << " size " << allReachableVerts.size() << " set " << showSet(allReachableVerts) << "\n";
 
 		allReachableVerts.erase(v);
 		outValues[v] = allReachableVerts.size();
