@@ -51,6 +51,9 @@
     <ClCompile Include="SimplicialFirstMemo.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="UpperBound.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractMemo.hh">
@@ -89,7 +92,10 @@
     <ClInclude Include="graphTypes.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TopDownTW.h">
+    <ClInclude Include="TopDownTW.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="UpperBound.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

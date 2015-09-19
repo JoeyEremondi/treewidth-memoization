@@ -130,6 +130,7 @@
     <ClCompile Include="NaiveMemo.cc" />
     <ClCompile Include="qset.cc" />
     <ClCompile Include="SimplicialFirstMemo.cc" />
+    <ClCompile Include="UpperBound.cc" />
     <ClCompile Include="test.cc" />
     <ClCompile Include="TWUtilAlgos.cc" />
     <ClCompile Include="VSet.cc" />
@@ -141,7 +142,8 @@
     <ClInclude Include="DepthBoundedMemo.hh" />
     <ClInclude Include="DIMACS.hh" />
     <ClInclude Include="graphTypes.hh" />
-    <ClInclude Include="TopDownTW.h" />
+    <ClInclude Include="UpperBound.hh" />
+    <ClInclude Include="TopDownTW.hh" />
     <ClInclude Include="HeuristicUpperBoundMemo.hh" />
     <ClInclude Include="NaiveMemo.hh" />
     <ClInclude Include="qset.hh" />
