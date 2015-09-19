@@ -130,6 +130,7 @@
     <ClCompile Include="NaiveMemo.cc" />
     <ClCompile Include="qset.cc" />
     <ClCompile Include="SimplicialFirstMemo.cc" />
+    <ClCompile Include="TopDownTW.cc" />
     <ClCompile Include="UpperBound.cc" />
     <ClCompile Include="test.cc" />
     <ClCompile Include="TWUtilAlgos.cc" />

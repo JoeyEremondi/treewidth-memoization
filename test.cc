@@ -35,6 +35,7 @@
 
 #include "DIMACS.hh"
 #include "BottomUpTW.hh"
+#include "TopDownTW.hh"
 
 #include "qset.hh"
 
@@ -82,7 +83,7 @@ int main(int argc, char** argv)
 	//separate variable makes switching for testing easier
 	//std::vector<std::string>& inFiles = filesInDir;
 
-	std::vector<std::string> inFiles({"queen6_6.dgf" });
+	std::vector<std::string> inFiles({"queen5_5.dgf" });
 
 
 
@@ -118,7 +119,12 @@ int main(int argc, char** argv)
 
 			std::cout << "Bottom-up Memoization" << std::endl;
 			timer = new auto_cpu_timer();
-			std::cout << "Treewidth: " << bottomUpTW(gRand) << std::endl;
+			std::cout << "Treewidth: " << bottomUpTW(gRand) << "\n\n\n";
+			delete timer;
+
+			std::cout << "Top Down" << std::endl;
+			timer = new auto_cpu_timer();
+			std::cout << "Treewidth: " << topDownTW(gRand) << "\n\n\n";
 			delete timer;
 			/*
 			std::cout << "Simplicial-first Memoization" << std::endl;
