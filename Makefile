@@ -4,9 +4,9 @@ CXX=clang++ -std=c++14
 RM=rm -f
 CPPFLAGS=-g -O2
 LDFLAGS=-g -O2
-LDLIBS=-lm -lboost_system -lboost_timer
+LDLIBS=-lm -lboost_system -lboost_timer -lboost_filesystem
 
-SRCS= qset.cc test.cc NaiveMemo.cc BasicMemo.cc DepthBoundedMemo.cc AbstractMemo.cc SimplicialFirstMemo.cc HeuristicUpperBoundMemo.cc TWUtilAlgos.cc DIMACS.cc VSet.cc BottomUpTW.cc
+SRCS= qset.cc test.cc NaiveMemo.cc BasicMemo.cc DepthBoundedMemo.cc AbstractMemo.cc SimplicialFirstMemo.cc HeuristicUpperBoundMemo.cc TWUtilAlgos.cc DIMACS.cc VSet.cc BottomUpTW.cc TopDownTW.cc UpperBound.cc
 OBJS=$(subst .cc,.o,$(SRCS))
 
 all: test
@@ -31,5 +31,3 @@ check-syntax:
 	$(CXX) $(CPPFLAGS) -o nul -S ${CHK_SOURCES}
 
 include .depend
-
-
