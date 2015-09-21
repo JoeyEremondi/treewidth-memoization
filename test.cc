@@ -83,7 +83,7 @@ int main(int argc, char** argv)
 	//separate variable makes switching for testing easier
 	//std::vector<std::string>& inFiles = filesInDir;
 
-	std::vector<std::string> inFiles({"queen5_5.dgf" });
+	std::vector<std::string> inFiles({"queen7_7.dgf" });
 
 
 

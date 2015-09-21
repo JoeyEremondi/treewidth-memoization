@@ -12,7 +12,7 @@
 TopDownTW::TopDownTW(const Graph& gIn)
 	: G(gIn)
 	, allVertices(boost::vertices(G).first, boost::vertices(G).second)
-	, bottomUpInfo(G, 10000000)
+	, bottomUpInfo(G, 1000000)
 {
 	std::sort(allVertices.begin(), allVertices.end(),
 		[gIn](auto v1, auto v2) -> bool
@@ -58,8 +58,11 @@ int TopDownTW::topDownTW(const Graph& G)
 	//First, check if we found a bottom-up solution without running out of space
 	if (bottomUpInfo.foundSolution())
 	{
+		std::cout << "Bottom up found solution\n";
 		return bottomUpInfo.solution();
 	}
+
+	std::cout << "Bottom up finished after " << bottomUpInfo.levelReached() << " levels\n";
 
 	VSet S(G);
 
@@ -100,7 +103,15 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 	}
 	else if (nSet <= bottomUpInfo.levelReached())
 	{
-		return (*bottomUpInfo.topLevelDict())[S];
+		auto searchInfo = bottomUpInfo.topLevelDict()->find(S);
+		if (searchInfo == bottomUpInfo.topLevelDict()->end())
+		{
+			return sharedUpperBound;
+		}
+		else
+		{
+			return searchInfo->second;
+		}
 	}
 
 	auto setSearch = TW[nSet].find(S);

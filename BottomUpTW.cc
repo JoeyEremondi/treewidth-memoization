@@ -103,7 +103,7 @@ int bottomUpTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound)
 
 	for (int i = 1; i <= nSet; ++i)
 	{
-		//std::cout << "Level " << i << "\n";
+		std::cout << "Level " << i << "\n";
 		//std::cout << "Num Q " << numQCalled << "\n";
 
 		//Initialize our dictionary at this level
@@ -181,7 +181,7 @@ int bottomUpTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound)
 		//De-allocate our old level of the tree, to save space
 		delete TW[i - 1];
 
-		//std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
+		std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
 		/*if (true)
 		{
 
@@ -261,10 +261,13 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 
 	//VSet clique;
 
-	int numStoredElements = 0;
+	
 
 	for (int i = 1; i <= nSet; ++i)
 	{
+		//Make sure our dict doesn't get too big
+		int numStoredElements = 0;
+
 		//Initialize our dictionary at this level
 		TW[i] = new std::unordered_map<VSet, int>();
 
@@ -342,6 +345,8 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 
 
 		}
+
+		std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
 
 		//De-allocate our old level of the tree, to save space
 		delete TW[i - 1];

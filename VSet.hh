@@ -14,15 +14,16 @@
 #include "graphTypes.hh"
 #define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
 #include "boost/dynamic_bitset.hpp"
+//#include <csize>
 
-typedef boost::dynamic_bitset<unsigned long> bitSet;
+//typedef boost::dynamic_bitset<unsigned long> bitSet;
 
 //Memory efficient storage of subsets of vertices in a graph
 class VSet
 {
 public:
 	//bitSet bitVec = 0;
-	boost::dynamic_bitset<unsigned long long> bitVec;
+	boost::dynamic_bitset<uint_fast64_t> bitVec;
 	//int currentSize = 0;
 
 public:
