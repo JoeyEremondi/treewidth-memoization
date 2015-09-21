@@ -1,6 +1,7 @@
 #include "TopDownTW.hh"
 
 #include "UpperBound.hh"
+#include "BottomUpTW.hh"
 
 #include <algorithm>
 #include <iostream>
@@ -8,9 +9,58 @@
 #include <sstream> // for ostringstream
 #include <cassert>
 
-
-int topDownTW(const Graph& G)
+TopDownTW::TopDownTW(const Graph& gIn)
+	: G(gIn)
+	, allVertices(boost::vertices(G).first, boost::vertices(G).second)
+	, bottomUpInfo(G, 10000000)
 {
+	std::sort(allVertices.begin(), allVertices.end(),
+		[gIn](auto v1, auto v2) -> bool
+	{
+		return boost::degree(v1, gIn) > boost::degree(v2, gIn);
+	});
+
+}
+
+//TODO put this in its own file
+bool isSimplicial(const Graph& G, Vertex v, const VSet& SStart)
+{
+	//std::vector<Vertex> neighbours;
+	auto neighbPair = boost::adjacent_vertices(v, G);
+	VSet neighbSet;
+
+	//Create our neighbour set
+	for (auto n = neighbPair.first; n != neighbPair.second; ++n)
+	{
+		if (SStart.contains(*n))
+		{
+			neighbSet.insert(*n);
+		}
+	}
+
+	for (auto n = neighbPair.first; n != neighbPair.second; ++n)
+	{
+		auto nnSet = boost::adjacent_vertices(*n, G);
+		for (auto nn = nnSet.first; nn != nnSet.second; ++nn)
+		{
+			if (SStart.contains(*nn) && !neighbSet.contains(*nn))
+			{
+				return false;
+			}
+		}
+	}
+	return true;
+}
+
+int TopDownTW::topDownTW(const Graph& G)
+{
+
+	//First, check if we found a bottom-up solution without running out of space
+	if (bottomUpInfo.foundSolution())
+	{
+		return bottomUpInfo.solution();
+	}
+
 	VSet S(G);
 
 	//Remove elements in the max-clique of G
@@ -23,9 +73,10 @@ int topDownTW(const Graph& G)
 		S.erase(*iter);
 	}
 
-	int upperBound = calcUpperBound(G, S);
+	sharedUpperBound = bottomUpInfo.bestUpperBound();
+	
 
-	return topDownTWFromSet(G, S, upperBound);
+	return topDownTWFromSet(G, S, S.size());
 
 
 
@@ -34,53 +85,74 @@ int topDownTW(const Graph& G)
 
 
 
-int topDownTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound)
+int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 {
-	static std::vector<std::unordered_map<VSet, int>> TW(SStart.size()+1);
+	static std::vector<std::unordered_map<VSet, int>> TW(S.size() + 1);
 
-	int nSet = SStart.size();
 	int nGraph = boost::num_vertices(G);
+	const int threshold = -1;
 
 
 
-	if (SStart.empty())
+	if (S.empty())
 	{
 		return NO_WIDTH;
 	}
+	else if (nSet <= bottomUpInfo.levelReached())
+	{
+		return (*bottomUpInfo.topLevelDict())[S];
+	}
 
-	auto setSearch = TW[nSet].find(SStart);
+	auto setSearch = TW[nSet].find(S);
 	auto setEnd = TW[nSet].end();
 
 	if (setSearch != setEnd) //TODO replace with memo lookup
 	{
 		return setSearch->second;
 	}
+	else if (nSet < threshold)
+	{
+		return bottomUpTWFromSet(G, S, sharedUpperBound);
+	}
 	else
 	{
 		std::vector<int> qValues(nGraph);
-		findQvalues(boost::num_vertices(G), SStart, G, qValues);
-		int minTW = globalUpperBound;
+		findQvalues(boost::num_vertices(G), S, G, qValues);
+		int minTW = sharedUpperBound;
 
-		std::vector<Vertex> members;
-		SStart.members(members);
 
-		for (Vertex v : members)
+		//Do a simplicial vertex first if it exists
+		for (Vertex v : allVertices)
 		{
-			VSet SminusV(SStart);
-			SminusV.erase(v);
-			int q = qValues[v];
-			//int qTrue = qCheck(nGraph, SminusV, v, G);
-			//std::cerr << "set: " << showSet(SminusV) << "\n";
-			//std::cerr << "v " << v << " Q " << q << " q true " << qTrue << "\n";
-			//assert(q == qTrue);
-			if (q < minTW && q < globalUpperBound)
+			if (false)//(S.contains(v) && isSimplicial(G, v, SStart))
 			{
-				minTW = std::min(minTW, std::max(q, topDownTWFromSet(G, SminusV, globalUpperBound)));
+				VSet SminusV(S);
+				SminusV.erase(v);
+				int finalTW = minTW = std::min(minTW, std::max(qValues[v], topDownTWFromSet(G, SminusV, nSet-1)));
+				TW[nSet][S] = minTW;
+				return finalTW;
 			}
-			
 		}
 
-		TW[nSet][SStart] = minTW;
+		for (Vertex v : allVertices)
+		{
+
+			if (S.contains(v))
+			{
+				VSet SminusV(S);
+				SminusV.erase(v);
+				int q = qValues[v];
+
+				if (q < std::min(minTW, sharedUpperBound))
+				{
+					minTW = std::min(minTW, std::max(q, topDownTWFromSet(G, SminusV, nSet-1)));
+					sharedUpperBound = std::min(sharedUpperBound, std::max(minTW, nGraph - nSet - 1));
+				}
+			}
+
+		}
+
+		TW[nSet][S] = minTW;
 		return minTW;
 	}
 

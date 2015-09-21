@@ -97,17 +97,17 @@ int main(int argc, char** argv)
 		//std::ofstream outGraph;
 		//outGraph.open("testGraphs/DOT/" + *iter + ".dot");
 
-		Graph gRand;
+		Graph testGraph;
 
-		read_coloring_problem(inGraphFile, gRand);
+		read_coloring_problem(inGraphFile, testGraph);
 		//boost::write_graphviz(outGraph, gRand);
 		inGraphFile.close();
 
 		//TODO better place for this?
-		VSet::maxNumVerts = boost::num_vertices(gRand) + 1;
+		VSet::maxNumVerts = boost::num_vertices(testGraph) + 1;
 
-		std::cout << "Num Vertices: " << boost::num_vertices(gRand) << "\n";
-		std::cout << "Num Edges: " << boost::num_edges(gRand) << "\n\n";
+		std::cout << "Num Vertices: " << boost::num_vertices(testGraph) << "\n";
+		std::cout << "Num Edges: " << boost::num_edges(testGraph) << "\n\n";
 
 		//boost::generate_random_graph(gRand, vc, ec, rng, true, true);
 
@@ -119,12 +119,13 @@ int main(int argc, char** argv)
 
 			std::cout << "Bottom-up Memoization" << std::endl;
 			timer = new auto_cpu_timer();
-			std::cout << "Treewidth: " << bottomUpTW(gRand) << "\n\n\n";
+			std::cout << "Treewidth: " << bottomUpTW(testGraph) << "\n\n\n";
 			delete timer;
 
 			std::cout << "Top Down" << std::endl;
 			timer = new auto_cpu_timer();
-			std::cout << "Treewidth: " << topDownTW(gRand) << "\n\n\n";
+			TopDownTW tdtw(testGraph);
+			std::cout << "Treewidth: " << tdtw.topDownTW(testGraph) << "\n\n\n";
 			delete timer;
 			/*
 			std::cout << "Simplicial-first Memoization" << std::endl;

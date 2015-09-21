@@ -4,9 +4,23 @@
 #include "qset.hh"
 #include "TWUtilAlgos.hh"
 #include "AbstractMemo.hh"
+#include "BottomUpTW.hh"
 
-int topDownTW(const Graph& G);
+class TopDownTW
+{
+public:
+	TopDownTW(const Graph& G);
+	int topDownTW(const Graph& G);
 
-int topDownTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound);
+	int topDownTWFromSet(const Graph& G, const VSet& S, int nSet);
+
+private:
+	const Graph& G;
+	int sharedUpperBound;
+	std::vector<Vertex> allVertices;
+	BottomUpTW bottomUpInfo;
+};
+
+
 
 #endif
