@@ -22,6 +22,7 @@ private:
 protected:
 	Graph G;
 	Graph GC;
+	int nGraph;
 	bool** adjMatrix;
 
 	int numExpanded = 0;

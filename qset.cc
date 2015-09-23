@@ -43,22 +43,19 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 		open.pop_back();
 
 		auto outEdges = boost::out_edges(w, G);
-		//std::cout << "Q: expanding " << w << "\n";
 
-		for (auto iter = outEdges.first; iter != outEdges.second; ++iter)
+		auto loopEnd = outEdges.second;
+		for (auto iter = outEdges.first; iter != loopEnd; ++iter)
 		{
 			Edge e = *iter;
 			Vertex u = boost::target(e, G);
-			//std::cout << "Q: found neighbour " << u << "\n";
+
 			if (!closed.contains(u))
 			{
-				//std::cout << "Q: adding " << u << " to closed\n";
-
 				closed.insert(u);
 
-				if (u != v && S.contains(u))
+				if (S.contains(u) && u != v )
 				{
-					//std::cout << "Q: adding " << u << " to queue\n";
 					open.push_back(u);
 				}
 				else if (u != v)
@@ -69,9 +66,7 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 			}
 		}
 	}
-	//delete[] closed;
-	// delete[] open;
-	//std::cout << "|Q| = " << numInQ << "\n";
+
 	return numInQ;
 
 }
@@ -194,15 +189,18 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 			if (!S.contains(u))
 			{
 				allReachableVerts.insert(u);
-;			}
+				;
+			}
 		}
 
 		allReachableVerts.erase(v);
 		outValues[v] = allReachableVerts.size();
 	}
-	
+
 
 }
+
+
 
 int qCheck(int n, VSet S, Vertex v, Graph G)
 {
@@ -223,12 +221,12 @@ int qCheck(int n, VSet S, Vertex v, Graph G)
 			Graph GG;
 			for (auto addVert = vertInfo.first; addVert != vertInfo.second; addVert++)
 			{
-					boost::add_vertex(GG);
+				boost::add_vertex(GG);
 			}
 
 			for (auto edgeIter = edgeInfo.first; edgeIter != edgeInfo.second; edgeIter++)
 			{
-				Vertex from = boost::source(*edgeIter, G); 
+				Vertex from = boost::source(*edgeIter, G);
 				Vertex to = boost::target(*edgeIter, G);
 				if (inducingSet.contains(to) && inducingSet.contains(from))
 				{
@@ -246,7 +244,7 @@ int qCheck(int n, VSet S, Vertex v, Graph G)
 			}
 
 		}
-		
+
 	}
 	return numInQ;
 }

@@ -11,7 +11,25 @@
 
 #include <boost/graph/graphviz.hpp>
 
-int permutTW(VSet vsetArg, const std::vector<Vertex>& Svec, const Graph& G) {
+int permutTW(int nGraph, VSet vsetArg, const std::vector<Vertex>& Svec, const Graph& G) {
+	int tw = NO_WIDTH;
+	VSet vs = vsetArg;
+
+	//std::cout << "PERMUTTW set " << vsetArg.size() << " vec size " << Svec.size() << "\n";
+
+	auto loopEnd = Svec.end();
+	for (auto current = Svec.begin(); current != loopEnd; ++current)
+	{
+		Vertex v = *current;
+		vs.erase(v);
+		int qval = sizeQ(nGraph, vs, v, G);
+		tw = std::max(tw, qval);
+	}
+	return tw;
+}
+
+
+int altPermutTW(int nGraph, const VSet& vsetArg, const std::vector<Vertex>& SvecAll, const Graph& G) {
 	int tw = NO_WIDTH;
 	VSet vs = vsetArg;
 
@@ -19,14 +37,23 @@ int permutTW(VSet vsetArg, const std::vector<Vertex>& Svec, const Graph& G) {
 
 	int n = boost::num_vertices(G);
 
-	for (auto current = Svec.begin(); current != Svec.end(); current++)
+	
+	auto loopEnd = SvecAll.end();
+	for (auto current = SvecAll.begin(); current != loopEnd; ++current)
 	{
-		vs.erase(*current);
-		int qval = sizeQ(n, vs, *current, G);
-		tw = std::max(tw, qval);
+		Vertex v = *current;
+		//Lets us give the entire vertex set for the graph
+		if (vsetArg.contains(v))
+		{
+			
+			vs.erase(v);
+			int qval = sizeQ(nGraph, vs, v, G);
+			tw = std::max(tw, qval);
+		}
 	}
 	return tw;
 }
+
 
 std::pair<Graph, std::map<Vertex, Vertex>> complement_graph(const Graph& G)
 {

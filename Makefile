@@ -1,6 +1,16 @@
 #Adapted from http://stackoverflow.com/questions/2481269/how-to-make-simple-c-makefile
+
+UNAME := $(shell uname)
+
+ifeq ($(UNAME), MINGW32_NT-6.2)
+INCLUDES="D:\Program Files\boost_1_59_0"# do something Linux-y
+endif
+ifeq ($(UNAME), Linux)
+INCLUDES=""
+endif
+
 CC=clang
-CXX=clang++ -std=c++14
+CXX=clang++ -std=c++14 -I$(INCLUDES)
 RM=rm -f
 CPPFLAGS=-g -O2
 LDFLAGS=-g -O2

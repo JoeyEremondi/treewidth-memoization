@@ -17,8 +17,11 @@ public:
 private:
 	const Graph& G;
 	int sharedUpperBound;
+	int lowerBound;
 	std::vector<Vertex> allVertices;
 	BottomUpTW bottomUpInfo;
+	int numInDict = 0;
+	int nGraph;
 };
 
 

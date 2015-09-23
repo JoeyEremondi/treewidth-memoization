@@ -8,12 +8,14 @@
 
 int calcUpperBound(const Graph& G, const VSet& S)
 {
+	int nGraph = boost::num_vertices(G);
+
 	//Optimiation: set the golbal upper-bound to the TW from some linear ordering
 	//First try: default ordering
 	std::vector<Vertex> Svec(S.size());
 	S.members(Svec);
 
-	int globalUpperBound = permutTW(S, Svec, G);
+	int globalUpperBound = permutTW(nGraph, S, Svec, G);
 
 
 	//Second try: order by degree ascending
@@ -23,7 +25,7 @@ int calcUpperBound(const Graph& G, const VSet& S)
 		auto vd = boost::degree(v, G);
 		return ud < vd;
 	});
-	globalUpperBound = std::min(globalUpperBound, permutTW(S, Svec, G));
+	globalUpperBound = std::min(globalUpperBound, permutTW(nGraph, S, Svec, G));
 
 	//Third try: order by degree descending
 	//Svec = S.members();
@@ -33,7 +35,7 @@ int calcUpperBound(const Graph& G, const VSet& S)
 		auto vd = boost::degree(v, G);
 		return ud > vd;
 	});
-	globalUpperBound = std::min(globalUpperBound, permutTW(S, Svec, G));
+	globalUpperBound = std::min(globalUpperBound, permutTW(nGraph, S, Svec, G));
 
 	std::cout << "Found global upper bound " << globalUpperBound << "\n";
 

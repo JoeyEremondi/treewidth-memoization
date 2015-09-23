@@ -9,11 +9,16 @@
 #include <sstream> // for ostringstream
 #include <cassert>
 
+const int maxDictSize = 1000000000;
+
+const int maxBottumUpSize = 100;
+
 TopDownTW::TopDownTW(const Graph& gIn)
 	: G(gIn)
 	, allVertices(boost::vertices(G).first, boost::vertices(G).second)
-	, bottomUpInfo(G, 1000000)
+	, bottomUpInfo(G, maxBottumUpSize)
 {
+	nGraph = boost::num_vertices(G);
 	std::sort(allVertices.begin(), allVertices.end(),
 		[gIn](auto v1, auto v2) -> bool
 	{
@@ -77,7 +82,13 @@ int TopDownTW::topDownTW(const Graph& G)
 	}
 
 	sharedUpperBound = bottomUpInfo.bestUpperBound();
-	
+
+
+	lowerBound = d2degen(S, G);
+	lowerBound = std::max(lowerBound, MMD(S, G));
+
+	std::cout << "Found lower bound " << lowerBound << "\n";
+
 
 	return topDownTWFromSet(G, S, S.size());
 
@@ -92,7 +103,6 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 {
 	static std::vector<std::unordered_map<VSet, int>> TW(S.size() + 1);
 
-	int nGraph = boost::num_vertices(G);
 	const int threshold = -1;
 
 
@@ -100,7 +110,7 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 	if (S.empty())
 	{
 		return NO_WIDTH;
-	}
+	}/*
 	else if (nSet <= bottomUpInfo.levelReached())
 	{
 		auto searchInfo = bottomUpInfo.topLevelDict()->find(S);
@@ -112,7 +122,7 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 		{
 			return searchInfo->second;
 		}
-	}
+	}*/
 
 	auto setSearch = TW[nSet].find(S);
 	auto setEnd = TW[nSet].end();
@@ -121,14 +131,15 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 	{
 		return setSearch->second;
 	}
+	/*
 	else if (nSet < threshold)
 	{
 		return bottomUpTWFromSet(G, S, sharedUpperBound);
-	}
+	}*/
 	else
 	{
 		std::vector<int> qValues(nGraph);
-		findQvalues(boost::num_vertices(G), S, G, qValues);
+		findQvalues(nGraph, S, G, qValues);
 		int minTW = sharedUpperBound;
 
 
@@ -139,7 +150,7 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 			{
 				VSet SminusV(S);
 				SminusV.erase(v);
-				int finalTW = minTW = std::min(minTW, std::max(qValues[v], topDownTWFromSet(G, SminusV, nSet-1)));
+				int finalTW = minTW = std::min(minTW, std::max(qValues[v], topDownTWFromSet(G, SminusV, nSet - 1)));
 				TW[nSet][S] = minTW;
 				return finalTW;
 			}
@@ -154,16 +165,51 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 				SminusV.erase(v);
 				int q = qValues[v];
 
-				if (q < std::min(minTW, sharedUpperBound))
+
+				//assert(setUpperBound >= sharedUpperBound);
+
+				//Don't recursively calculate TW if we know Q is bigger
+				
+				/*
+				if (q >= setUpperBound)
 				{
-					minTW = std::min(minTW, std::max(q, topDownTWFromSet(G, SminusV, nSet-1)));
-					sharedUpperBound = std::min(sharedUpperBound, std::max(minTW, nGraph - nSet - 1));
+					minTW = std::min(minTW, q);
+				}*/
+				
+				if (q < minTW || q < sharedUpperBound )
+				{
+					int setUpperBound = sharedUpperBound;
+
+					std::vector<Vertex> sortedMembers;
+					SminusV.members(sortedMembers);
+
+					setUpperBound = permutTW(nGraph, S, sortedMembers, G);
+
+					if (q >= setUpperBound || setUpperBound < lowerBound)
+					{
+						minTW = std::min(minTW, q);
+					}
+					else
+					{
+						minTW = std::min(minTW, std::max(q, topDownTWFromSet(G, SminusV, nSet - 1)));
+						sharedUpperBound = std::min(sharedUpperBound, std::max(minTW, nGraph - nSet - 1));
+					}
+
 				}
 			}
 
 		}
 
-		TW[nSet][S] = minTW;
+		try
+		{
+			TW[nSet][S] = minTW;
+			numInDict++;
+		}
+		catch (const std::bad_alloc& e) {
+			std::cerr << numInDict << " elements stored in Dict\n";
+			TW[S.size()].clear(); //TODO smarter than emptying entire layer?
+			
+		}
 		return minTW;
 	}
 

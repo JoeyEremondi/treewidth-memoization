@@ -83,7 +83,8 @@ int main(int argc, char** argv)
 	//separate variable makes switching for testing easier
 	//std::vector<std::string>& inFiles = filesInDir;
 
-	std::vector<std::string> inFiles({"queen7_7.dgf" });
+	//std::vector<std::string> inFiles({"eil51.tsp.dgf" });
+	std::vector<std::string> inFiles({ "queen5_5.dgf" });
 
 
 
@@ -117,10 +118,10 @@ int main(int argc, char** argv)
 
 
 
-			std::cout << "Bottom-up Memoization" << std::endl;
-			timer = new auto_cpu_timer();
-			std::cout << "Treewidth: " << bottomUpTW(testGraph) << "\n\n\n";
-			delete timer;
+			//std::cout << "Bottom-up Memoization" << std::endl;
+			//timer = new auto_cpu_timer();
+			//std::cout << "Treewidth: " << bottomUpTW(testGraph) << "\n\n\n";
+			//delete timer;
 
 			std::cout << "Top Down" << std::endl;
 			timer = new auto_cpu_timer();

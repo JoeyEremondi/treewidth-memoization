@@ -10,7 +10,7 @@ AbstractMemo::AbstractMemo(Graph theGraph)
 	GC = complement_graph(G).first;
 
 	int n = boost::num_vertices(G);
-
+	nGraph = n;
 	adjMatrix = new bool*[n];
 
 	for (int i = 0; i < n; i++)
@@ -84,7 +84,7 @@ void AbstractMemo::setGlobalUpperBound(VSet S)
 	std::vector<Vertex> Svec(S.size());
 	S.members(Svec);
 
-	globalUpperBound = permutTW(S, Svec, G);
+	globalUpperBound = permutTW(nGraph, S, Svec, G);
 
 	//Second try: order by degree ascending
 	Graph gthis = this->G;
@@ -94,7 +94,7 @@ void AbstractMemo::setGlobalUpperBound(VSet S)
 		auto vd = boost::degree(v, this->G);
 		return ud < vd;
 	});
-	globalUpperBound = std::min(globalUpperBound, permutTW(S, Svec, G));
+	globalUpperBound = std::min(globalUpperBound, permutTW(nGraph, S, Svec, G));
 
 	//Third try: order by degree descending
 	//Svec = S.members();
@@ -104,7 +104,7 @@ void AbstractMemo::setGlobalUpperBound(VSet S)
 		auto vd = boost::degree(v, this->G);
 		return ud > vd;
 	});
-	globalUpperBound = std::min(globalUpperBound, permutTW(S, Svec, G));
+	globalUpperBound = std::min(globalUpperBound, permutTW(nGraph, S, Svec, G));
 
 	std::cout << "Found global upper bound " << globalUpperBound << "\n";
 }

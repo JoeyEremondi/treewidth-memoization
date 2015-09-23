@@ -227,6 +227,7 @@ BottomUpTW::BottomUpTW(const Graph & gIn, int maxLayerSizeIn)
 
 	upperBound = calcUpperBound(G, S);
 
+
 	this->fillTWSet(S);
 
 }
@@ -238,6 +239,13 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 	VSet emptySet;
 	TW[0] = new std::unordered_map<VSet, int>();
 	(*TW[0])[emptySet] = NO_WIDTH;
+
+	//Initial values for our data, in case we never succeed
+	this->didFindSolution = false;
+	this->twValueFound = NO_WIDTH;
+	this->maxLevelReached = -1;
+	this->topLevelDictFound = NULL;
+	
 
 	//TODO remove
 	//globalUpperBound = 26;
@@ -261,95 +269,112 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 
 	//VSet clique;
 
-	
+	int numStoredElements = 0;
 
 	for (int i = 1; i <= nSet; ++i)
 	{
-		//Make sure our dict doesn't get too big
-		int numStoredElements = 0;
+		try {
+			//Make sure our dict doesn't get too big
+			numStoredElements = 0;
 
-		//Initialize our dictionary at this level
-		TW[i] = new std::unordered_map<VSet, int>();
+			//Initialize our dictionary at this level
+			TW[i] = new std::unordered_map<VSet, int>();
 
-		int minTW = upperBound;
+			int minTW = upperBound;
 
-		//Store the |Q| values, overwritten each layer
-		std::vector<int> qSizes(nGraph);
+			//Store the |Q| values, overwritten each layer
+			std::vector<int> qSizes(nGraph);
 
-		auto twLoopEnd = TW[i - 1]->end();
-		for (auto pair = TW[i - 1]->begin(); pair != twLoopEnd; ++pair)
-		{
-			VSet S = pair->first;
-			int r = pair->second;
-
-			if (r < upperBound)
+			auto twLoopEnd = TW[i - 1]->end();
+			for (auto pair = TW[i - 1]->begin(); pair != twLoopEnd; ++pair)
 			{
+				VSet S = pair->first;
+				int r = pair->second;
 
-				Vertex firstSet = S.first();
-
-				findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
-
-				for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
+				if (r < upperBound)
 				{
-					Vertex v = *x;
-					if ((!S.contains(v)) /*&& (!clique.contains(v)) && v < firstSet*/) //TODO check if in clique here?
+
+					Vertex firstSet = S.first();
+
+					findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
+
+					for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
 					{
-
-
-
-						VSet SUx = S;
-						SUx.insert(v);
-
-						int q = qSizes[v];
-
-
-						int rr = std::max(r, q);
-
-						minTW = std::min(minTW, rr);
-						upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
-
-						if (rr < upperBound)
+						Vertex v = *x;
+						if ((!S.contains(v)) /*&& (!clique.contains(v)) && v < firstSet*/) //TODO check if in clique here?
 						{
-							auto searchInfo = TW[i]->find(SUx);
-							if (searchInfo == TW[i]->end())
+
+
+
+							VSet SUx = S;
+							SUx.insert(v);
+
+							int q = qSizes[v];
+
+
+							int rr = std::max(r, q);
+
+							minTW = std::min(minTW, rr);
+							upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
+
+							if (rr < upperBound)
 							{
-								//Create new element in our of stored values, if we have space
-								if (numStoredElements < maxLayerSize)
+								auto searchInfo = TW[i]->find(SUx);
+								if (searchInfo == TW[i]->end())
+								{
+									//Create new element in our of stored values, if we have space
+									if (numStoredElements < maxLayerSize)
+									{
+										(*TW[i])[SUx] = rr;
+										numStoredElements++;
+									}
+									else //If we run out of space, store the last dict we fully calculated
+									{
+										this->didFindSolution = false;
+										this->twValueFound = NO_WIDTH;
+										this->maxLevelReached = i - 1;
+										this->topLevelDictFound = TW[i - 1];
+										delete TW[i];
+										delete TW;
+										return;
+									}
+
+								}
+								else if (rr < searchInfo->second)
 								{
 									(*TW[i])[SUx] = rr;
-									numStoredElements++;
 								}
-								else //If we run out of space, store the last dict we fully calculated
-								{
-									this->didFindSolution = false;
-									this->twValueFound = NO_WIDTH;
-									this->maxLevelReached = i - 1;
-									this->topLevelDictFound = TW[i - 1];
-									delete TW[i];
-									delete TW;
-									return;
-								}
-								
-							}
-							else if (rr < searchInfo->second)
-							{
-								(*TW[i])[SUx] = rr;
-							}
 
 
+							}
 						}
-					}
 
+					}
 				}
+
+
+
 			}
 
+			std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
 
+			//De-allocate our old level of the tree, to save space
+			delete TW[i - 1];
 		}
+		catch (const std::bad_alloc& e) {
+			std::cerr << "Level " << i << ", num in Dict " << numStoredElements << "\n";
+			std::cerr << "allocation failed: " << e.what() << '\n';
 
-		std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
+			//Keep going, like we hit our limit
 
-		//De-allocate our old level of the tree, to save space
-		delete TW[i - 1];
+			this->didFindSolution = false;
+			this->twValueFound = NO_WIDTH;
+			this->maxLevelReached = i - 1;
+			this->topLevelDictFound = TW[i - 1];
+			delete TW[i];
+			delete TW;
+			return;
+		}
 
 	}
 
