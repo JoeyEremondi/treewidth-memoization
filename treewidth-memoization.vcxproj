@@ -116,7 +116,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <Link>
-      <AdditionalLibraryDirectories>D:\Program Files\boost_1_59_0\lib;D:\Program Files\boost_1_59_0\stage\lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>D:\Program Files\boost_1_59_0\stage\lib\</AdditionalLibraryDirectories>
       <SubSystem>Console</SubSystem>
       <LinkTimeCodeGeneration>UseLinkTimeCodeGeneration</LinkTimeCodeGeneration>
     </Link>

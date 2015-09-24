@@ -11,7 +11,9 @@
 
 const int maxDictSize = 1000000000;
 
-const int maxBottumUpSize = 100;
+const int maxBottumUpSize = 1000000000;
+
+const int topLevelNoStore = 15;
 
 TopDownTW::TopDownTW(const Graph& gIn)
 	: G(gIn)
@@ -101,7 +103,7 @@ int TopDownTW::topDownTW(const Graph& G)
 
 int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 {
-	static std::vector<std::unordered_map<VSet, int>> TW(S.size() + 1);
+	static std::vector<std::unordered_map<VSet, int>> TW(nGraph);
 
 	const int threshold = -1;
 
@@ -110,7 +112,7 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 	if (S.empty())
 	{
 		return NO_WIDTH;
-	}/*
+	}
 	else if (nSet <= bottomUpInfo.levelReached())
 	{
 		auto searchInfo = bottomUpInfo.topLevelDict()->find(S);
@@ -122,7 +124,7 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 		{
 			return searchInfo->second;
 		}
-	}*/
+	}
 
 	auto setSearch = TW[nSet].find(S);
 	auto setEnd = TW[nSet].end();
@@ -202,12 +204,22 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 
 		try
 		{
-			TW[nSet][S] = minTW;
-			numInDict++;
+			//Don't cache the top few layers, to save space
+			if (nGraph - nSet > topLevelNoStore)
+			{
+				TW[nSet][S] = minTW;
+				numInDict++;
+				if (numInDict % 500000 == 0)
+				{
+					std::cerr << numInDict << " elements currently stored\n";
+				}
+			}
 		}
 		catch (const std::bad_alloc& e) {
 			std::cerr << numInDict << " elements stored in Dict\n";
-			TW[S.size()].clear(); //TODO smarter than emptying entire layer?
+			std::cerr << "Emptying layer" <<  nSet << ", deleting" << TW[nSet].size() << " elements\n";
+			numInDict -= TW[nSet].size();
+			TW[nSet].clear(); //TODO smarter than emptying entire layer?
 			
 		}
 		return minTW;

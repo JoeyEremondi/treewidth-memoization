@@ -7,6 +7,7 @@
 #include <string>
 #include <sstream> // for ostringstream
 #include <cassert>
+#include <boost/unordered_map.hpp>
 
 
 int bottomUpTW(const Graph& G)
