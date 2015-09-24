@@ -205,7 +205,8 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 		try
 		{
 			//Don't cache the top few layers, to save space
-			if (nGraph - nSet > topLevelNoStore)
+			//Same for the bottom few layers
+			if (nGraph - nSet > topLevelNoStore && nSet > topLevelNoStore)
 			{
 				TW[nSet][S] = minTW;
 				numInDict++;
