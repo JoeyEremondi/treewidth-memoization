@@ -104,92 +104,103 @@ int bottomUpTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound)
 
 	for (int i = 1; i <= nSet; ++i)
 	{
-		std::cout << "Level " << i << "\n";
-		//std::cout << "Num Q " << numQCalled << "\n";
+		try {
+			std::cout << "Level " << i << "\n";
+			//std::cout << "Num Q " << numQCalled << "\n";
 
-		//Initialize our dictionary at this level
-		TW[i] = new std::unordered_map<VSet, int>();
+			//Initialize our dictionary at this level
+			TW[i] = new std::unordered_map<VSet, int>();
 
-		//TODO what is this? Taken from Java version
-		int minTW = upperBound;
+			//TODO what is this? Taken from Java version
+			int minTW = upperBound;
 
-		//std::unordered_map<VSet, int> currentTW;
+			//std::unordered_map<VSet, int> currentTW;
 
-		//Store the |Q| values, overwritten each layer
-		std::vector<int> qSizes(nGraph);
+			//Store the |Q| values, overwritten each layer
+			std::vector<int> qSizes(nGraph);
 
-		auto twLoopEnd = TW[i - 1]->end();
-		for (auto pair = TW[i - 1]->begin(); pair != twLoopEnd; ++pair)
-		{
-			VSet S = pair->first;
-			int r = pair->second;
-
-			if (r < upperBound)
+			auto twLoopEnd = TW[i - 1]->end();
+			for (auto pair = TW[i - 1]->begin(); pair != twLoopEnd; ++pair)
 			{
+				VSet S = pair->first;
+				int r = pair->second;
 
-				//std::cout << "On set " << showSet(S);
-
-				Vertex firstSet = S.first();
-
-				findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
-
-				for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
+				if (r < upperBound)
 				{
-					Vertex v = *x;
-					if ((!S.contains(v)) /*&& (!clique.contains(v)) && v < firstSet*/) //TODO check if in clique here?
+
+					//std::cout << "On set " << showSet(S);
+
+					Vertex firstSet = S.first();
+
+					findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
+
+					for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
 					{
-
-
-
-						VSet SUx = S;
-						SUx.insert(v);
-
-						int q = qSizes[v];
-						//int trueQ = qCheck(nGraph, S, v, G);
-						//int qOld = sizeQ(nGraph, S, v, G);
-						//assert(q == trueQ);
-
-
-						int rr = std::max(r, q);
-
-						//if (rr >= nGraph - i - 1 && rr < minTW) {
-						minTW = std::min(minTW, rr);
-						upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
-						//}
-
-						if (rr < upperBound)
+						Vertex v = *x;
+						if ((!S.contains(v)) /*&& (!clique.contains(v)) && v < firstSet*/) //TODO check if in clique here?
 						{
-							auto searchInfo = TW[i]->find(SUx);
-							if (searchInfo == TW[i]->end() || rr < searchInfo->second)
+
+
+
+							VSet SUx = S;
+							SUx.insert(v);
+
+							int q = qSizes[v];
+							//int trueQ = qCheck(nGraph, S, v, G);
+							//int qOld = sizeQ(nGraph, S, v, G);
+							//assert(q == trueQ);
+
+
+							int rr = std::max(r, q);
+
+							//if (rr >= nGraph - i - 1 && rr < minTW) {
+							minTW = std::min(minTW, rr);
+							upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
+							//}
+
+							if (rr < upperBound)
 							{
-								//std::vector<Vertex> newSeq(oldSeq);
-								//newSeq.push_back(v);
-								(*TW[i])[SUx] = rr;
+								auto searchInfo = TW[i]->find(SUx);
+								if (searchInfo == TW[i]->end() || rr < searchInfo->second)
+								{
+									//std::vector<Vertex> newSeq(oldSeq);
+									//newSeq.push_back(v);
+									(*TW[i])[SUx] = rr;
+								}
+
+
 							}
-
-
 						}
-					}
 
+					}
 				}
+
+
 			}
 
 
+
+			//De-allocate our old level of the tree, to save space
+			delete TW[i - 1];
+
+			std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
+			/*if (true)
+			{
+
+				std::cout << "TW i: " << i << " " << showLayer(TW[i]) << "\n";
+			} */
+		}
+		catch (const std::bad_alloc& e) {
+			std::cerr << "Allocation failed: " << e.what() << '\n';
+			//Free up our resources
+			delete TW[i - 1];
+			delete TW[i];
+			delete TW;
+			return -1;
 		}
 
-
-
-		//De-allocate our old level of the tree, to save space
-		delete TW[i - 1];
-
-		std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
-		/*if (true)
-		{
-
-			std::cout << "TW i: " << i << " " << showLayer(TW[i]) << "\n";
-		} */
 	}
-
+	
 	//std::cout << "Num Q " << numQCalled << "\n";
 
 

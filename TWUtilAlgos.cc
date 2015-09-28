@@ -37,7 +37,7 @@ int altPermutTW(int nGraph, const VSet& vsetArg, const std::vector<Vertex>& Svec
 
 	int n = boost::num_vertices(G);
 
-	
+
 	auto loopEnd = SvecAll.end();
 	for (auto current = SvecAll.begin(); current != loopEnd; ++current)
 	{
@@ -45,7 +45,7 @@ int altPermutTW(int nGraph, const VSet& vsetArg, const std::vector<Vertex>& Svec
 		//Lets us give the entire vertex set for the graph
 		if (vsetArg.contains(v))
 		{
-			
+
 			vs.erase(v);
 			int qval = sizeQ(nGraph, vs, v, G);
 			tw = std::max(tw, qval);
@@ -107,28 +107,17 @@ std::pair<Graph, std::map<Vertex, Vertex>> complement_graph(const Graph& G)
 
 int subgraphDegree(Vertex v, VSet S, const Graph& G)
 {
-	int ret = 0;
-
-	VSet seenNeighbours;
+	VSet neighbours;
 
 	//std::cout << "Getting adj vertices for " << v << "\n";
 
-	auto neighbourSet = boost::adjacent_vertices(v, G);
-
-	for (auto iter = neighbourSet.first; iter != neighbourSet.second; iter++)
+	auto neighbourIter = boost::adjacent_vertices(v, G);
+	for (auto n = neighbourIter.first; n != neighbourIter.second; ++n)
 	{
-		//std::cout << "Looking at neighbour: " << "\n";
-		//std::cout<< *iter << "\n";
-
-		if (S.contains(*iter) && !seenNeighbours.contains(*iter))
-		{
-			ret++;
-			seenNeighbours.insert(*iter);
-		}
-
+		neighbours.insert(*n);
 	}
 
-	return ret;
+	return S.setIntersection(neighbours).size();
 
 }
 
@@ -411,24 +400,58 @@ int minDeg(VSet S, const Graph& G)
 
 }
 
+int secondSmallestDegree(VSet H, Graph G)
+{
+	std::vector<Vertex> members;
+	H.members(members);
+	std::sort(members.begin(), members.end(),
+		[G, H](const Vertex & u, const Vertex & v) -> bool
+	{
+		return subgraphDegree(u, H, G) < subgraphDegree(v, H, G);
+	});
+
+	return subgraphDegree(members[1], H, G);
+}
+
+Vertex customMinDegreeExcept(Vertex vExclude, VSet H, Graph G)
+{
+	std::vector<Vertex> members;
+	H.members(members);
+	std::sort(members.begin(), members.end(),
+		[G, H](const Vertex & u, const Vertex & v) -> bool
+	{
+		return subgraphDegree(u, H, G) < subgraphDegree(v, H, G);
+	});
+	
+	if (members[0] == vExclude)
+	{
+		return members[1];
+	}
+	return members[0];
+}
+
 
 
 //TODO fix this
 //Based on Algorithm 2 from the lower bounds paper
-int d2degen(VSet Sarg, const Graph& G)
+int d2degen(const VSet& SStart, const Graph& G)
 {
-	VSet S = Sarg;
 
 	int d2D = 0;
-	auto vertInfo = boost::vertices(G);
-	for (auto iter = vertInfo.first; iter != vertInfo.second; iter++)
+	
+	std::vector<Vertex> sMembers;
+	SStart.members(sMembers);
+	
+	for (Vertex v : sMembers)
 	{
-		VSet H = G;
+		VSet H = SStart;
+		
 		while (H.size() >= 2)
 		{
-			Vertex w = minDegreeVertExcept(*iter, H, G).first;
-			d2D = std::max(d2D, subgraphDegree(*iter, H, G)); //TODO *iter or w?
-			H.erase(w);
+			d2D = std::max(d2D, secondSmallestDegree(H, G));
+			Vertex u = customMinDegreeExcept(v, H, G);
+			//d2D = std::max(d2D, subgraphDegree(v, H, G)); //TODO *iter or w?
+			H.erase(u);
 		}
 
 	}

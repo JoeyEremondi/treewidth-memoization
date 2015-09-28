@@ -83,8 +83,10 @@ int main(int argc, char** argv)
 	//separate variable makes switching for testing easier
 	//std::vector<std::string>& inFiles = filesInDir;
 
-	std::vector<std::string> inFiles({"eil51.tsp.dgf" });
+	//std::vector<std::string> inFiles({"eil51.tsp.dgf" });
 	//std::vector<std::string> inFiles({ "queen7_7.dgf" });
+	std::vector<std::string> inFiles({ "mildew.dgf" });
+	//std::vector<std::string> inFiles({ "oesoca42.dgf" });
 
 
 
@@ -128,6 +130,7 @@ int main(int argc, char** argv)
 			TopDownTW tdtw(testGraph);
 			std::cout << "Treewidth: " << tdtw.topDownTW(testGraph) << "\n\n\n";
 			delete timer;
+
 			/*
 			std::cout << "Simplicial-first Memoization" << std::endl;
 			timer = new auto_cpu_timer();
@@ -171,7 +174,7 @@ int main(int argc, char** argv)
 		}
 		catch (const std::bad_alloc& e) {
 			std::cerr << "Allocation failed: " << e.what() << '\n';
-			return -1;
+			//return -1;
 		}
 
 

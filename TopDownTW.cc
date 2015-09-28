@@ -15,6 +15,8 @@ const int maxBottumUpSize = 1000000000;
 
 const int topLevelNoStore = 15;
 
+const int bottomLevelNoStore = 5;
+
 TopDownTW::TopDownTW(const Graph& gIn)
 	: G(gIn)
 	, allVertices(boost::vertices(G).first, boost::vertices(G).second)
@@ -77,7 +79,8 @@ int TopDownTW::topDownTW(const Graph& G)
 	VSet maxClique = exactMaxClique(G);
 	std::vector<Vertex> cliqueVec(maxClique.size());
 	maxClique.members(cliqueVec);
-
+	std::cout << "Max clique " << showSet(maxClique) << "\n";
+	
 	for (auto iter = cliqueVec.begin(); iter != cliqueVec.end(); ++iter)
 	{
 		S.erase(*iter);
@@ -87,7 +90,9 @@ int TopDownTW::topDownTW(const Graph& G)
 
 
 	lowerBound = d2degen(S, G);
+	std::cout << "d2 lower " << lowerBound << "\n";
 	lowerBound = std::max(lowerBound, MMD(S, G));
+	std::cout << "MMD lower " << MMD(S, G) << "\n";
 
 	std::cout << "Found lower bound " << lowerBound << "\n";
 
@@ -206,7 +211,7 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 		{
 			//Don't cache the top few layers, to save space
 			//Same for the bottom few layers
-			if (nGraph - nSet > topLevelNoStore && nSet > topLevelNoStore)
+			if (nGraph - nSet > topLevelNoStore && nSet > bottomLevelNoStore)
 			{
 				TW[nSet][S] = minTW;
 				numInDict++;

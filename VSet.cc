@@ -105,3 +105,11 @@ VSet VSet::setUnion(const VSet& that) const
 	ret.bitVec = newBitVec;
 	return ret;
 }
+
+VSet VSet::setIntersection(const VSet& that) const
+{
+	auto newBitVec = this->bitVec & that.bitVec;
+	VSet ret;
+	ret.bitVec = newBitVec;
+	return ret;
+}

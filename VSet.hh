@@ -57,6 +57,7 @@ public:
 	std::size_t operator()() const;
 
 	VSet setUnion(const VSet& that) const;
+	VSet setIntersection(const VSet& that) const;
 
 	static int maxNumVerts;
 	

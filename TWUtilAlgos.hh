@@ -42,7 +42,7 @@ std::pair<Vertex, int> minDegreeSubgraphVert(VSet S, const Graph& G);
 //that isn't the given vertex v
 std::pair<Vertex, int> minDegreeVertExcept(Vertex v, VSet S, const Graph& G);
 
-int d2degen(VSet Sarg, const Graph& G);
+int d2degen(const VSet& SStart, const Graph& G);
 
 int MMD(VSet Sarg, const Graph& G);
 
