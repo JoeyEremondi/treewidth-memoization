@@ -57,6 +57,9 @@
     <ClCompile Include="TopDownTW.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="OppBloom.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractMemo.hh">
@@ -99,6 +102,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="UpperBound.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="OppBloom.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

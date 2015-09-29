@@ -142,6 +142,7 @@
     <ClCompile Include="DIMACS.cc" />
     <ClCompile Include="HeuristicUpperBoundMemo.cc" />
     <ClCompile Include="NaiveMemo.cc" />
+    <ClCompile Include="OppBloom.cc" />
     <ClCompile Include="qset.cc" />
     <ClCompile Include="SimplicialFirstMemo.cc" />
     <ClCompile Include="TopDownTW.cc" />
@@ -157,6 +158,7 @@
     <ClInclude Include="DepthBoundedMemo.hh" />
     <ClInclude Include="DIMACS.hh" />
     <ClInclude Include="graphTypes.hh" />
+    <ClInclude Include="OppBloom.hh" />
     <ClInclude Include="UpperBound.hh" />
     <ClInclude Include="TopDownTW.hh" />
     <ClInclude Include="HeuristicUpperBoundMemo.hh" />
