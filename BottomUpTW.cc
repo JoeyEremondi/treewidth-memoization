@@ -246,10 +246,12 @@ BottomUpTW::BottomUpTW(const Graph & gIn, int maxLayerSizeIn)
 
 void BottomUpTW::fillTWSet(const VSet& SStart)
 {
-	auto TW = new std::unordered_map<VSet, int>*[VSet::maxNumVerts];
+	std::cout << "Bottom up using map\n";
+
+	auto TW = new std::map<VSet, int>*[VSet::maxNumVerts];
 
 	VSet emptySet;
-	TW[0] = new std::unordered_map<VSet, int>();
+	TW[0] = new std::map<VSet, int>();
 	(*TW[0])[emptySet] = NO_WIDTH;
 
 	//Initial values for our data, in case we never succeed
@@ -290,7 +292,7 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 			numStoredElements = 0;
 
 			//Initialize our dictionary at this level
-			TW[i] = new std::unordered_map<VSet, int>();
+			TW[i] = new std::map<VSet, int>();
 
 			int minTW = upperBound;
 

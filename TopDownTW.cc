@@ -13,7 +13,7 @@ const int maxDictSize = 1000000000;
 
 const int maxBottumUpSize = 1000000000;
 
-const int topLevelNoStore = 15;
+const int topLevelNoStore = 10;
 
 const int bottomLevelNoStore = 5;
 
@@ -108,7 +108,7 @@ int TopDownTW::topDownTW(const Graph& G)
 
 int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 {
-	static std::vector<std::unordered_map<VSet, int>> TW(nGraph);
+	static std::vector<std::map<VSet, int>> TW(nGraph);
 
 	const int threshold = -1;
 
