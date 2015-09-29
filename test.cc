@@ -173,7 +173,7 @@ int main(int argc, char** argv)
 			*/
 		}
 		catch (const std::bad_alloc& e) {
-			std::cerr << "Allocation failed: " << e.what() << '\n';
+			std::cerr << "Allocation failed in main: " << e.what() << '\n';
 			//return -1;
 		}
 
