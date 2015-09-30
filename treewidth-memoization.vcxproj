@@ -140,6 +140,8 @@
     <ClCompile Include="ArrayOfSetBottomUp.cc" />
     <ClCompile Include="BasicMemo.cc" />
     <ClCompile Include="BottomUpTW.cc" />
+    <ClCompile Include="DAWG.cc" />
+    <ClCompile Include="DAWGBottomUp.cc" />
     <ClCompile Include="DepthBoundedMemo.cc" />
     <ClCompile Include="DIMACS.cc" />
     <ClCompile Include="HeuristicUpperBoundMemo.cc" />
@@ -160,6 +162,8 @@
     <ClInclude Include="ArrayOfSetBottomUp.hh" />
     <ClInclude Include="BasicMemo.hh" />
     <ClInclude Include="BottomUpTW.hh" />
+    <ClInclude Include="DAWG.hh" />
+    <ClInclude Include="DAWGBottomUp.hh" />
     <ClInclude Include="DepthBoundedMemo.hh" />
     <ClInclude Include="DIMACS.hh" />
     <ClInclude Include="graphTypes.hh" />

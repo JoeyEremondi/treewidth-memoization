@@ -29,6 +29,7 @@
 
 #include "TreeBottomUp.hh"
 #include "ArrayOfSetBottomUp.hh"
+#include "DAWGBottomUp.hh"
 
 #include "HeuristicUpperBoundMemo.hh"
 
@@ -125,7 +126,7 @@ int main(int argc, char** argv)
 
 			std::cout << "Set based Bottom-up Memoization" << std::endl;
 			timer = new auto_cpu_timer();
-			ArrayOfSetBottomUp bottomUpSearcher(testGraph);
+			DAWGBottomUp bottomUpSearcher(testGraph);
 			std::cout << "Treewidth: " << bottomUpSearcher.tw() << "\n\n\n";
 			delete timer;
 

@@ -69,6 +69,12 @@
     <ClCompile Include="ArrayOfSetBottomUp.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="DAWGBottomUp.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="DAWG.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractMemo.hh">
@@ -123,6 +129,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="ArrayOfSetBottomUp.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DAWGBottomUp.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="DAWG.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
