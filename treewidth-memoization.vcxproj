@@ -147,6 +147,7 @@
     <ClCompile Include="qset.cc" />
     <ClCompile Include="SimplicialFirstMemo.cc" />
     <ClCompile Include="TopDownTW.cc" />
+    <ClCompile Include="TreeBottomUp.cc" />
     <ClCompile Include="UpperBound.cc" />
     <ClCompile Include="test.cc" />
     <ClCompile Include="TWUtilAlgos.cc" />
@@ -161,6 +162,7 @@
     <ClInclude Include="DIMACS.hh" />
     <ClInclude Include="graphTypes.hh" />
     <ClInclude Include="OppBloom.hh" />
+    <ClInclude Include="TreeBottomUp.hh" />
     <ClInclude Include="UpperBound.hh" />
     <ClInclude Include="TopDownTW.hh" />
     <ClInclude Include="HeuristicUpperBoundMemo.hh" />

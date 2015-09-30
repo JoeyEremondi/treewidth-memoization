@@ -2,6 +2,8 @@
 #include "VSet.hh"
 #include "qset.hh"
 #include "AbstractMemo.hh" //TODO better place for constants?
+#include "UpperBound.hh"
+#include "TWUtilAlgos.hh"
 
 
 
@@ -17,6 +19,25 @@ AbstractBottomUp::AbstractBottomUp(const Graph & Gin)
 
 AbstractBottomUp::~AbstractBottomUp()
 {
+}
+
+int AbstractBottomUp::tw()
+{
+	VSet S(G);
+
+	//Remove elements in the max-clique of G
+	VSet maxClique = exactMaxClique(G);
+	std::vector<Vertex> cliqueVec(maxClique.size());
+	maxClique.members(cliqueVec);
+
+	for (auto iter = cliqueVec.begin(); iter != cliqueVec.end(); ++iter)
+	{
+		S.erase(*iter);
+	}
+
+	globalUpperBound = calcUpperBound(G, S);
+
+	return twForSet(S);
 }
 
 int AbstractBottomUp::twForSet(VSet SStart)
@@ -48,6 +69,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 
 	for (i = 1; i <= nSet; ++i)
 	{
+		currentLayer = i;
 		try {
 			std::cout << "Level " << i << "\n";
 			//std::cout << "Num Q " << numQCalled << "\n";
