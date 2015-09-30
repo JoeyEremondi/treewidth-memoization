@@ -45,6 +45,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 
 	VSet emptySet;
 	//Initialize our store
+	beginLayer(0);
 	updateTW(0, emptySet, NO_WIDTH);
 
 	int nSet = SStart.size();
@@ -155,7 +156,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 	}
 
 
-	int finalResult = this->finalResult();
+	int finalResult = this->finalResult(nSet, SStart);
 	endLayer(i);
 	return finalResult;
 }

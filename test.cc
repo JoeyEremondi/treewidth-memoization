@@ -27,6 +27,8 @@
 #include "SimplicialFirstMemo.hh"
 #include "BasicMemo.hh"
 
+#include "TreeBottomUp.hh"
+
 #include "HeuristicUpperBoundMemo.hh"
 
 #include <fstream> 
@@ -34,7 +36,7 @@
 #include <sstream>
 
 #include "DIMACS.hh"
-#include "BottomUpTW.hh"
+//#include "BottomUpTW.hh"
 #include "TopDownTW.hh"
 
 #include "qset.hh"
@@ -84,8 +86,8 @@ int main(int argc, char** argv)
 	//std::vector<std::string>& inFiles = filesInDir;
 
 	//std::vector<std::string> inFiles({"eil51.tsp.dgf" });
-	//std::vector<std::string> inFiles({ "queen7_7.dgf" });
-	std::vector<std::string> inFiles({ "mildew.dgf" });
+	std::vector<std::string> inFiles({ "queen6_6.dgf" });
+	//std::vector<std::string> inFiles({ "mildew.dgf" });
 	//std::vector<std::string> inFiles({ "oesoca42.dgf" });
 
 
@@ -107,7 +109,7 @@ int main(int argc, char** argv)
 		inGraphFile.close();
 
 		//TODO better place for this?
-		VSet::maxNumVerts = boost::num_vertices(testGraph) + 1;
+		VSet::maxNumVerts = boost::num_vertices(testGraph);
 
 		std::cout << "Num Vertices: " << boost::num_vertices(testGraph) << "\n";
 		std::cout << "Num Edges: " << boost::num_edges(testGraph) << "\n\n";
@@ -120,10 +122,11 @@ int main(int argc, char** argv)
 
 
 
-			//std::cout << "Bottom-up Memoization" << std::endl;
-			//timer = new auto_cpu_timer();
-			//std::cout << "Treewidth: " << bottomUpTW(testGraph) << "\n\n\n";
-			//delete timer;
+			std::cout << "Map based Bottom-up Memoization" << std::endl;
+			timer = new auto_cpu_timer();
+			TreeBottomUp bottomUpSearcher(testGraph);
+			std::cout << "Treewidth: " << bottomUpSearcher.tw() << "\n\n\n";
+			delete timer;
 
 			std::cout << "Top Down" << std::endl;
 			timer = new auto_cpu_timer();

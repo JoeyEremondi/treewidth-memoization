@@ -24,7 +24,7 @@ protected:
 	virtual void iterNext() = 0;
 
 	virtual int TW(int layer, VSet S) = 0;
-	virtual int updateTW(int layer, VSet S, int tw) = 0;
+	virtual void updateTW(int layer, VSet S, int tw) = 0;
 	virtual void beginLayer(int layer) = 0;
 	virtual void endLayer(int layer) = 0;
 	virtual int finalResult(int finalLayer, VSet SStart) = 0;

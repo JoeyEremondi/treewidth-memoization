@@ -15,8 +15,8 @@ TreeBottomUp::~TreeBottomUp()
 
 void TreeBottomUp::beginIter()
 {
-	iter = TWarr[currentLayer]->begin();
-	layerEnd = TWarr[currentLayer]->end();
+	iter = TWarr[currentLayer-1]->begin();
+	layerEnd = TWarr[currentLayer-1]->end();
 	S = iter->first;
 	r = iter->second;
 }
@@ -41,7 +41,7 @@ int TreeBottomUp::TW(int layer, VSet S)
 	return (*TWarr[layer])[S];
 }
 
-int TreeBottomUp::updateTW(int layer, VSet S, int tw)
+void TreeBottomUp::updateTW(int layer, VSet S, int tw)
 {
 	auto searchInfo = (*TWarr[layer]).find(S);
 	if (searchInfo == (*TWarr[layer]).end())

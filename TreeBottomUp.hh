@@ -17,7 +17,7 @@ protected:
 	void iterNext();
 
 	int TW(int layer, VSet S);
-	int updateTW(int layer, VSet S, int tw);
+	void updateTW(int layer, VSet S, int tw);
 	void beginLayer(int layer);
 	void endLayer(int layer);
 	int finalResult(int finalLayer, VSet SStart);
