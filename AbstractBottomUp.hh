@@ -18,6 +18,7 @@ protected:
 	int globalUpperBound;
 	int twForSet(VSet S);
 	int currentLayer = 0;
+	int lowerBound;
 
 	virtual void beginIter() = 0;
 	virtual bool iterDone() = 0;
@@ -28,5 +29,6 @@ protected:
 	virtual void beginLayer(int layer) = 0;
 	virtual void endLayer(int layer) = 0;
 	virtual int finalResult(int finalLayer, VSet SStart) = 0;
+	virtual int numStored() = 0;
 };
 

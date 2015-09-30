@@ -1,16 +1,23 @@
 #pragma once
 #include "AbstractBottomUp.hh"
-class TreeBottomUp :
+#include "VSet.hh"
+#include "qset.hh"
+
+class ArrayOfSetBottomUp :
 	public AbstractBottomUp
 {
 public:
-	TreeBottomUp(const Graph& G);
-	~TreeBottomUp();
+	ArrayOfSetBottomUp(const Graph& G);
+	~ArrayOfSetBottomUp();
 
 protected:
-	std::map<VSet, int>** TWarr;
-	std::map<VSet, int>::iterator iter;
-	std::map<VSet, int>::const_iterator layerEnd;
+	std::set<VSet>** TWarr;
+	std::set<VSet>::iterator iter;
+	int iterTWVal;
+	std::set<VSet>::const_iterator layerEnd;
+	bool haveSeenInitialElement = false;
+
+	int* upperBoundForLayer;
 
 	void beginIter();
 	bool iterDone();

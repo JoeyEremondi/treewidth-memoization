@@ -37,6 +37,17 @@ int AbstractBottomUp::tw()
 
 	globalUpperBound = calcUpperBound(G, S);
 
+	//Set the lower bound
+	lowerBound = 0;
+	/*
+	lowerBound = d2degen(S, G);
+	std::cout << "d2 lower " << lowerBound << "\n";
+	lowerBound = std::max(lowerBound, MMD(S, G));
+	std::cout << "MMD lower " << MMD(S, G) << "\n";
+
+	std::cout << "Found lower bound " << lowerBound << "\n";
+	*/
+
 	return twForSet(S);
 }
 
@@ -46,7 +57,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 	VSet emptySet;
 	//Initialize our store
 	beginLayer(0);
-	updateTW(0, emptySet, NO_WIDTH);
+	updateTW(0, emptySet, lowerBound/*NO_WIDTH*/);
 
 	int nSet = SStart.size();
 
@@ -124,7 +135,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 							globalUpperBound = std::min(globalUpperBound, std::max(minTW, nGraph - i - 1));
 							//}
 
-							if (rr < globalUpperBound)
+							if (rr < globalUpperBound && rr >= lowerBound)
 							{
 								updateTW(i, SUx, rr);
 
@@ -148,6 +159,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 		catch (const std::bad_alloc& e) {
 			std::cerr << "Allocation failed: " << e.what() << '\n';
 			//Free up our resources
+			std::cerr << numStored() << " elements in the failing layer\n";
 			endLayer(i - 1);
 			endLayer(i);
 			return -1;
@@ -157,7 +169,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 
 
 	int finalResult = this->finalResult(nSet, SStart);
-	endLayer(i);
+	endLayer(nSet);
 	return finalResult;
 }
 

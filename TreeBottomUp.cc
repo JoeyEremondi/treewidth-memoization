@@ -1,4 +1,5 @@
 #include "TreeBottomUp.hh"
+#include <iostream>
 
 
 
@@ -28,7 +29,8 @@ bool TreeBottomUp::iterDone()
 
 void TreeBottomUp::iterNext()
 {
-	iter++;
+	//Erase elements as we process them
+	iter = TWarr[currentLayer - 1]->erase(iter);
 	if (iter != layerEnd)
 	{
 		S = iter->first;
@@ -61,6 +63,7 @@ void TreeBottomUp::beginLayer(int layer)
 
 void TreeBottomUp::endLayer(int layer)
 {
+	std::cout << "TW i size: " << currentLayer << " " << TWarr[currentLayer]->size() << "\n";
 	delete TWarr[layer];
 }
 
@@ -72,6 +75,11 @@ int TreeBottomUp::finalResult(int finalLayer, VSet SStart)
 		return globalUpperBound;
 	}
 	return searchInfo->second;
+}
+
+int TreeBottomUp::numStored()
+{
+	return TWarr[currentLayer]->size() + TWarr[currentLayer-1]->size();
 }
 
 

@@ -28,6 +28,7 @@
 #include "BasicMemo.hh"
 
 #include "TreeBottomUp.hh"
+#include "ArrayOfSetBottomUp.hh"
 
 #include "HeuristicUpperBoundMemo.hh"
 
@@ -122,9 +123,9 @@ int main(int argc, char** argv)
 
 
 
-			std::cout << "Map based Bottom-up Memoization" << std::endl;
+			std::cout << "Set based Bottom-up Memoization" << std::endl;
 			timer = new auto_cpu_timer();
-			TreeBottomUp bottomUpSearcher(testGraph);
+			ArrayOfSetBottomUp bottomUpSearcher(testGraph);
 			std::cout << "Treewidth: " << bottomUpSearcher.tw() << "\n\n\n";
 			delete timer;
 

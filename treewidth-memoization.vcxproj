@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="AbstractBottomUp.cc" />
     <ClCompile Include="AbstractMemo.cc" />
+    <ClCompile Include="ArrayOfSetBottomUp.cc" />
     <ClCompile Include="BasicMemo.cc" />
     <ClCompile Include="BottomUpTW.cc" />
     <ClCompile Include="DepthBoundedMemo.cc" />
@@ -156,6 +157,7 @@
   <ItemGroup>
     <ClInclude Include="AbstractBottomUp.hh" />
     <ClInclude Include="AbstractMemo.hh" />
+    <ClInclude Include="ArrayOfSetBottomUp.hh" />
     <ClInclude Include="BasicMemo.hh" />
     <ClInclude Include="BottomUpTW.hh" />
     <ClInclude Include="DepthBoundedMemo.hh" />
