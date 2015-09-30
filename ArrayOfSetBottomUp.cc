@@ -17,25 +17,26 @@ ArrayOfSetBottomUp::~ArrayOfSetBottomUp()
 
 void ArrayOfSetBottomUp::beginIter()
 {
+	int prevLayer = currentLayer - 1;
 	if (currentLayer > 1)
 	{
 		//We start looking at the sets with lowest TW values
 		iterTWVal = lowerBound;
 		//Find the first non-empty TW-value
-		while (TWarr[currentLayer][iterTWVal].empty())
+		while (TWarr[prevLayer][iterTWVal].empty())
 		{
 			++iterTWVal;
 		}
 
-		if (iterTWVal < upperBoundForLayer[currentLayer])
+		if (iterTWVal < upperBoundForLayer[prevLayer])
 		{
 			//Set our iterator to the first set in that value array
-			iter = TWarr[currentLayer][iterTWVal].begin();
+			iter = TWarr[prevLayer][iterTWVal].begin();
 			S = *iter;
 			r = iterTWVal;
 
 			//Cache the end of our current set
-			layerEnd = TWarr[currentLayer][iterTWVal].end();
+			layerEnd = TWarr[prevLayer][iterTWVal].end();
 		}
 	}
 	else
@@ -50,16 +51,17 @@ void ArrayOfSetBottomUp::beginIter()
 
 bool ArrayOfSetBottomUp::iterDone()
 {
+	int prevLayer = currentLayer - 1;
 	//We're only done if we're at the end of the last value set to look at
 	if (currentLayer == 1)
 	{
 		return haveSeenInitialElement;
 	}
-	if (iterTWVal > upperBoundForLayer[currentLayer])
+	if (iterTWVal > upperBoundForLayer[prevLayer])
 	{
 		return true;
 	}
-	if (iterTWVal < upperBoundForLayer[currentLayer] - 1)
+	if (iterTWVal < upperBoundForLayer[prevLayer] - 1)
 	{
 		return false;
 	}
@@ -68,6 +70,7 @@ bool ArrayOfSetBottomUp::iterDone()
 
 void ArrayOfSetBottomUp::iterNext()
 {
+	int prevLayer = currentLayer - 1;
 	//Special case, since we don't have a NO_WIDTH entry
 	if (currentLayer == 1)
 	{
@@ -76,27 +79,31 @@ void ArrayOfSetBottomUp::iterNext()
 	else if (iter == layerEnd)
 	{
 		//Find the next non-empty TW-value
-		while (TWarr[currentLayer][iterTWVal].empty())
+		while (TWarr[prevLayer][iterTWVal].empty())
 		{
 			++iterTWVal;
 		}
-		if (iterTWVal < upperBoundForLayer[currentLayer])
+		if (iterTWVal < upperBoundForLayer[prevLayer])
 		{
 			//Set our iterator to the first set in that value array
-			iter = TWarr[currentLayer][iterTWVal].begin();
+			iter = TWarr[prevLayer][iterTWVal].begin();
 			S = *iter;
 			r = iterTWVal;
 
 			//Cache the end of our current set
-			layerEnd = TWarr[currentLayer][iterTWVal].end();
+			layerEnd = TWarr[prevLayer][iterTWVal].end();
 		}
 
 	}
 	else
 	{
 		//Delete the last element and advance the iterator
-		iter = TWarr[currentLayer][iterTWVal].erase(iter);
-		S = *iter;
+		iter = TWarr[prevLayer][iterTWVal].erase(iter);
+		if (iter != layerEnd)
+		{
+			S = *iter;
+		}
+		
 	}
 
 }
@@ -112,7 +119,6 @@ int ArrayOfSetBottomUp::TW(int layer, VSet S)
 		}
 	}
 	//TODO should never hit this?
-	std::cerr << "ERROR! Should never not find cached TW!"
 	return globalUpperBound;
 }
 

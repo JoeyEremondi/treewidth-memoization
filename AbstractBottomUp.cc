@@ -99,8 +99,6 @@ int AbstractBottomUp::twForSet(VSet SStart)
 
 			for (beginIter(); !iterDone(); iterNext())
 			{
-				//VSet S = pair->first;
-				//int r = pair->second;
 
 				if (r < globalUpperBound)
 				{
@@ -141,6 +139,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 
 
 							}
+
 						}
 
 					}
