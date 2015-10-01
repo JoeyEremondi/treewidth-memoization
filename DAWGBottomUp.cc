@@ -118,6 +118,7 @@ void DAWGBottomUp::updateTW(int layer, VSet S, int tw)
 void DAWGBottomUp::beginLayer(int layer)
 {
 	int prevLayer = layer - 1;
+	int numStored = 0;
 
 	//Generate a DAWG to store items from the last layer, erasing them as we go
 	if (layer > 0)
@@ -127,24 +128,17 @@ void DAWGBottomUp::beginLayer(int layer)
 
 		for (int i = lowerBound; i < upperBoundForLayer[prevLayer]; ++i)
 		{
-			std::cerr << "\n***** Starting new DAWG loop\n";
+			//std::cout << "\n***** Starting new DAWG loop\n";
 			auto loopEnd = TW[i].end();
-			for (auto iter = TW[i].begin(); iter != loopEnd; ++iter/*iter = TW[i].erase(iter)*/)
+			for (auto iter = TW[i].begin(); iter != loopEnd; iter = TW[i].erase(iter))
 			{
+				//std::cout << "Start layer with " << showSet(*iter) << " tw " << i <<" in prev\n";
 				lastLayerTW[i].insert(*iter);
-				std::cerr << "Adding " << showSet(*iter) << " to DAWG\n";
-				assert(lastLayerTW[i].contains(*iter));
+				numStored++;
+				//std::cout << "Adding " << showSet(*iter) << " to DAWG\n";
+				//assert(lastLayerTW[i].contains(*iter));
 			}
-			//TODO remove
-			lastLayerTW[i].initIter();
-			auto someS = lastLayerTW[i].nextIter();
-			while (!lastLayerTW[i].iterDone())
-			{
 
-				std::cerr << "Checking set " << showSet(someS) << "\n";
-				assert(TW[i].find(someS) != TW[i].end());
-				auto someS = lastLayerTW[i].nextIter();
-			}
 		}
 	}
 
@@ -161,7 +155,7 @@ void DAWGBottomUp::beginLayer(int layer)
 void DAWGBottomUp::endLayer(int layer)
 {
 
-	std::cout << "TW i size: " << currentLayer << " " << numStored() << "\n";
+	//std::cout << "TW i size: " << currentLayer << " " << numStored() << "\n";
 	//TODO anything else to do here?
 }
 

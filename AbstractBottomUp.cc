@@ -147,8 +147,6 @@ int AbstractBottomUp::twForSet(VSet SStart)
 
 
 			}
-			std::cerr << "Iter done, layer " << currentLayer << "\n";
-
 
 
 			//De-allocate our old level of the tree, to save space

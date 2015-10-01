@@ -13,7 +13,7 @@ public:
 
 protected:
 	std::vector<std::set<VSet>> TW;
-	int iterTWVal;
+	int iterTWVal = 0;
 	bool haveSeenInitialElement = false;
 
 	std::vector<DAWG> lastLayerTW;

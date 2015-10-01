@@ -9,6 +9,7 @@ struct StackElem
 	State state;
 	int depth;
 	VSet set;
+	std::vector<State> statePath;
 };
 
 class DAWG
@@ -24,12 +25,15 @@ private:
 	int length;
 
 protected:
+	int pathsToEndFrom(int depth, State q);
 	State newState();
 	void addTransition(int depth, State from, State to, bool readLetter);
 	void minimize();
 
 public:
+	std::string asDot();
 	DAWG();
+	int size();
 	void insert(VSet word);
 	bool contains(VSet word);
 	inline State delta(int depth, State q, bool bitRead) {

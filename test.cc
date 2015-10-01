@@ -123,12 +123,16 @@ int main(int argc, char** argv)
 		try {
 			auto_cpu_timer* timer;
 
-
-
 			std::cout << "Set based Bottom-up Memoization" << std::endl;
 			timer = new auto_cpu_timer();
-			DAWGBottomUp bottomUpSearcher(testGraph);
+			ArrayOfSetBottomUp bottomUpSearcher(testGraph);
 			std::cout << "Treewidth: " << bottomUpSearcher.tw() << "\n\n\n";
+			delete timer;
+
+			std::cout << "DAWG based Bottom-up Memoization" << std::endl;
+			timer = new auto_cpu_timer();
+			DAWGBottomUp dawgSearcher(testGraph);
+			std::cout << "Treewidth: " << dawgSearcher.tw() << "\n\n\n";
 			delete timer;
 
 			std::cout << "Top Down" << std::endl;

@@ -103,7 +103,7 @@ void ArrayOfSetBottomUp::iterNext()
 		{
 			S = *iter;
 		}
-		
+
 	}
 
 }
@@ -141,11 +141,12 @@ void ArrayOfSetBottomUp::beginLayer(int layer)
 	//Create an array entry for each possible TW value
 	upperBoundForLayer[layer] = globalUpperBound;
 	TWarr[layer] = new std::set<VSet>[globalUpperBound];
+
 }
 
 void ArrayOfSetBottomUp::endLayer(int layer)
 {
-	std::cout << "TW i size: " << currentLayer << " " << numStored() << "\n";
+	//std::cout << "TW i size: " << currentLayer << " " << numStored() << "\n";
 	//Delete this layer's array of sets
 	delete[] TWarr[layer];
 }
