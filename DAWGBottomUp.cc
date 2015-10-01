@@ -7,7 +7,8 @@ DAWGBottomUp::DAWGBottomUp(const Graph& G) : AbstractBottomUp(G)
 	upperBoundForLayer = new int[VSet::maxNumVerts];
 	//Create our initial TW value
 	//This gets repeatedly deleted and allocated
-	TW = new std::set<VSet>[boost::num_vertices(G)];
+	TW = new std::set<VSet>[1]; //Just a dummy so we don't double delete
+	lastLayerTW = new DAWG[1]; //same, just a dummy
 }
 
 
@@ -120,8 +121,11 @@ void DAWGBottomUp::beginLayer(int layer)
 	int prevLayer = layer - 1;
 
 	//Generate a DAWG to store items from the last layer, erasing them as we go
-	delete[] lastLayerTW;
-	lastLayerTW = new DAWG[upperBoundForLayer[prevLayer]];
+	if (layer > 0)
+	{
+		delete[] lastLayerTW;
+		lastLayerTW = new DAWG[upperBoundForLayer[prevLayer]];
+	}
 
 	for (int i = lowerBound; i < prevLayer; ++i)
 	{
@@ -133,7 +137,7 @@ void DAWGBottomUp::beginLayer(int layer)
 	}
 
 	//Delete the old TW to free its memory, and allocate a new one
-	delete TW;
+	delete[] TW;
 	TW = new std::set<VSet>[globalUpperBound];
 
 	//Create an array entry for each possible TW value

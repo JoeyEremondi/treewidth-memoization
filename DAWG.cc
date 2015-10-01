@@ -1,4 +1,5 @@
 #include "DAWG.hh"
+#include <iostream>
 
 State DAWG::newState()
 {
@@ -87,7 +88,7 @@ VSet DAWG::nextIter()
 	int currentPos = top.depth;
 	VSet currentSet = top.set;
 
-	while (currentPos < VSet::maxNumVerts)
+	while (currentPos < VSet::maxNumVerts - 1)
 	{
 		if (delta0[current] != SINK && delta1[current] != SINK)
 		{
