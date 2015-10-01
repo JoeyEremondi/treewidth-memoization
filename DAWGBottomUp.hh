@@ -12,13 +12,11 @@ public:
 	~DAWGBottomUp();
 
 protected:
-	std::set<VSet>** TWarr;
-	std::set<VSet>::iterator iter;
+	std::set<VSet>* TW;
 	int iterTWVal;
-	std::set<VSet>::const_iterator layerEnd;
 	bool haveSeenInitialElement = false;
 
-	DAWG* lastLayer;
+	DAWG* lastLayerTW;
 
 	int* upperBoundForLayer;
 
@@ -26,7 +24,6 @@ protected:
 	bool iterDone();
 	void iterNext();
 
-	int TW(int layer, VSet S);
 	void updateTW(int layer, VSet S, int tw);
 	void beginLayer(int layer);
 	void endLayer(int layer);

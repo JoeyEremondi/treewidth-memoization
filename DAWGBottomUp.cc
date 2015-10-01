@@ -4,14 +4,16 @@
 
 DAWGBottomUp::DAWGBottomUp(const Graph& G) : AbstractBottomUp(G)
 {
-	TWarr = new std::set<VSet>*[VSet::maxNumVerts];
 	upperBoundForLayer = new int[VSet::maxNumVerts];
+	//Create our initial TW value
+	//This gets repeatedly deleted and allocated
+	TW = new std::set<VSet>[boost::num_vertices(G)];
 }
 
 
 DAWGBottomUp::~DAWGBottomUp()
 {
-	delete[] TWarr;
+	delete TW;
 	delete[] upperBoundForLayer;
 }
 
@@ -23,7 +25,7 @@ void DAWGBottomUp::beginIter()
 		//We start looking at the sets with lowest TW values
 		iterTWVal = lowerBound;
 		//Find the first non-empty TW-value
-		while (TWarr[prevLayer][iterTWVal].empty())
+		while (lastLayerTW[iterTWVal].empty() && iterTWVal < upperBoundForLayer[prevLayer])
 		{
 			++iterTWVal;
 		}
@@ -31,12 +33,9 @@ void DAWGBottomUp::beginIter()
 		if (iterTWVal < upperBoundForLayer[prevLayer])
 		{
 			//Set our iterator to the first set in that value array
-			iter = TWarr[prevLayer][iterTWVal].begin();
-			S = *iter;
+			lastLayerTW[iterTWVal].initIter();
+			S = lastLayerTW[iterTWVal].nextIter();
 			r = iterTWVal;
-
-			//Cache the end of our current set
-			layerEnd = TWarr[prevLayer][iterTWVal].end();
 		}
 	}
 	else
@@ -65,7 +64,7 @@ bool DAWGBottomUp::iterDone()
 	{
 		return false;
 	}
-	return iter == layerEnd;
+	return lastLayerTW[iterTWVal].iterDone();
 }
 
 void DAWGBottomUp::iterNext()
@@ -76,88 +75,83 @@ void DAWGBottomUp::iterNext()
 	{
 		haveSeenInitialElement = true;
 	}
-	else if (iter == layerEnd)
+	else if (lastLayerTW[iterTWVal].iterDone())
 	{
 		//Find the next non-empty TW-value
-		while (TWarr[prevLayer][iterTWVal].empty())
+		while (lastLayerTW[iterTWVal].empty() && iterTWVal < upperBoundForLayer[prevLayer])
 		{
 			++iterTWVal;
 		}
 		if (iterTWVal < upperBoundForLayer[prevLayer])
 		{
 			//Set our iterator to the first set in that value array
-			iter = TWarr[prevLayer][iterTWVal].begin();
-			S = *iter;
+			lastLayerTW[iterTWVal].initIter();
+			S = lastLayerTW[iterTWVal].nextIter();
 			r = iterTWVal;
-
-			//Cache the end of our current set
-			layerEnd = TWarr[prevLayer][iterTWVal].end();
 		}
 
 	}
-	else
+	else if (!lastLayerTW[iterTWVal].iterDone())
 	{
-		//Delete the last element and advance the iterator
-		iter = TWarr[prevLayer][iterTWVal].erase(iter);
-		if (iter != layerEnd)
-		{
-			S = *iter;
-		}
+		S = lastLayerTW[iterTWVal].nextIter();
 
 	}
 
 }
 
-int DAWGBottomUp::TW(int layer, VSet S)
-{
-	for (int i = lowerBound; i < upperBoundForLayer[layer]; i++)
-	{
-		auto searchInfo = TWarr[layer][i].find(S);
-		if (searchInfo != TWarr[layer][i].end())
-		{
-			return i;
-		}
-	}
-	//TODO should never hit this?
-	return globalUpperBound;
-}
+
 
 void DAWGBottomUp::updateTW(int layer, VSet S, int tw)
 {
 	if (tw > 0)
 	{
 		//Add it to the set for this tw value
-		TWarr[layer][tw].insert(S);
+		TW[tw].insert(S);
 		//Remove it from any higher sets, if we've made an improvement
 		for (int i = tw + 1; i < upperBoundForLayer[layer]; i++)
 		{
-			TWarr[layer][i].erase(S);
+			TW[i].erase(S);
 		}
 	}
 }
 
 void DAWGBottomUp::beginLayer(int layer)
 {
+	int prevLayer = layer - 1;
+
+	//Generate a DAWG to store items from the last layer, erasing them as we go
+	delete[] lastLayerTW;
+	lastLayerTW = new DAWG[upperBoundForLayer[prevLayer]];
+
+	for (int i = lowerBound; i < prevLayer; ++i)
+	{
+		auto loopEnd = TW[i].end();
+		for (auto iter = TW[i].begin(); iter != loopEnd; iter = TW[i].erase(iter))
+		{
+			lastLayerTW[i].insert(*iter);
+		}
+	}
+
+	//Delete the old TW to free its memory, and allocate a new one
+	delete TW;
+	TW = new std::set<VSet>[globalUpperBound];
+
 	//Create an array entry for each possible TW value
 	upperBoundForLayer[layer] = globalUpperBound;
-	TWarr[layer] = new std::set<VSet>[globalUpperBound];
 }
 
 void DAWGBottomUp::endLayer(int layer)
 {
-	delete lastLayer;
-	lastLayer = new DAWG();
 
 	std::cout << "TW i size: " << currentLayer << " " << numStored() << "\n";
-	//Delete this layer's array of sets
-	delete[] TWarr[layer];
+	//TODO anything else to do here?
 }
 
 int DAWGBottomUp::finalResult(int finalLayer, VSet SStart)
 {
 	for (int i = 0; i < globalUpperBound; i++)
 	{
-		if (!TWarr[finalLayer][i].empty())
+		if (!TW[i].empty())
 		{
 			return i;
 		}
@@ -171,13 +165,10 @@ int DAWGBottomUp::numStored()
 	//Look at all values stored in this layer and the last
 	for (int i = lowerBound; i < upperBoundForLayer[currentLayer]; i++)
 	{
-		ret += TWarr[currentLayer][i].size();
+		ret += TW[i].size();
 	}
 
-	for (int i = lowerBound; i < upperBoundForLayer[currentLayer - 1]; i++)
-	{
-		ret += TWarr[currentLayer - 1][i].size();
-	}
+
 
 	return ret;
 }

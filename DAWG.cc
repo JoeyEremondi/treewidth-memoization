@@ -123,3 +123,8 @@ bool DAWG::iterDone()
 {
 	return iterStack.empty();
 }
+
+bool DAWG::empty()
+{
+	return delta0[initial] == SINK && delta1[initial] == SINK;
+}

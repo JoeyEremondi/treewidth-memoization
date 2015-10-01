@@ -35,4 +35,5 @@ public:
 	void initIter();
 	VSet nextIter();
 	bool iterDone();
+	bool empty();
 };

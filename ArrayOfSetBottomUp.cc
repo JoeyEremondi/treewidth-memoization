@@ -23,7 +23,7 @@ void ArrayOfSetBottomUp::beginIter()
 		//We start looking at the sets with lowest TW values
 		iterTWVal = lowerBound;
 		//Find the first non-empty TW-value
-		while (TWarr[prevLayer][iterTWVal].empty())
+		while (TWarr[prevLayer][iterTWVal].empty() && iterTWVal < upperBoundForLayer[prevLayer])
 		{
 			++iterTWVal;
 		}
@@ -79,7 +79,7 @@ void ArrayOfSetBottomUp::iterNext()
 	else if (iter == layerEnd)
 	{
 		//Find the next non-empty TW-value
-		while (TWarr[prevLayer][iterTWVal].empty())
+		while (TWarr[prevLayer][iterTWVal].empty() && iterTWVal < upperBoundForLayer[prevLayer])
 		{
 			++iterTWVal;
 		}
