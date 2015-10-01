@@ -12,11 +12,11 @@ public:
 	~DAWGBottomUp();
 
 protected:
-	std::set<VSet>* TW;
+	std::vector<std::set<VSet>> TW;
 	int iterTWVal;
 	bool haveSeenInitialElement = false;
 
-	DAWG* lastLayerTW;
+	std::vector<DAWG> lastLayerTW;
 
 	int* upperBoundForLayer;
 

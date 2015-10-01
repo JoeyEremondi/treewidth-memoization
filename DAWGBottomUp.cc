@@ -7,14 +7,12 @@ DAWGBottomUp::DAWGBottomUp(const Graph& G) : AbstractBottomUp(G)
 	upperBoundForLayer = new int[VSet::maxNumVerts];
 	//Create our initial TW value
 	//This gets repeatedly deleted and allocated
-	TW = new std::set<VSet>[1]; //Just a dummy so we don't double delete
-	lastLayerTW = new DAWG[1]; //same, just a dummy
 }
 
 
 DAWGBottomUp::~DAWGBottomUp()
 {
-	delete TW;
+	TW.clear();
 	delete[] upperBoundForLayer;
 }
 
@@ -26,7 +24,7 @@ void DAWGBottomUp::beginIter()
 		//We start looking at the sets with lowest TW values
 		iterTWVal = lowerBound;
 		//Find the first non-empty TW-value
-		while (lastLayerTW[iterTWVal].empty() && iterTWVal < upperBoundForLayer[prevLayer])
+		while (iterTWVal < upperBoundForLayer[prevLayer] && lastLayerTW[iterTWVal].empty())
 		{
 			++iterTWVal;
 		}
@@ -57,7 +55,7 @@ bool DAWGBottomUp::iterDone()
 	{
 		return haveSeenInitialElement;
 	}
-	if (iterTWVal > upperBoundForLayer[prevLayer])
+	if (iterTWVal >= upperBoundForLayer[prevLayer])
 	{
 		return true;
 	}
@@ -79,7 +77,8 @@ void DAWGBottomUp::iterNext()
 	else if (lastLayerTW[iterTWVal].iterDone())
 	{
 		//Find the next non-empty TW-value
-		while (lastLayerTW[iterTWVal].empty() && iterTWVal < upperBoundForLayer[prevLayer])
+		++iterTWVal;
+		while (iterTWVal < upperBoundForLayer[prevLayer] && lastLayerTW[iterTWVal].empty())
 		{
 			++iterTWVal;
 		}
@@ -91,13 +90,13 @@ void DAWGBottomUp::iterNext()
 			r = iterTWVal;
 		}
 
+
 	}
 	else if (!lastLayerTW[iterTWVal].iterDone())
 	{
 		S = lastLayerTW[iterTWVal].nextIter();
 
 	}
-
 }
 
 
@@ -123,22 +122,24 @@ void DAWGBottomUp::beginLayer(int layer)
 	//Generate a DAWG to store items from the last layer, erasing them as we go
 	if (layer > 0)
 	{
-		delete[] lastLayerTW;
-		lastLayerTW = new DAWG[upperBoundForLayer[prevLayer]];
-	}
+		lastLayerTW.clear();
+		lastLayerTW.resize(upperBoundForLayer[prevLayer]);
 
-	for (int i = lowerBound; i < prevLayer; ++i)
-	{
-		auto loopEnd = TW[i].end();
-		for (auto iter = TW[i].begin(); iter != loopEnd; iter = TW[i].erase(iter))
+		for (int i = lowerBound; i < upperBoundForLayer[prevLayer]; ++i)
 		{
-			lastLayerTW[i].insert(*iter);
+			auto loopEnd = TW[i].end();
+			for (auto iter = TW[i].begin(); iter != loopEnd; iter = TW[i].erase(iter))
+			{
+				lastLayerTW[i].insert(*iter);
+			}
 		}
 	}
 
+	
+
 	//Delete the old TW to free its memory, and allocate a new one
-	delete[] TW;
-	TW = new std::set<VSet>[globalUpperBound];
+	TW.clear();
+	TW.resize(globalUpperBound);
 
 	//Create an array entry for each possible TW value
 	upperBoundForLayer[layer] = globalUpperBound;

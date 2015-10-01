@@ -2,7 +2,7 @@
 
 #include "VSet.hh"
 
-typedef int State;
+typedef uint64_t State;
 
 struct StackElem
 {
@@ -15,23 +15,44 @@ struct StackElem
 class DAWG
 {
 private:
-	int numStates;
-	State initial;
-	std::map<State, State> delta0; //TODO array for space?
-	std::map<State, State> delta1;
-	const State SINK = -1;
+	uint64_t nextState = 2;
+	const State initial = 1;
+	std::vector<std::map<State, State>> delta0; //TODO array for space?
+	std::vector<std::map<State, State>> delta1;
+	const State SINK = 0;
 	std::vector<StackElem> iterStack;
 	StackElem currentStack;
+	int length;
 
 protected:
 	State newState();
-	void addTransition(int from, int to, bool readLetter);
+	void addTransition(int depth, State from, State to, bool readLetter);
 	void minimize();
 
 public:
+	DAWG();
 	void insert(VSet word);
 	bool contains(VSet word);
-	inline State delta(State q, bool bitRead) { return bitRead ? delta1[q] : delta0[q]; }
+	inline State delta(int depth, State q, bool bitRead) {
+		if (bitRead)
+		{
+			auto searchInfo = delta1[depth].find(q);
+			if (searchInfo == delta1[depth].end())
+			{
+				return SINK;
+			}
+			return searchInfo->second;
+		}
+		else
+		{
+			auto searchInfo = delta0[depth].find(q);
+			if (searchInfo == delta0[depth].end())
+			{
+				return SINK;
+			}
+			return searchInfo->second;
+		}
+	}
 	void initIter();
 	VSet nextIter();
 	bool iterDone();

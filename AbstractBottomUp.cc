@@ -147,6 +147,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 
 
 			}
+			std::cerr << "Iter done, layer " << currentLayer << "\n";
 
 
 

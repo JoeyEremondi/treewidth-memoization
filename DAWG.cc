@@ -1,23 +1,24 @@
 #include "DAWG.hh"
+#include "qset.hh"
 #include <iostream>
 
 State DAWG::newState()
 {
-	State ret = numStates;
-	numStates++;
+	State ret = nextState;
+	nextState++;
 	return ret;
 }
 
-void DAWG::addTransition(int from, int to, bool readLetter)
+void DAWG::addTransition(int depth, State from, State to, bool readLetter)
 {
 	//TODO assert not contains already?
 	if (readLetter)
 	{
-		delta1[from] = to;
+		delta1[depth][from] = to;
 	}
 	else
 	{
-		delta0[from] = to;
+		delta0[depth][from] = to;
 	}
 }
 
@@ -26,16 +27,21 @@ void DAWG::minimize()
 	//TODO implement
 }
 
+DAWG::DAWG()
+{
+	this->length = VSet::maxNumVerts;
+}
+
 void DAWG::insert(VSet word)
 {
 	State currentState = initial;
 	for (int i = 0; i < word.maxNumVerts; ++i)
 	{
-		State nextState = delta(currentState, word.contains(i));
+		State nextState = delta(i, currentState, word.contains(i));
 		if (nextState == SINK)
 		{
 			nextState = newState();
-			addTransition(currentState, nextState, word.contains(i));
+			addTransition(i, currentState, nextState, word.contains(i));
 		}
 		currentState = nextState;
 	}
@@ -46,7 +52,7 @@ bool DAWG::contains(VSet word)
 	State currentState = initial;
 	for (int i = 0; i < word.maxNumVerts; ++i)
 	{
-		State nextState = delta(currentState, word.contains(i));
+		State nextState = delta(i, currentState, word.contains(i));
 		if (nextState == SINK)
 		{
 			return false;
@@ -64,11 +70,11 @@ void DAWG::initIter()
 	VSet just0;
 	just0.insert(0);
 
-	if (delta0[initial] != SINK)
+	if (delta(0, initial, false) != SINK)
 	{
 		iterStack.push_back({ initial, 0, false, empty });
 	}
-	if (delta1[initial] != SINK)
+	if (delta(0, initial, true) != SINK)
 	{
 		iterStack.push_back({ initial, 0, true, just0 });
 	}
@@ -84,34 +90,35 @@ VSet DAWG::nextIter()
 	auto top = iterStack.back();
 	iterStack.pop_back();
 
-	int current = top.state;
+	State current = top.state;
 	int currentPos = top.depth;
 	VSet currentSet = top.set;
 
 	while (currentPos < VSet::maxNumVerts - 1)
 	{
-		if (delta0[current] != SINK && delta1[current] != SINK)
+		if (delta(currentPos, current, false) != SINK && delta(currentPos, current, true) != SINK)
 		{
 			//Add the 1 path to our stack
 			VSet newSet = currentSet;
 			newSet.insert(currentPos + 1);
-			iterStack.push_back({ delta1[current], currentPos + 1, true, newSet });
+			iterStack.push_back({ delta1[currentPos][current], currentPos + 1, true, newSet });
 			//Keep following the 0 path
+
+			current = delta0[currentPos][current];
 			currentPos++;
-			current = delta0[current];
 			currentSet.erase(currentPos); //TODO pos or pos-1?
 		}
 		//If only one path, just follow that path
-		else if (delta0[current] != SINK)
+		else if (delta(currentPos, current, false) != SINK)
 		{
+			current = delta0[currentPos][current];
 			currentPos++;
-			current = delta0[current];
 			currentSet.erase(currentPos); //TODO pos or pos-1?
 		}
-		else if (delta1[current] != SINK)
+		else if (delta(currentPos, current, true) != SINK)
 		{
+			current = delta1[currentPos][current];
 			currentPos++;
-			current = delta1[current];
 			currentSet.erase(currentPos); //TODO pos or pos-1?
 		}
 		//TODO check that all strings same length?
@@ -127,5 +134,5 @@ bool DAWG::iterDone()
 
 bool DAWG::empty()
 {
-	return delta0[initial] == SINK && delta1[initial] == SINK;
+	return delta(0, initial, false) == SINK && delta(0, initial, true) == SINK;
 }
