@@ -127,15 +127,28 @@ void DAWGBottomUp::beginLayer(int layer)
 
 		for (int i = lowerBound; i < upperBoundForLayer[prevLayer]; ++i)
 		{
+			std::cerr << "\n***** Starting new DAWG loop\n";
 			auto loopEnd = TW[i].end();
-			for (auto iter = TW[i].begin(); iter != loopEnd; iter = TW[i].erase(iter))
+			for (auto iter = TW[i].begin(); iter != loopEnd; ++iter/*iter = TW[i].erase(iter)*/)
 			{
 				lastLayerTW[i].insert(*iter);
+				std::cerr << "Adding " << showSet(*iter) << " to DAWG\n";
+				assert(lastLayerTW[i].contains(*iter));
+			}
+			//TODO remove
+			lastLayerTW[i].initIter();
+			auto someS = lastLayerTW[i].nextIter();
+			while (!lastLayerTW[i].iterDone())
+			{
+
+				std::cerr << "Checking set " << showSet(someS) << "\n";
+				assert(TW[i].find(someS) != TW[i].end());
+				auto someS = lastLayerTW[i].nextIter();
 			}
 		}
 	}
 
-	
+
 
 	//Delete the old TW to free its memory, and allocate a new one
 	TW.clear();

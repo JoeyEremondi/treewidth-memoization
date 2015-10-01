@@ -8,7 +8,6 @@ struct StackElem
 {
 	State state;
 	int depth;
-	bool bit;
 	VSet set;
 };
 

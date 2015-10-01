@@ -12,6 +12,7 @@ State DAWG::newState()
 void DAWG::addTransition(int depth, State from, State to, bool readLetter)
 {
 	//TODO assert not contains already?
+	//std::cerr << "Adding transition " << from << " ->" << readLetter << "-> " << to << " layer " << depth << "\n" ;
 	if (readLetter)
 	{
 		delta1[depth][from] = to;
@@ -69,64 +70,91 @@ void DAWG::initIter()
 	iterStack.clear();
 
 	VSet empty;
-	VSet just0;
-	just0.insert(0);
 
-	if (delta(0, initial, false) != SINK)
-	{
-		iterStack.push_back({ initial, 0, false, empty });
-	}
-	if (delta(0, initial, true) != SINK)
-	{
-		iterStack.push_back({ initial, 0, true, just0 });
-	}
+	iterStack.push_back({ initial, 0, empty });
+
+
 
 
 }
 
 VSet DAWG::nextIter()
 {
-	//Pop an element off the stack
-	//Then find a path to an end-state, adding alternate
-	//paths to the stack as we go
-	auto top = iterStack.back();
-	iterStack.pop_back();
 
-	State current = top.state;
-	int currentPos = top.depth;
-	VSet currentSet = top.set;
-
-	while (currentPos < VSet::maxNumVerts - 1)
+	bool didFail = true;
+	while (didFail)
 	{
-		if (delta(currentPos, current, false) != SINK && delta(currentPos, current, true) != SINK)
+		didFail = false;
+		if (iterStack.empty())
 		{
-			//Add the 1 path to our stack
-			VSet newSet = currentSet;
-			newSet.insert(currentPos + 1);
-			iterStack.push_back({ delta1[currentPos][current], currentPos + 1, true, newSet });
-			//Keep following the 0 path
+			//std::cerr << "Returning empty stack\n";
+			VSet ret;
+			return ret;
+		}
 
-			current = delta0[currentPos][current];
-			currentPos++;
-			currentSet.erase(currentPos); //TODO pos or pos-1?
-		}
-		//If only one path, just follow that path
-		else if (delta(currentPos, current, false) != SINK)
+		//Pop an element off the stack
+		//Then find a path to an end-state, adding alternate
+		//paths to the stack as we go
+		auto top = iterStack.back();
+		iterStack.pop_back();
+
+		State current = top.state;
+		int currentPos = top.depth;
+		VSet currentSet = top.set;
+
+		while (currentPos < length)
 		{
-			current = delta0[currentPos][current];
-			currentPos++;
-			currentSet.erase(currentPos); //TODO pos or pos-1?
+			State q0, q1;
+			if ((q0 = delta(currentPos, current, false)) != SINK && (q1 = delta(currentPos, current, true)) != SINK)
+			{
+				//Add the 1 path to our stack
+				VSet newSet = currentSet;
+				newSet.insert(currentPos + 1);
+				iterStack.push_back({ q1, currentPos + 1, newSet });
+				//Keep following the 0 path
+
+				//std::cerr << "Pushing " << current << " -> true -> " << q1 << " layer " << currentPos+1 << "\n";
+				//std::cerr << "Following " << current << " -> false -> " << q0 << " layer " << currentPos + 1 << "\n";
+
+				current = q0;
+				currentSet.erase(currentPos);
+				currentPos++;
+				
+			}
+			//If only one path, just follow that path
+			else if ((q0 = delta(currentPos, current, false)) != SINK)
+			{
+				//std::cerr << "Following " << current << " -> false -> " << q0 << " layer " << currentPos + 1 << "\n";
+
+				current = q0;
+				currentSet.erase(currentPos);
+				currentPos++;
+				
+			}
+			else if ((q1 = delta(currentPos, current, true)) != SINK)
+			{
+				//std::cerr << "Following " << current << " -> true -> " << q1 << " layer " << currentPos + 1 << "\n";
+
+				current = q1;
+				currentSet.insert(currentPos);
+				currentPos++;
+				
+			}
+			else
+			{
+				//std::cerr << "Failing\n";
+				didFail = true;
+				break;
+			}
 		}
-		else if (delta(currentPos, current, true) != SINK)
+		//When we reach our set length, return the set we accumulated
+		if (!didFail)
 		{
-			current = delta1[currentPos][current];
-			currentPos++;
-			currentSet.erase(currentPos); //TODO pos or pos-1?
+			//std::cerr << "Returing " << showSet(currentSet) << " after no failures\n";
+			return currentSet;
 		}
-		//TODO check that all strings same length?
+
 	}
-	//When we reach our set length, return the set we accumulated
-	return currentSet;
 }
 
 bool DAWG::iterDone()
