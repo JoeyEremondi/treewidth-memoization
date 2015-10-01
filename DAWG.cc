@@ -30,6 +30,8 @@ void DAWG::minimize()
 DAWG::DAWG()
 {
 	this->length = VSet::maxNumVerts;
+	this->delta0.resize(length);
+	this->delta1.resize(length);
 }
 
 void DAWG::insert(VSet word)
