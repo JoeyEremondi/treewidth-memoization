@@ -60,6 +60,56 @@ void DAWG::addTransition(int depth, State from, State to, bool readLetter)
 	}
 }
 
+void DAWG::minimizeHelper(int layer, State q)
+{
+	for (bool bit : { true, false })
+	{
+		State tnext = delta(layer, q, bit);
+		//Don't follow transitions that aren't there
+		if (tnext != SINK)
+		{
+			if (StateMap.find(tnext) == StateMap.end())
+			{
+				minimizeHelper(layer + 1, tnext);
+			}
+			//Update our transition to point to the correct vertex
+			setTransition(layer, q, bit, StateMap[tnext]);
+		}
+	}
+	if (Register.find(sig(layer, q)) == Register.end())
+	{
+		StateMap[q] = q;
+		Register[sig(layer, q)] = q;
+	}
+	else
+	{
+		StateMap[q] = Register[sig(layer, q)];
+		deleteState(layer, q);
+	}
+}
+
+void DAWG::deleteState(int layer, State q)
+{
+	if (layer < length)
+	{
+		delta0[layer].erase(q);
+		delta1[layer].erase(q);
+	}
+}
+
+
+void DAWG::minimize()
+{
+	Register.clear();
+	StateMap.clear();
+
+	minimizeHelper(0, initial);
+	
+	Register.clear();
+	StateMap.clear();
+}
+
+/*
 //We make assumptions about our DFA:
 //All accepted words are the same length
 //Transitions in layers, only from layer i to layer i+1
@@ -174,6 +224,7 @@ void DAWG::minimize()
 	//Finally, adjust our initial vertex if need be
 	//initial = equivClasses[initial]; //TODO make not const?
 }
+*/
 
 DAWG::DAWG()
 {

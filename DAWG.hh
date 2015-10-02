@@ -12,6 +12,8 @@ struct StackElem
 	std::vector<State> statePath;
 };
 
+typedef std::pair<State, State> StateSignature;
+
 class DAWG
 {
 private:
@@ -24,19 +26,42 @@ private:
 	StackElem currentStack;
 	int length;
 
+	//Based off of depth-first minimization, stringology paper //TODO cite
+	std::map<StateSignature, State> Register;
+	std::map<State, State> StateMap;
+
 protected:
 	int pathsToEndFrom(int depth, State q);
 	State newState();
 	void addTransition(int depth, State from, State to, bool readLetter);
-	void minimize();
+	void minimizeHelper(int layer, State q);
+	void deleteState(int layer, State q);
+
+	inline void setTransition(int layer, State q, bool bit, State tnext)
+	{
+		if (bit)
+		{
+			delta1[layer][q] = tnext;
+		}
+		else
+		{
+			delta0[layer][q] = tnext;
+		}
+	}
+	
 
 public:
+	void minimize();
 	std::string asDot();
 	DAWG();
 	int size();
 	void insert(VSet word);
 	bool contains(VSet word);
 	inline State delta(int depth, State q, bool bitRead) {
+		if (depth >= length)
+		{
+			return SINK;
+		}
 		if (bitRead)
 		{
 			auto searchInfo = delta1[depth].find(q);
@@ -56,6 +81,12 @@ public:
 			return searchInfo->second;
 		}
 	}
+
+	inline StateSignature sig(int layer, State q)
+	{
+		return{delta(layer, q, false), delta(layer, q, true)};
+	}
+
 	void initIter();
 	VSet nextIter();
 	bool iterDone();

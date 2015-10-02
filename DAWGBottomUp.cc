@@ -139,6 +139,9 @@ void DAWGBottomUp::beginLayer(int layer)
 				//assert(lastLayerTW[i].contains(*iter));
 			}
 
+			//Minimize our DAWG to save space
+			lastLayerTW[i].minimize();
+
 		}
 	}
 

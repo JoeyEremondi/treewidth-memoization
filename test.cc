@@ -88,9 +88,9 @@ int main(int argc, char** argv)
 	//std::vector<std::string>& inFiles = filesInDir;
 
 	//std::vector<std::string> inFiles({"eil51.tsp.dgf" });
-	std::vector<std::string> inFiles({ "queen7_7.dgf" });
+	//std::vector<std::string> inFiles({ "queen6_6.dgf" });
 	//std::vector<std::string> inFiles({ "mildew.dgf" });
-	//std::vector<std::string> inFiles({ "myciel3.dgf" });
+	std::vector<std::string> inFiles({ "myciel3.dgf" });
 	//std::vector<std::string> inFiles({ "oesoca42.dgf" });
 
 
@@ -123,11 +123,11 @@ int main(int argc, char** argv)
 		try {
 			auto_cpu_timer* timer;
 
-			std::cout << "Set based Bottom-up Memoization" << std::endl;
-			timer = new auto_cpu_timer();
-			ArrayOfSetBottomUp bottomUpSearcher(testGraph);
-			std::cout << "Treewidth: " << bottomUpSearcher.tw() << "\n\n\n";
-			delete timer;
+			//std::cout << "Set based Bottom-up Memoization" << std::endl;
+			//timer = new auto_cpu_timer();
+			//ArrayOfSetBottomUp bottomUpSearcher(testGraph);
+			//std::cout << "Treewidth: " << bottomUpSearcher.tw() << "\n\n\n";
+			//delete timer;
 
 			std::cout << "DAWG based Bottom-up Memoization" << std::endl;
 			timer = new auto_cpu_timer();
@@ -135,11 +135,11 @@ int main(int argc, char** argv)
 			std::cout << "Treewidth: " << dawgSearcher.tw() << "\n\n\n";
 			delete timer;
 
-			std::cout << "Top Down" << std::endl;
-			timer = new auto_cpu_timer();
-			TopDownTW tdtw(testGraph);
-			std::cout << "Treewidth: " << tdtw.topDownTW(testGraph) << "\n\n\n";
-			delete timer;
+			//std::cout << "Top Down" << std::endl;
+			//timer = new auto_cpu_timer();
+			//TopDownTW tdtw(testGraph);
+			//std::cout << "Treewidth: " << tdtw.topDownTW(testGraph) << "\n\n\n";
+			//delete timer;
 
 			/*
 			std::cout << "Simplicial-first Memoization" << std::endl;
