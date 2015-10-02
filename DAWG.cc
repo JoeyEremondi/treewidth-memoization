@@ -2,6 +2,7 @@
 #include "qset.hh"
 #include <iostream>
 #include <sstream>
+#include <algorithm>
 
 std::string DAWG::asDot()
 {
@@ -59,9 +60,119 @@ void DAWG::addTransition(int depth, State from, State to, bool readLetter)
 	}
 }
 
+//We make assumptions about our DFA:
+//All accepted words are the same length
+//Transitions in layers, only from layer i to layer i+1
+//All states in final layer are accepting
+//We also assume all states are reachable, and can reach some final state
 void DAWG::minimize()
 {
-	//TODO implement
+	//Step 1 : Determine which vertices are distinct
+	//see https://www.cs.umd.edu/class/fall2009/cmsc330/lectures/discussion2.pdf
+
+
+	std::set<State> empty;
+	std::vector<State> equivClasses(nextState, SINK);
+
+	//Each final state is equivalent to the smallest final state
+	std::set<State> allFinalStates;
+	for (auto arr : { delta0, delta1 })
+	{
+		for (auto pair : arr[length - 2])
+		{
+			allFinalStates.insert(pair.second);
+		}
+	}
+	State finalEquivClass = *(std::min_element(allFinalStates.begin(), allFinalStates.end()));
+	for (State f : allFinalStates)
+	{
+		equivClasses[f] = finalEquivClass;
+	}
+	
+
+	//For each distance from the start vertex, starting with our final states
+	for (int i = length - 2; i >= 0; --i)
+	{
+		//For each vertex, keep the list of larger vertices which are distinct from it
+		//Vertices at different distances from the start state are assumed distinct
+		std::map<State, std::set<State>> distinct;
+
+		//First, we collect the list of vertices in this layer
+		std::set<State> thisLayerAllStates;
+		for (auto arr : { delta0, delta1 })
+		{
+			for (auto pair1 : arr[i])
+			{
+				thisLayerAllStates.insert(pair1.first);
+			}
+
+		}
+		
+		//Then, we look at all pairs and see if they are distinct
+		for (State q1 : thisLayerAllStates)
+		{
+			//Initialize the distinct set for each vertex
+			distinct[q1] = empty;
+			//Each state initially is in its own equivalence class
+			equivClasses[q1] = q1;
+
+			for (State q2 : thisLayerAllStates)
+			{
+				//Check if they disagree on either transition, after applying found equivalences for the previous layer
+				for (bool bit : {true, false})
+				{
+					if (equivClasses[delta(i, q1, bit)] != equivClasses[delta(i, q2, bit)])
+					{
+						distinct[q1].insert(q2);
+					}
+				}
+			}
+		}
+		//Now that we have a complete list of distinct vertices, we set the equivalence class
+		//of each vertex as the smallest vertex not distinct from it
+		for (State q1 : thisLayerAllStates)
+		{
+			for (State q2 : thisLayerAllStates)
+			{
+				if (q1 < q2 && distinct[q1].find(q2) == distinct[q1].end())
+				{
+					equivClasses[q2] = std::min(equivClasses[q2], q1);
+				}
+			}
+		}
+	}
+	
+	//Now, we have a vector mapping each vertex to its equivalence class
+	//So we go through our maps delta1 and delta0, delete redundant vertices
+	//And redirect transitions to their equivalence classes
+	for (auto arr : { delta0, delta1 })
+	{
+		for (int layer = 0; layer < length; layer++)
+		{
+			//Iterate, possibly deleting as we go
+			auto iter = arr[layer].begin();
+			while (iter != arr[layer].end())
+			{
+				State from = iter->first;
+				State to = iter->second;
+				if (from == equivClasses[from])
+				{
+					//Update our transition to point to the new state
+					arr[layer][from] = equivClasses[to];
+					++iter;
+				}
+				else
+				{
+					//This transition is irrelevant, remove it
+					iter = arr[layer].erase(iter);
+				}
+			}
+		}
+	}
+	
+
+	//Finally, adjust our initial vertex if need be
+	//initial = equivClasses[initial]; //TODO make not const?
 }
 
 DAWG::DAWG()
