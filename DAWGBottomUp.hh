@@ -12,6 +12,8 @@ public:
 	~DAWGBottomUp();
 
 protected:
+	int numUpdates = 0;
+
 	std::vector<std::set<VSet>> TW;
 	int iterTWVal = 0;
 	bool haveSeenInitialElement = false;

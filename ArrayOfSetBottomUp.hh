@@ -11,6 +11,7 @@ public:
 	~ArrayOfSetBottomUp();
 
 protected:
+	int numUpdates = 0;
 	std::set<VSet>** TWarr;
 	std::set<VSet>::iterator iter;
 	int iterTWVal;

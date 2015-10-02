@@ -2,7 +2,7 @@
 
 #include "VSet.hh"
 
-typedef uint64_t State;
+typedef uint32_t State;
 
 struct StackElem
 {
@@ -18,7 +18,7 @@ class DAWG
 {
 private:
 	uint64_t nextState = 2;
-	const State initial = 1;
+	State initial = 1;
 	std::vector<std::map<State, State>> delta0; //TODO array for space?
 	std::vector<std::map<State, State>> delta1;
 	const State SINK = 0;
@@ -37,6 +37,8 @@ protected:
 	void minimizeHelper(int layer, State q);
 	void deleteState(int layer, State q);
 
+	std::vector<std::string> DAWG::wordSetHelper(int depth, State q);
+
 	inline void setTransition(int layer, State q, bool bit, State tnext)
 	{
 		if (bit)
@@ -51,11 +53,14 @@ protected:
 	
 
 public:
+	int numTransitions();
 	void minimize();
 	std::string asDot();
 	DAWG();
 	int size();
+	std::vector<std::string> DAWG::wordSet();
 	void insert(VSet word);
+	void insertSafe(VSet word);
 	bool contains(VSet word);
 	inline State delta(int depth, State q, bool bitRead) {
 		if (depth >= length)

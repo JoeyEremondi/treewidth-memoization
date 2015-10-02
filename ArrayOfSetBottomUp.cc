@@ -124,8 +124,18 @@ int ArrayOfSetBottomUp::TW(int layer, VSet S)
 
 void ArrayOfSetBottomUp::updateTW(int layer, VSet S, int tw)
 {
+	numUpdates++;
 	if (tw > 0)
 	{
+		for (int i = 0; i < tw; i++)
+		{
+			//Don't insert if we already have it at a lower level
+			if (TWarr[layer][i].find(S) != TWarr[layer][i].end())
+			{
+				return;
+			}
+		}
+
 		//Add it to the set for this tw value
 		TWarr[layer][tw].insert(S);
 		//Remove it from any higher sets, if we've made an improvement
@@ -138,9 +148,21 @@ void ArrayOfSetBottomUp::updateTW(int layer, VSet S, int tw)
 
 void ArrayOfSetBottomUp::beginLayer(int layer)
 {
+	if (layer > 0)
+	{
+		int numLastLevel = 0;
+		for (int i = lowerBound; i < upperBoundForLayer[layer - 1]; i++)
+		{
+			numLastLevel += TWarr[layer - 1][i].size();
+		}
+		std::cerr << numLastLevel << " from last level\n";
+	}
+
 	//Create an array entry for each possible TW value
 	upperBoundForLayer[layer] = globalUpperBound;
 	TWarr[layer] = new std::set<VSet>[globalUpperBound];
+
+
 
 }
 
@@ -149,6 +171,7 @@ void ArrayOfSetBottomUp::endLayer(int layer)
 	//std::cout << "TW i size: " << currentLayer << " " << numStored() << "\n";
 	//Delete this layer's array of sets
 	delete[] TWarr[layer];
+	std::cerr << "Called update " << numUpdates << " times\n";
 }
 
 int ArrayOfSetBottomUp::finalResult(int finalLayer, VSet SStart)
