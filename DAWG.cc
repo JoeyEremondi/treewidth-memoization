@@ -102,13 +102,10 @@ int DAWG::numTransitions()
 {
 	int ret = 0;
 
-	for (auto transMap : delta0)
+	for (int i = 0; i < length; i++)
 	{
-		ret += transMap.size();
-	}
-	for (auto transMap : delta1)
-	{
-		ret += transMap.size();
+		ret += delta0[i].size();
+		ret += delta1[i].size();
 	}
 	return ret;
 
@@ -251,8 +248,18 @@ void DAWG::minimize()
 DAWG::DAWG()
 {
 	this->length = VSet::maxNumVerts;
-	this->delta0.resize(length);
-	this->delta1.resize(length);
+
+	//Allocate our vectors
+
+	this->delta0 = new std::map<State, State>[length];
+	this->delta1 = new std::map<State, State>[length];
+
+}
+
+DAWG::~DAWG()
+{
+	delete[] delta0;
+	delete[] delta1;
 }
 
 int DAWG::size()
@@ -292,11 +299,12 @@ std::vector<std::string> DAWG::wordSetHelper(int depth, State q)
 
 void DAWG::insertSafe(VSet word)
 {
-	std::cerr << "Start of insert\n\n";
+	std::cerr << "Start of insert safe\n\n";
 
 	//Make an automaton for our new word
 	std::vector<State> newStates(length + 1);
-	State currentState = initial;
+	State newInitial = newState();
+	State currentState = newInitial;
 	newStates[0] = currentState;
 	for (int i = 0; i < length; ++i)
 	{
@@ -307,8 +315,8 @@ void DAWG::insertSafe(VSet word)
 		currentState = nextState;
 	}
 
-	std::vector<std::map<State, State>> newDelta0;
-	std::vector<std::map<State, State>> newDelta1;
+	std::map<State, State>* newDelta0 = new std::map<State, State>[length];
+	std::map<State, State>* newDelta1 = new std::map<State, State>[length];
 
 	//Make a product construction with our existing automaton
 	std::map<std::pair<State, State>, State> pairMap;
@@ -317,7 +325,7 @@ void DAWG::insertSafe(VSet word)
 	State earliestNewSinkSeen;
 
 	//TODO zero case
-	for (int layer = length - 1; layer >= 0; --length)
+	for (int layer = length - 1; layer >= 0; --layer)
 	{
 		State newFrom = newStates[layer];
 		State newTo = newStates[layer + 1];
@@ -383,12 +391,13 @@ void DAWG::insertSafe(VSet word)
 
 	}
 
+	initial = pairMap[{initial, newInitial}];
+
 	//Empty our old deltas
-	delta0.clear();
-	delta1.clear();
+	delete[] delta0;
+	delete[] delta1;
 
 	//Set our new delta values
-	//TODO pointers?
 	delta0 = newDelta0;
 	delta1 = newDelta1;
 
@@ -432,7 +441,7 @@ void DAWG::insertSafe(VSet word)
 
 	//When we're done, minimize to save space
 	//TODO delete irrelevant vertices?
-	minimize();
+	//minimize();
 
 }
 

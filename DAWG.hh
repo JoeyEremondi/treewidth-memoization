@@ -19,8 +19,10 @@ class DAWG
 private:
 	uint64_t nextState = 2;
 	State initial = 1;
-	std::vector<std::map<State, State>> delta0; //TODO array for space?
-	std::vector<std::map<State, State>> delta1;
+
+	std::map<State, State>* delta0; 
+	std::map<State, State>* delta1;
+
 	const State SINK = 0;
 	std::vector<StackElem> iterStack;
 	StackElem currentStack;
@@ -57,6 +59,7 @@ public:
 	void minimize();
 	std::string asDot();
 	DAWG();
+	~DAWG();
 	int size();
 	std::vector<std::string> DAWG::wordSet();
 	void insert(VSet word);
