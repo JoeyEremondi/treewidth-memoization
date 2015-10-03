@@ -12,11 +12,11 @@ std::string DAWG::asDot()
 	{
 		for (auto pair : delta0[i])
 		{
-			ss << "  " << pair.first << " -> " << pair.second << " [label=0]\n";
+			ss << "  " << pair.first << " -> " << pair.second << " [label=\"0 " << i << " \"]\n";
 		}
 		for (auto pair : delta1[i])
 		{
-			ss << "  " << pair.first << " -> " << pair.second << " [label=1]\n";
+			ss << "  " << pair.first << " -> " << pair.second << " [label=\"1 " << i << " \"]\n";
 		}
 	}
 	ss << "}";
@@ -35,7 +35,9 @@ int DAWG::pathsToEndFrom(int depth, State q)
 	}
 	else
 	{
-		return pathsToEndFrom(depth + 1, delta(depth, q, true)) + pathsToEndFrom(depth + 1, delta(depth, q, false));
+		int ret = pathsToEndFrom(depth + 1, delta(depth, q, true)) + pathsToEndFrom(depth + 1, delta(depth, q, false));
+		std::cerr << ret << " paths from " << q << " to end\n";
+		return ret;
 	}
 }
 
@@ -209,7 +211,7 @@ void DAWG::insertSafe(VSet word)
 	//Make a product construction with our existing automaton
 	std::map<std::pair<State, State>, State> pairMap;
 
-	std::vector<std::set<State>> seenOldSinks(length+1);
+	std::vector<std::set<State>> seenOldSinks(length + 1);
 	State earliestNewSinkSeen;
 	bool haveSetEarliest = false;
 
@@ -227,8 +229,11 @@ void DAWG::insertSafe(VSet word)
 			State repr = newState();
 			pairMap[{ transition.second, newStates[length] }] = repr;
 		}
-		
+
 	}
+
+	State initialPair = newState();
+	pairMap[{initial, newInitial}] = initialPair;
 
 	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
@@ -245,9 +250,7 @@ void DAWG::insertSafe(VSet word)
 		auto newDelta = newBit ? newDelta1 : newDelta0;
 		auto newOtherDelta = newBit ? newDelta0 : newDelta1;
 
-		
-		State initialPair = newState();
-		pairMap[{initial, newInitial}] = initialPair;
+
 
 		//Look at all the states with transitions defined the same as our new word
 		//Create new states for their pairs, and add them to the map
@@ -296,7 +299,7 @@ void DAWG::insertSafe(VSet word)
 			State qTo = iter->second;
 
 			//Generate an int for our pair state, and store it in the map
-			
+
 			auto searchInfo = pairMap.find({ qFrom, newFrom });
 			if (searchInfo == pairMap.end())
 			{
@@ -319,7 +322,7 @@ void DAWG::insertSafe(VSet word)
 						haveSetEarliest = true;
 						earliestNewSinkSeen = newTo;
 					}
-					
+
 				}
 
 				//Use the pair we already assigned
@@ -332,8 +335,8 @@ void DAWG::insertSafe(VSet word)
 				newOtherDelta[layer][pairRep] = qTo;
 				seenOldSinks[layer + 1].insert(qTo);
 			}
-			
-			
+
+
 		}
 
 
@@ -341,7 +344,7 @@ void DAWG::insertSafe(VSet word)
 
 
 
-	
+
 
 	//Traverse all sink states from our original automaton
 	//And add transitions as necessary
@@ -350,16 +353,16 @@ void DAWG::insertSafe(VSet word)
 	{
 		for (auto sinkState : seenOldSinks[layer])
 		{
-			
+
 			//TODO avoid recomputing
 			State to0 = delta0[layer][sinkState];
 			State to1 = delta1[layer][sinkState];
 
-			std::cerr << "layer " << layer  << " Adding sink state main " << sinkState << " 0 -> " << to0 << ", 1 ->" << to1 << "\n";
+			std::cerr << "layer " << layer << " Adding sink state main " << sinkState << " 0 -> " << to0 << ", 1 ->" << to1 << "\n";
 			if (to1 != SINK)
 			{
 				std::cerr << "Pushing next state " << to1 << "\n";
-				newDelta1[layer][sinkState] =  to1;
+				newDelta1[layer][sinkState] = to1;
 				seenOldSinks[layer + 1].insert(to1);
 			}
 
@@ -381,7 +384,7 @@ void DAWG::insertSafe(VSet word)
 			for (int j = i; j < length; j++)
 			{
 				auto arr = word.contains(j) ? newDelta1 : newDelta0;
-				arr[i][newStates[j]] = newStates[j + 1];
+				arr[j][newStates[j]] = newStates[j + 1];
 			}
 			foundFirst = true;
 		}
@@ -395,7 +398,9 @@ void DAWG::insertSafe(VSet word)
 	delta0 = newDelta0;
 	delta1 = newDelta1;
 
-	
+	initial = initialPair;
+
+
 
 
 	//When we're done, minimize to save space
