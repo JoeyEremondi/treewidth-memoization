@@ -38,6 +38,7 @@ protected:
 	void addTransition(int depth, State from, State to, bool readLetter);
 	void minimizeHelper(int layer, State q);
 	void deleteState(int layer, State q);
+	void insert(VSet word);
 
 	std::vector<std::string> DAWG::wordSetHelper(int depth, State q);
 
@@ -62,7 +63,7 @@ public:
 	~DAWG();
 	int size();
 	std::vector<std::string> DAWG::wordSet();
-	void insert(VSet word);
+	
 	void insertSafe(VSet word);
 	bool contains(VSet word);
 	inline State delta(int depth, State q, bool bitRead) {

@@ -128,122 +128,6 @@ void DAWG::minimize()
 	//std::cerr << "Transitions after minimization " << numTransitions() << "\n";
 }
 
-/*
-//We make assumptions about our DFA:
-//All accepted words are the same length
-//Transitions in layers, only from layer i to layer i+1
-//All states in final layer are accepting
-//We also assume all states are reachable, and can reach some final state
-void DAWG::minimize()
-{
-	//Step 1 : Determine which vertices are distinct
-	//see https://www.cs.umd.edu/class/fall2009/cmsc330/lectures/discussion2.pdf
-
-
-	std::set<State> empty;
-	std::vector<State> equivClasses(nextState, SINK);
-
-	//Each final state is equivalent to the smallest final state
-	std::set<State> allFinalStates;
-	for (auto arr : { delta0, delta1 })
-	{
-		for (auto pair : arr[length - 2])
-		{
-			allFinalStates.insert(pair.second);
-		}
-	}
-	State finalEquivClass = *(std::min_element(allFinalStates.begin(), allFinalStates.end()));
-	for (State f : allFinalStates)
-	{
-		equivClasses[f] = finalEquivClass;
-	}
-
-
-	//For each distance from the start vertex, starting with our final states
-	for (int i = length - 2; i >= 0; --i)
-	{
-		//For each vertex, keep the list of larger vertices which are distinct from it
-		//Vertices at different distances from the start state are assumed distinct
-		std::map<State, std::set<State>> distinct;
-
-		//First, we collect the list of vertices in this layer
-		std::set<State> thisLayerAllStates;
-		for (auto arr : { delta0, delta1 })
-		{
-			for (auto pair1 : arr[i])
-			{
-				thisLayerAllStates.insert(pair1.first);
-			}
-
-		}
-
-		//Then, we look at all pairs and see if they are distinct
-		for (State q1 : thisLayerAllStates)
-		{
-			//Initialize the distinct set for each vertex
-			distinct[q1] = empty;
-			//Each state initially is in its own equivalence class
-			equivClasses[q1] = q1;
-
-			for (State q2 : thisLayerAllStates)
-			{
-				//Check if they disagree on either transition, after applying found equivalences for the previous layer
-				for (bool bit : {true, false})
-				{
-					if (equivClasses[delta(i, q1, bit)] != equivClasses[delta(i, q2, bit)])
-					{
-						distinct[q1].insert(q2);
-					}
-				}
-			}
-		}
-		//Now that we have a complete list of distinct vertices, we set the equivalence class
-		//of each vertex as the smallest vertex not distinct from it
-		for (State q1 : thisLayerAllStates)
-		{
-			for (State q2 : thisLayerAllStates)
-			{
-				if (q1 < q2 && distinct[q1].find(q2) == distinct[q1].end())
-				{
-					equivClasses[q2] = std::min(equivClasses[q2], q1);
-				}
-			}
-		}
-	}
-
-	//Now, we have a vector mapping each vertex to its equivalence class
-	//So we go through our maps delta1 and delta0, delete redundant vertices
-	//And redirect transitions to their equivalence classes
-	for (auto arr : { delta0, delta1 })
-	{
-		for (int layer = 0; layer < length; layer++)
-		{
-			//Iterate, possibly deleting as we go
-			auto iter = arr[layer].begin();
-			while (iter != arr[layer].end())
-			{
-				State from = iter->first;
-				State to = iter->second;
-				if (from == equivClasses[from])
-				{
-					//Update our transition to point to the new state
-					arr[layer][from] = equivClasses[to];
-					++iter;
-				}
-				else
-				{
-					//This transition is irrelevant, remove it
-					iter = arr[layer].erase(iter);
-				}
-			}
-		}
-	}
-
-
-	//Finally, adjust our initial vertex if need be
-	//initial = equivClasses[initial]; //TODO make not const?
-}
-*/
 
 DAWG::DAWG()
 {
@@ -301,18 +185,22 @@ void DAWG::insertSafe(VSet word)
 {
 	std::cerr << "Start of insert safe\n\n";
 
+	//Special case: if there are no transitions, we just insert the word normally
+	if (delta0[0].empty() && delta1[0].empty())
+	{
+		insert(word);
+		return;
+	}
+
 	//Make an automaton for our new word
 	std::vector<State> newStates(length + 1);
 	State newInitial = newState();
-	State currentState = newInitial;
-	newStates[0] = currentState;
+	newStates[0] = newInitial;
 	for (int i = 0; i < length; ++i)
 	{
-		State nextState = delta(i, currentState, word.contains(i));
-		nextState = newState();
+		State nextState = newState();
 		//addTransition(i, currentState, nextState, word.contains(i));
 		newStates[i + 1] = nextState;
-		currentState = nextState;
 	}
 
 	std::map<State, State>* newDelta0 = new std::map<State, State>[length];
@@ -321,15 +209,34 @@ void DAWG::insertSafe(VSet word)
 	//Make a product construction with our existing automaton
 	std::map<std::pair<State, State>, State> pairMap;
 
-	std::vector<std::set<State>> seenOldSinks(length);
+	std::vector<std::set<State>> seenOldSinks(length+1);
 	State earliestNewSinkSeen;
+	bool haveSetEarliest = false;
+
+	//Initialize our pair map with our end states
+	for (auto transition : delta0[length - 1])
+	{
+		State repr = newState();
+		pairMap[{transition.second, newStates[length]}] = repr;
+	}
+	for (auto transition : delta1[length - 1])
+	{
+		//Don't double insert
+		if (pairMap.find({ transition.second, newStates[length] }) == pairMap.end())
+		{
+			State repr = newState();
+			pairMap[{ transition.second, newStates[length] }] = repr;
+		}
+		
+	}
 
 	//TODO zero case
-	for (int layer = length - 1; layer >= 0; --layer)
+	for (int layer = 0; layer < length; ++layer)
 	{
 		State newFrom = newStates[layer];
 		State newTo = newStates[layer + 1];
 		bool newBit = word.contains(layer);
+
 		//For each transition matching the letter of our new automaton
 		//we add a transition to a new "pair" state
 		auto thisDelta = newBit ? delta1 : delta0;
@@ -337,69 +244,133 @@ void DAWG::insertSafe(VSet word)
 
 		auto newDelta = newBit ? newDelta1 : newDelta0;
 		auto newOtherDelta = newBit ? newDelta0 : newDelta1;
+
 		
+		State initialPair = newState();
+		pairMap[{initial, newInitial}] = initialPair;
 
 		//Look at all the states with transitions defined the same as our new word
 		//Create new states for their pairs, and add them to the map
-		for (auto iter = thisDelta[layer].begin(); iter != thisDelta[layer].end(); iter = thisDelta[layer].erase(iter))
+		for (auto iter = thisDelta[layer].begin(); iter != thisDelta[layer].end(); ++iter)
 		{
 			State qFrom = iter->first;
 			State qTo = iter->second;
 
-			//Generate an int for our pair state, and store it in the map
-			State pairRep = newState();
-			pairMap[{qFrom, newFrom}] = pairRep;
+			//Check, are we in the pair map? If not, then we are not reachable from a previous layer
+			auto searchInfo = pairMap.find({ qFrom, newFrom });
+			if (searchInfo != pairMap.end())
+			{
+				//Generate an int for our pair state, and store it in the map
+				State pairRep = searchInfo->second;
 
-			//Insert our new transition into our new store
-			newDelta[layer][pairRep] = pairMap[{qTo, newTo}];
+				//See if the state we're going to is in the pair map
+				//And if not, create a new state for it
+				State nextRep;
+				auto nextSearchInfo = pairMap.find({ qTo, newTo });
+				if (nextSearchInfo == pairMap.end())
+				{
+					nextRep = newState();
+					std::cerr << "Made new state " << nextRep << "\n";
+					pairMap[{ qTo, newTo }] = nextRep;
+				}
+				else
+				{
+					nextRep = searchInfo->second;
+					std::cerr << "Setting next rep " << nextRep << "\n";
+				}
+
+				//Insert our new transition into our new store
+				newDelta[layer][pairRep] = nextRep;
+				std::cerr << "Adding transition for pair (" << qFrom << ", " << newFrom << ") to (" << qTo << ", " << newTo << ")\n";
+				std::cerr << pairRep << " -> " << newBit << " -> " << pairMap[{qTo, newTo}] << "\n";
+			}
 		}
 
 		//For each transition qFrom -> b -> qTo, where b doesn't match our new word
 		//we send (qFrom, newFrom) to (qTo, SINK), which we represent as qTo to save labels
 		//Look at all the states with transitions defined the same as our new word
 		//Create new states for their pairs, and add them to the map
-		for (auto iter = thatDelta[layer].begin(); iter != thatDelta[layer].end(); iter = thatDelta[layer].erase(iter))
+		for (auto iter = thatDelta[layer].begin(); iter != thatDelta[layer].end(); ++iter) //TODO erase as we go?
 		{
 			State qFrom = iter->first;
 			State qTo = iter->second;
 
 			//Generate an int for our pair state, and store it in the map
-			State pairRep;
+			
 			auto searchInfo = pairMap.find({ qFrom, newFrom });
 			if (searchInfo == pairMap.end())
 			{
-				//Didn't find it, so we need a new representative for this pair
-				pairRep = newState();
-				//Also means qFrom has no transition on bit, so we add one to a sink state
-				//again, representing (SINK, newTo) as newTo
-				newDelta[layer][newFrom] = newTo;
-				earliestNewSinkSeen = newStates[layer];
+				//Didn't find it, so this pair is not reachable
 
 			}
 			else
 			{
+				State pairRep = searchInfo->second;
+
+				//First, check if we have a transition already defined on newBit
+				if (newDelta[layer].find(pairRep) == newDelta[layer].end())
+				{
+					//If not, we need a sink transition just on the new state
+					newDelta[layer][pairRep] = newTo;
+
+					//Mark that we need to add those states to our final DFA
+					if (!haveSetEarliest)
+					{
+						haveSetEarliest = true;
+						earliestNewSinkSeen = newTo;
+					}
+					
+				}
+
 				//Use the pair we already assigned
 				pairRep = searchInfo->second;
-			}
-			pairMap[{qFrom, newFrom}] = pairRep;
 
-			//Insert our new transition into our new store
-			newOtherDelta[layer][pairRep] = qTo;
-			seenOldSinks[layer].insert(qTo);
+				std::cerr << "Adding transition for pair (" << qFrom << ", " << newFrom << ") to (" << qTo << ", " << SINK << ")\n";
+				std::cerr << pairRep << " -> " << newBit << " -> " << qTo << "\n";
+
+				//Insert our new transition into our new store
+				newOtherDelta[layer][pairRep] = qTo;
+				seenOldSinks[layer + 1].insert(qTo);
+			}
+			
+			
 		}
 
 
 	}
 
-	initial = pairMap[{initial, newInitial}];
 
-	//Empty our old deltas
-	delete[] delta0;
-	delete[] delta1;
 
-	//Set our new delta values
-	delta0 = newDelta0;
-	delta1 = newDelta1;
+	
+
+	//Traverse all sink states from our original automaton
+	//And add transitions as necessary
+	//TODO better naming
+	for (int layer = 0; layer < length; layer++)
+	{
+		for (auto sinkState : seenOldSinks[layer])
+		{
+			
+			//TODO avoid recomputing
+			State to0 = delta0[layer][sinkState];
+			State to1 = delta1[layer][sinkState];
+
+			std::cerr << "layer " << layer  << " Adding sink state main " << sinkState << " 0 -> " << to0 << ", 1 ->" << to1 << "\n";
+			if (to1 != SINK)
+			{
+				std::cerr << "Pushing next state " << to1 << "\n";
+				newDelta1[layer][sinkState] =  to1;
+				seenOldSinks[layer + 1].insert(to1);
+			}
+
+			if (to0 != SINK)
+			{
+				std::cerr << "Pushing next state " << to0 << "\n";
+				newDelta0[layer][sinkState] = to0;
+				seenOldSinks[layer + 1].insert(to0);
+			}
+		}
+	}
 
 	//Add all transitions from original DFA for each of our sinkStates
 	bool foundFirst = false;
@@ -409,34 +380,22 @@ void DAWG::insertSafe(VSet word)
 		{
 			for (int j = i; j < length; j++)
 			{
-				addTransition(i, newStates[i], newStates[i + 1], word.contains(i));
+				auto arr = word.contains(j) ? newDelta1 : newDelta0;
+				arr[i][newStates[j]] = newStates[j + 1];
 			}
 			foundFirst = true;
 		}
 	}
 
-	//Traverse all sink states from our original automaton
-	//And add transitions as necessary
-	//TODO better naming
-	for (int layer = 0; layer < length; layer++)
-	{
-		for (auto sinkState : seenOldSinks[layer])
-		{
-			//TODO avoid recomputing
-			State to0;
-			State to1;
-			if ((to1 =delta(layer, sinkState, true)) != SINK)
-			{
-				addTransition(layer, sinkState, true, to1);
-				seenOldSinks[layer + 1].insert(to1);
-			}
-			if ((to0 = delta(layer, sinkState, false)) != SINK)
-			{
-				addTransition(layer, sinkState, false, to0);
-				seenOldSinks[layer + 1].insert(to0);
-			}
-		}
-	}
+	//Empty our old deltas
+	delete[] delta0;
+	delete[] delta1;
+
+	//Set our new delta values
+	delta0 = newDelta0;
+	delta1 = newDelta1;
+
+	
 
 
 	//When we're done, minimize to save space
