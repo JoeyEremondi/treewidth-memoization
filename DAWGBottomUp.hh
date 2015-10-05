@@ -14,11 +14,9 @@ public:
 protected:
 	int numUpdates = 0;
 
-	std::vector<std::set<VSet>> TW;
+	std::vector<DAWG> TW;
 	int iterTWVal = 0;
 	bool haveSeenInitialElement = false;
-
-	std::vector<DAWG> lastLayerTW;
 
 	int* upperBoundForLayer;
 

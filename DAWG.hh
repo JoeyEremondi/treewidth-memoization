@@ -45,19 +45,25 @@ inline bool operator<(const StateSignature& lhs, const StateSignature& rhs)
 class DAWG
 {
 private:
-	uint64_t nextState = 2;
-	State initial = 1;
+	uint64_t nextState = 3;
+	State initial = 2;
 
 	std::unordered_map<State, State>* delta0; 
 	std::unordered_map<State, State>* delta1;
 
+	std::unordered_map<State, std::set<int>>* valueDelta;
+
 	const State SINK = 0;
+	const State FINAL = 1;
+	const int NOT_CONTAINED = -1;
+
 	std::vector<StackElem> iterStack;
 	StackElem currentStack;
 	int length;
 
 	//Based off of depth-first minimization, stringology paper //TODO cite
 	std::unordered_map<StateSignature, State> Register;
+	std::map<std::set<int>, State> EndRegister;
 	std::unordered_map<State, State> StateMap;
 
 protected:
@@ -67,7 +73,7 @@ protected:
 	void minimize();
 	void minimizeHelper(int layer, State q);
 	void deleteState(int layer, State q);
-	void insert(VSet word);
+	void insertIntoEmpty(VSet word, int tw);
 
 	std::vector<std::string> DAWG::wordSetHelper(int depth, State q);
 
@@ -85,6 +91,7 @@ protected:
 	
 
 public:
+	void clear();
 	int numTransitions();
 	
 	std::string asDot();
@@ -93,8 +100,8 @@ public:
 	int size();
 	std::vector<std::string> DAWG::wordSet();
 	
-	void insertSafe(VSet word);
-	bool contains(VSet word);
+	void insert(VSet word, int tw);
+	int contains(VSet word);
 	inline State delta(int depth, State q, bool bitRead) {
 		if (depth >= length)
 		{
@@ -126,7 +133,7 @@ public:
 	}
 
 	void initIter();
-	VSet nextIter();
+	std::pair<VSet, int> nextIter();
 	bool iterDone();
 	bool empty();
 };
