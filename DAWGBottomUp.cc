@@ -203,7 +203,7 @@ void DAWGBottomUp::beginLayer(int layer)
 			//std::cerr << "Made un-minimized DAWG\n";
 
 			//Minimize our DAWG to save space
-			lastLayerTW[i].minimize();
+			//lastLayerTW[i].minimize();
 
 			int arrSizeAfter = lastLayerTW[i].size();
 			if (setSize != arrSizeAfter)

@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __DAWG__HH__
+#define __DAWG__HH__
 
 #include "VSet.hh"
 
@@ -12,7 +13,34 @@ struct StackElem
 	std::vector<State> statePath;
 };
 
-typedef std::pair<State, State> StateSignature;
+
+struct StateSignature
+{
+	State s1;
+	State s2;
+};
+//Hash for pairs of states
+namespace std {
+	template <> struct hash<StateSignature>
+	{
+		size_t operator()(const StateSignature & ss) const
+		{
+			std::size_t seed = 0;
+			boost::hash_combine(seed, ss.s1);
+			boost::hash_combine(seed, ss.s2);
+			return seed;
+		}
+	};
+}
+inline bool operator==(const StateSignature& lhs, const StateSignature& rhs)
+{
+	return (lhs.s1 == rhs.s1) && (lhs.s2 == rhs.s2);
+}
+inline bool operator<(const StateSignature& lhs, const StateSignature& rhs)
+{
+	return (lhs.s1 < rhs.s1) || (lhs.s1 == rhs.s1 && lhs.s2 == rhs.s2);
+} 
+//typedef std::pair<State, State> StateSignature;
 
 class DAWG
 {
@@ -20,8 +48,8 @@ private:
 	uint64_t nextState = 2;
 	State initial = 1;
 
-	std::map<State, State>* delta0; 
-	std::map<State, State>* delta1;
+	std::unordered_map<State, State>* delta0; 
+	std::unordered_map<State, State>* delta1;
 
 	const State SINK = 0;
 	std::vector<StackElem> iterStack;
@@ -29,13 +57,14 @@ private:
 	int length;
 
 	//Based off of depth-first minimization, stringology paper //TODO cite
-	std::map<StateSignature, State> Register;
-	std::map<State, State> StateMap;
+	std::unordered_map<StateSignature, State> Register;
+	std::unordered_map<State, State> StateMap;
 
 protected:
 	int pathsToEndFrom(int depth, State q);
 	State newState();
 	void addTransition(int depth, State from, State to, bool readLetter);
+	void minimize();
 	void minimizeHelper(int layer, State q);
 	void deleteState(int layer, State q);
 	void insert(VSet word);
@@ -57,7 +86,7 @@ protected:
 
 public:
 	int numTransitions();
-	void minimize();
+	
 	std::string asDot();
 	DAWG();
 	~DAWG();
@@ -101,3 +130,5 @@ public:
 	bool iterDone();
 	bool empty();
 };
+
+#endif

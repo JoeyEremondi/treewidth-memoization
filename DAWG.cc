@@ -136,8 +136,8 @@ DAWG::DAWG()
 
 	//Allocate our vectors
 
-	this->delta0 = new std::map<State, State>[length];
-	this->delta1 = new std::map<State, State>[length];
+	this->delta0 = new std::unordered_map<State, State>[length];
+	this->delta1 = new std::unordered_map<State, State>[length];
 
 }
 
@@ -202,8 +202,8 @@ void DAWG::insertSafe(VSet word)
 		newStates[i + 1] = nextState;
 	}
 
-	std::map<State, State>* newDelta0 = new std::map<State, State>[length];
-	std::map<State, State>* newDelta1 = new std::map<State, State>[length];
+	auto newDelta0 = new std::unordered_map<State, State>[length];
+	auto newDelta1 = new std::unordered_map<State, State>[length];
 
 	//Make a product construction with our existing automaton
 	std::vector<std::map<std::pair<State, State>, State>> pairMap(length + 1);
@@ -233,6 +233,8 @@ void DAWG::insertSafe(VSet word)
 	State initialPair = newState();
 	pairMap[0][{initial, newInitial}] = initialPair;
 
+	int totalTransitions = 0;
+
 	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
 	{
@@ -248,11 +250,9 @@ void DAWG::insertSafe(VSet word)
 		auto newDelta = newBit ? newDelta1 : newDelta0;
 		auto newOtherDelta = newBit ? newDelta0 : newDelta1;
 
-
-
 		//Look at all the states with transitions defined the same as our new word
 		//Create new states for their pairs, and add them to the map
-		for (auto iter = thisDelta[layer].begin(); iter != thisDelta[layer].end(); ++iter)
+		for (auto iter = thisDelta[layer].begin(); iter != thisDelta[layer].end(); iter = thisDelta[layer].erase(iter))
 		{
 			State qFrom = iter->first;
 			State qTo = iter->second;
@@ -294,7 +294,7 @@ void DAWG::insertSafe(VSet word)
 		//we send (qFrom, newFrom) to (qTo, SINK), which we represent as qTo to save labels
 		//Look at all the states with transitions defined the same as our new word
 		//Create new states for their pairs, and add them to the map
-		for (auto iter = thatDelta[layer].begin(); iter != thatDelta[layer].end(); ++iter) //TODO erase as we go?
+		for (auto iter = thatDelta[layer].begin(); iter != thatDelta[layer].end(); iter = thatDelta[layer].erase(iter)) //TODO erase as we go?
 		{
 			State qFrom = iter->first;
 			State qTo = iter->second;
@@ -352,6 +352,9 @@ void DAWG::insertSafe(VSet word)
 		//Save memory, we don't ever look back a level
 		pairMap[layer].clear();
 
+		//Helps us only minimize when we have to
+		totalTransitions += newDelta[layer].size() + newOtherDelta[layer].size();
+
 
 	}
 
@@ -371,8 +374,10 @@ void DAWG::insertSafe(VSet word)
 
 	//When we're done, minimize to save space
 	//TODO delete irrelevant vertices?
-	//minimize();
-
+	if (totalTransitions > 10000) //TODO make this smarter?
+	{
+		minimize();
+	}
 }
 
 void DAWG::insert(VSet word)
