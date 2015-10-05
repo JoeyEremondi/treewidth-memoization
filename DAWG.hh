@@ -51,7 +51,7 @@ private:
 	std::unordered_map<State, State>* delta0; 
 	std::unordered_map<State, State>* delta1;
 
-	std::unordered_map<State, std::set<int>>* valueDelta;
+	std::unordered_map<State, int>* valueDelta;
 
 	const State SINK = 0;
 	const State FINAL = 1;
@@ -63,7 +63,7 @@ private:
 
 	//Based off of depth-first minimization, stringology paper //TODO cite
 	std::unordered_map<StateSignature, State> Register;
-	std::map<std::set<int>, State> EndRegister;
+	std::map<int, State> EndRegister;
 	std::unordered_map<State, State> StateMap;
 
 protected:

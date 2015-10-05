@@ -21,8 +21,7 @@ std::string DAWG::asDot()
 	}
 	for (auto pair : *valueDelta)
 	{
-		int min = *std::min_element(pair.second.begin(), pair.second.end());
-		ss << "  " << pair.first << " -> " << FINAL << " [label=\"" << min << " \"]\n";
+		ss << "  " << pair.first << " -> " << FINAL << " [label=\"" << pair.second << " \"]\n";
 	}
 	ss << "}";
 	return ss.str();
@@ -181,7 +180,7 @@ DAWG::DAWG()
 
 	this->delta0 = new std::unordered_map<State, State>[length];
 	this->delta1 = new std::unordered_map<State, State>[length];
-	this->valueDelta = new std::unordered_map<State, std::set<int>>;
+	this->valueDelta = new std::unordered_map<State, int>;
 
 }
 
@@ -249,7 +248,8 @@ void DAWG::insert(VSet word, int tw)
 
 	auto newDelta0 = new std::unordered_map<State, State>[length];
 	auto newDelta1 = new std::unordered_map<State, State>[length];
-	auto newValueDelta = new std::unordered_map<State, std::set<int>>;
+	auto newValueDelta = new std::unordered_map<State, int>;
+	
 
 	//Make a product construction with our existing automaton
 	std::vector<std::map<std::pair<State, State>, State>> pairMap(length + 1);
@@ -264,6 +264,10 @@ void DAWG::insert(VSet word, int tw)
 	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
 	{
+		//We start our layers with the same transitions as our old delta
+		newDelta1[layer] = delta1[layer];
+		newDelta0[layer] = delta0[layer];
+
 		State newFrom = newStates[layer];
 		State newTo = newStates[layer + 1];
 		bool newBit = word.contains(layer);
@@ -311,9 +315,14 @@ void DAWG::insert(VSet word, int tw)
 			//Check if we need to add this transition as a successor to a  "sink" transition
 			if (sinkStates[layer].find(qFrom) != sinkStates[layer].end())
 			{
-				newDelta[layer][qFrom] = qTo;
+				//newDelta[layer][qFrom] = qTo; //Already added, since we started with copy
 				sinkStates[layer+1].insert(qTo);
 			}
+			else
+			{
+				newDelta[layer].erase(qFrom);
+			}
+
 		}
 
 		//For each transition qFrom -> b -> qTo, where b doesn't match our new word
@@ -347,7 +356,7 @@ void DAWG::insert(VSet word, int tw)
 					sinkStates[layer + 1].insert(newTo);
 
 				}
-
+				
 				//Use the pair we already assigned
 				pairRep = searchInfo->second;
 
@@ -360,8 +369,12 @@ void DAWG::insert(VSet word, int tw)
 			//Check if we need to add this transition as a successor to a  "sink" transition
 			if (sinkStates[layer].find(qFrom) != sinkStates[layer].end())
 			{
-				newOtherDelta[layer][qFrom] = qTo;
+				//newOtherDelta[layer][qFrom] = qTo;
 				sinkStates[layer + 1].insert(qTo);
+			}
+			else
+			{
+				newOtherDelta[layer].erase(qFrom);
 			}
 
 		}
@@ -370,10 +383,11 @@ void DAWG::insert(VSet word, int tw)
 		//And add it if we added the transition before it
 		if (sinkStates[layer].find(newFrom) != sinkStates[layer].end())
 		{
-			newDelta[layer][newFrom] = newTo;
+			newDelta[layer][newFrom] = newTo; //Transitions from single word automaton aren't added yet
 			//Mark this state as seen, so we add its sucessors
 			sinkStates[layer + 1].insert(newTo);
 		}
+
 
 		//Save memory, we don't ever look back a level
 		pairMap[layer].clear();
@@ -385,30 +399,32 @@ void DAWG::insert(VSet word, int tw)
 
 	}
 
+	//Copy our old delta into our new one
+	*newValueDelta = *valueDelta;
+
 	//Now that we're at the last layer, add transitions to our TW states as necessary
 	//This lets us store TW values in our DAWG
 	for (auto iter = valueDelta->begin(); iter != valueDelta->end(); iter++)
 	{
 		State newFrom = newStates[length];
 		State qFrom = iter->first;
-		std::set<int> twVals = iter->second;
+		int oldTW = iter->second;
 
-		//Add sink transition from old state, if we need to
-		if (sinkStates[length].find(qFrom) != sinkStates[length].end())
+		//Add remove unused old transitions
+		if (sinkStates[length].find(qFrom) == sinkStates[length].end())
 		{
-			newValueDelta->insert({ qFrom, twVals });
+			newValueDelta->erase(qFrom);
 		}
 
-		//Add our new value, and insert for our product state, if need be
-		twVals.insert(tw);
-
+		//As an automaton, our new product state can transition on either oldTW or newTW
+		//But we will only ever take the min value
 		auto searchInfo = pairMap[length].find({ qFrom, newFrom });
 		if (searchInfo != pairMap[length].end())
 		{
 			State pairRep = searchInfo->second;
 			//we have a "sink" transition on every TW-value that was supported, 
 			//plus our new TW value
-			newValueDelta->insert({ pairRep, twVals });
+			newValueDelta->insert({ pairRep, std::min(oldTW, tw) });
 		}
 
 	}
@@ -416,9 +432,7 @@ void DAWG::insert(VSet word, int tw)
 	//Add a sink transition to our final state reading input tw, if necessary
 	if (sinkStates[length].find(newStates[length] ) != sinkStates[length].end())
 	{
-		std::set<int> newVals;
-		newVals.insert(tw);
-		newValueDelta->insert({ newStates[length], newVals });
+		newValueDelta->insert({ newStates[length], tw });
 	}
 
 
@@ -460,9 +474,7 @@ void DAWG::insertIntoEmpty(VSet word, int tw)
 		}
 		currentState = nextState;
 	}
-	std::set<int> newTWVals;
-	newTWVals.insert(tw);
-	valueDelta->insert({ currentState, newTWVals });
+	valueDelta->insert({ currentState, tw });
 
 
 }
@@ -480,8 +492,7 @@ int DAWG::contains(VSet word)
 		currentState = nextState;
 	}
 	//Return the smallest treewidth value we can follow from this state
-	auto& twVals = (*valueDelta)[currentState];
-	return *std::min_element(twVals.begin(), twVals.end());
+	return (*valueDelta)[currentState];
 }
 
 void DAWG::initIter()
@@ -594,8 +605,7 @@ std::pair<VSet, int> DAWG::nextIter()
 		if (!didFail)
 		{
 			//std::cout << "Returing " << showSet(currentSet) << " after no failures, path " << showStates(currentPath) << "\n";
-			auto twSet = valueDelta->find(current)->second;
-			int minTW = *std::min_element(twSet.begin(), twSet.end());
+			int minTW = valueDelta->find(current)->second;
 			return{ currentSet, minTW };
 
 
