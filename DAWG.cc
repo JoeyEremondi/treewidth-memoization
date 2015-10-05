@@ -253,6 +253,7 @@ void DAWG::insert(VSet word, int tw)
 
 	//Make a product construction with our existing automaton
 	std::vector<std::map<std::pair<State, State>, State>> pairMap(length + 1);
+	std::vector<std::unordered_set<State>> sinkStates(length + 1);
 
 
 	State initialPair = newState();
@@ -308,10 +309,10 @@ void DAWG::insert(VSet word, int tw)
 			}
 
 			//Check if we need to add this transition as a successor to a  "sink" transition
-			if (pairMap[layer].find({ qFrom, SINK }) != pairMap[layer].end())
+			if (sinkStates[layer].find(qFrom) != sinkStates[layer].end())
 			{
 				newDelta[layer][qFrom] = qTo;
-				pairMap[layer + 1][{qTo, SINK}] = qTo;
+				sinkStates[layer+1].insert(qTo);
 			}
 		}
 
@@ -343,7 +344,7 @@ void DAWG::insert(VSet word, int tw)
 					newDelta[layer][pairRep] = newTo;
 
 					//Add this "sink pair" to our map, so we know to add its successors
-					pairMap[layer + 1][{SINK, newTo}] = newTo;
+					sinkStates[layer + 1].insert(newTo);
 
 				}
 
@@ -353,29 +354,30 @@ void DAWG::insert(VSet word, int tw)
 				//Insert our new transition into our new store
 				newOtherDelta[layer][pairRep] = qTo;
 				//Mark the sink state as seen in our pair map
-				pairMap[layer + 1][{qTo, SINK}] = qTo;
+				sinkStates[layer + 1].insert(qTo);
 			}
 
 			//Check if we need to add this transition as a successor to a  "sink" transition
-			if (pairMap[layer].find({ qFrom, SINK }) != pairMap[layer].end())
+			if (sinkStates[layer].find(qFrom) != sinkStates[layer].end())
 			{
 				newOtherDelta[layer][qFrom] = qTo;
-				pairMap[layer + 1][{qTo, SINK}] = qTo;
+				sinkStates[layer + 1].insert(qTo);
 			}
 
 		}
 
 		//Look at the transition in the automaton accepting our added word
 		//And add it if we added the transition before it
-		if (pairMap[layer].find({ SINK, newFrom }) != pairMap[layer].end())
+		if (sinkStates[layer].find(newFrom) != sinkStates[layer].end())
 		{
 			newDelta[layer][newFrom] = newTo;
 			//Mark this state as seen, so we add its sucessors
-			pairMap[layer + 1][{SINK, newTo}] = newTo;
+			sinkStates[layer + 1].insert(newTo);
 		}
 
 		//Save memory, we don't ever look back a level
 		pairMap[layer].clear();
+		sinkStates[layer].clear();
 
 		//Helps us only minimize when we have to
 		totalTransitions += newDelta[layer].size() + newOtherDelta[layer].size();
@@ -392,7 +394,7 @@ void DAWG::insert(VSet word, int tw)
 		std::set<int> twVals = iter->second;
 
 		//Add sink transition from old state, if we need to
-		if (pairMap[length].find({ qFrom, SINK }) != pairMap[length].end())
+		if (sinkStates[length].find(qFrom) != sinkStates[length].end())
 		{
 			newValueDelta->insert({ qFrom, twVals });
 		}
@@ -409,14 +411,10 @@ void DAWG::insert(VSet word, int tw)
 			newValueDelta->insert({ pairRep, twVals });
 		}
 
-
-
-
-
 	}
 
 	//Add a sink transition to our final state reading input tw, if necessary
-	if (pairMap[length].find({ SINK, newStates[length] }) != pairMap[length].end())
+	if (sinkStates[length].find(newStates[length] ) != sinkStates[length].end())
 	{
 		std::set<int> newVals;
 		newVals.insert(tw);
