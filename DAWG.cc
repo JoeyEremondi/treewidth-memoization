@@ -36,7 +36,6 @@ int DAWG::pathsToEndFrom(int depth, State q)
 	else
 	{
 		int ret = pathsToEndFrom(depth + 1, delta(depth, q, true)) + pathsToEndFrom(depth + 1, delta(depth, q, false));
-		std::cerr << ret << " paths from " << q << " to end\n";
 		return ret;
 	}
 }
@@ -185,8 +184,6 @@ std::vector<std::string> DAWG::wordSetHelper(int depth, State q)
 
 void DAWG::insertSafe(VSet word)
 {
-	std::cerr << "Start of insert safe\n\n";
-
 	//Special case: if there are no transitions, we just insert the word normally
 	if (delta0[0].empty() && delta1[0].empty())
 	{
@@ -209,31 +206,32 @@ void DAWG::insertSafe(VSet word)
 	std::map<State, State>* newDelta1 = new std::map<State, State>[length];
 
 	//Make a product construction with our existing automaton
-	std::map<std::pair<State, State>, State> pairMap;
+	std::vector<std::map<std::pair<State, State>, State>> pairMap(length + 1);
 
-	std::vector<std::set<State>> seenOldSinks(length + 1);
-	State earliestNewSinkSeen;
-	bool haveSetEarliest = false;
+	//std::vector<std::set<State>> seenOldSinks(length + 1);
+	//State earliestNewSinkSeen;
+	//bool haveSetEarliest = false;
 
+	/*
 	//Initialize our pair map with our end states
 	for (auto transition : delta0[length - 1])
 	{
 		State repr = newState();
-		pairMap[{transition.second, newStates[length]}] = repr;
+		pairMap[0][{transition.second, newStates[length]}] = repr;
 	}
 	for (auto transition : delta1[length - 1])
 	{
 		//Don't double insert
-		if (pairMap.find({ transition.second, newStates[length] }) == pairMap.end())
+		if (pairMap[0].find({ transition.second, newStates[length] }) == pairMap[0].end())
 		{
 			State repr = newState();
-			pairMap[{ transition.second, newStates[length] }] = repr;
+			pairMap[0][{ transition.second, newStates[length] }] = repr;
 		}
 
-	}
+	} */
 
 	State initialPair = newState();
-	pairMap[{initial, newInitial}] = initialPair;
+	pairMap[0][{initial, newInitial}] = initialPair;
 
 	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
@@ -260,8 +258,8 @@ void DAWG::insertSafe(VSet word)
 			State qTo = iter->second;
 
 			//Check, are we in the pair map? If not, then we are not reachable from a previous layer
-			auto searchInfo = pairMap.find({ qFrom, newFrom });
-			if (searchInfo != pairMap.end())
+			auto searchInfo = pairMap[layer].find({ qFrom, newFrom });
+			if (searchInfo != pairMap[layer].end())
 			{
 				//Generate an int for our pair state, and store it in the map
 				State pairRep = searchInfo->second;
@@ -269,23 +267,26 @@ void DAWG::insertSafe(VSet word)
 				//See if the state we're going to is in the pair map
 				//And if not, create a new state for it
 				State nextRep;
-				auto nextSearchInfo = pairMap.find({ qTo, newTo });
-				if (nextSearchInfo == pairMap.end())
+				auto nextSearchInfo = pairMap[layer+1].find({ qTo, newTo });
+				if (nextSearchInfo == pairMap[layer+1].end())
 				{
 					nextRep = newState();
-					std::cerr << "Made new state " << nextRep << "\n";
-					pairMap[{ qTo, newTo }] = nextRep;
+					pairMap[layer+1][{ qTo, newTo }] = nextRep;
 				}
 				else
 				{
 					nextRep = searchInfo->second;
-					std::cerr << "Setting next rep " << nextRep << "\n";
 				}
 
 				//Insert our new transition into our new store
 				newDelta[layer][pairRep] = nextRep;
-				std::cerr << "Adding transition for pair (" << qFrom << ", " << newFrom << ") to (" << qTo << ", " << newTo << ")\n";
-				std::cerr << pairRep << " -> " << newBit << " -> " << pairMap[{qTo, newTo}] << "\n";
+			}
+
+			//Check if we need to add this transition as a successor to a  "sink" transition
+			if (pairMap[layer].find({ qFrom, SINK }) != pairMap[layer].end())
+			{
+				newDelta[layer][qFrom] = qTo;
+				pairMap[layer + 1][{qTo, SINK}] = qTo;
 			}
 		}
 
@@ -300,8 +301,8 @@ void DAWG::insertSafe(VSet word)
 
 			//Generate an int for our pair state, and store it in the map
 
-			auto searchInfo = pairMap.find({ qFrom, newFrom });
-			if (searchInfo == pairMap.end())
+			auto searchInfo = pairMap[layer].find({ qFrom, newFrom });
+			if (searchInfo == pairMap[layer].end())
 			{
 				//Didn't find it, so this pair is not reachable
 
@@ -316,79 +317,44 @@ void DAWG::insertSafe(VSet word)
 					//If not, we need a sink transition just on the new state
 					newDelta[layer][pairRep] = newTo;
 
-					//Mark that we need to add those states to our final DFA
-					if (!haveSetEarliest)
-					{
-						haveSetEarliest = true;
-						earliestNewSinkSeen = newTo;
-					}
+					//Add this "sink pair" to our map, so we know to add its successors
+					pairMap[layer + 1][{SINK, newTo}] = newTo;
 
 				}
 
 				//Use the pair we already assigned
 				pairRep = searchInfo->second;
 
-				std::cerr << "Adding transition for pair (" << qFrom << ", " << newFrom << ") to (" << qTo << ", " << SINK << ")\n";
-				std::cerr << pairRep << " -> " << newBit << " -> " << qTo << "\n";
-
 				//Insert our new transition into our new store
 				newOtherDelta[layer][pairRep] = qTo;
-				seenOldSinks[layer + 1].insert(qTo);
+				//Mark the sink state as seen in our pair map
+				pairMap[layer + 1][{qTo, SINK}] = qTo;
 			}
 
+			//Check if we need to add this transition as a successor to a  "sink" transition
+			if (pairMap[layer].find({ qFrom, SINK }) != pairMap[layer].end())
+			{
+				newOtherDelta[layer][qFrom] = qTo;
+				pairMap[layer + 1][{qTo, SINK}] = qTo;
+			}
 
 		}
 
-
-	}
-
-
-
-
-
-	//Traverse all sink states from our original automaton
-	//And add transitions as necessary
-	//TODO better naming
-	for (int layer = 0; layer < length; layer++)
-	{
-		for (auto sinkState : seenOldSinks[layer])
+		//Look at the transition in the automaton accepting our added word
+		//And add it if we added the transition before it
+		if (pairMap[layer].find({ SINK, newFrom }) != pairMap[layer].end())
 		{
-
-			//TODO avoid recomputing
-			State to0 = delta0[layer][sinkState];
-			State to1 = delta1[layer][sinkState];
-
-			std::cerr << "layer " << layer << " Adding sink state main " << sinkState << " 0 -> " << to0 << ", 1 ->" << to1 << "\n";
-			if (to1 != SINK)
-			{
-				std::cerr << "Pushing next state " << to1 << "\n";
-				newDelta1[layer][sinkState] = to1;
-				seenOldSinks[layer + 1].insert(to1);
-			}
-
-			if (to0 != SINK)
-			{
-				std::cerr << "Pushing next state " << to0 << "\n";
-				newDelta0[layer][sinkState] = to0;
-				seenOldSinks[layer + 1].insert(to0);
-			}
+			newDelta[layer][newFrom] = newTo;
+			//Mark this state as seen, so we add its sucessors
+			pairMap[layer + 1][{SINK, newTo}] = newTo;
 		}
+
+		//Save memory, we don't ever look back a level
+		pairMap[layer].clear();
+
+
 	}
 
-	//Add all transitions from original DFA for each of our sinkStates
-	bool foundFirst = false;
-	for (int i = 0; i < length + 1 && !foundFirst; i++)
-	{
-		if (newStates[i] == earliestNewSinkSeen)
-		{
-			for (int j = i; j < length; j++)
-			{
-				auto arr = word.contains(j) ? newDelta1 : newDelta0;
-				arr[j][newStates[j]] = newStates[j + 1];
-			}
-			foundFirst = true;
-		}
-	}
 
 	//Empty our old deltas
 	delete[] delta0;
@@ -411,12 +377,6 @@ void DAWG::insertSafe(VSet word)
 
 void DAWG::insert(VSet word)
 {
-	static int insertionNum = 0;
-
-	std::cerr << "Start of insert\n\n";
-
-	int sizeBefore = size();
-	std::string dotBefore = asDot();
 
 	State currentState = initial;
 	for (int i = 0; i < length; ++i)
@@ -426,36 +386,11 @@ void DAWG::insert(VSet word)
 		{
 
 			nextState = newState();
-			std::cerr << "Adding new state " << nextState << "leaving " << currentState << " on " << word.contains(i) << "\n";
 			addTransition(i, currentState, nextState, word.contains(i));
 		}
 		currentState = nextState;
 	}
 
-	int sizeAfter = size();
-	if (sizeBefore + 1 != sizeAfter)
-	{
-		std::cerr << "Bad size in insert with " << showSet(word) << "\n";
-		std::cerr << "before " << sizeBefore << " after " << sizeAfter << "\n";
-		std::cerr << dotBefore << "\n\n";
-		std::cerr << asDot();
-		abort();
-	}
-
-
-
-	//Minimize as we go, so we never get too large
-	insertionNum++;
-	if (true /*insertionNum % 10000 == 0*/)
-	{
-		//TODO reclaim lost state numbers?
-		minimize();
-		//minimize();
-	}
-	if (sizeBefore != size())
-	{
-		abort;
-	}
 
 }
 

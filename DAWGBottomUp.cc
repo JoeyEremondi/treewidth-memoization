@@ -157,8 +157,8 @@ void DAWGBottomUp::beginLayer(int layer)
 			for (auto iter = TW[i].begin(); iter != loopEnd; iter = TW[i].erase(iter))
 			{
 				int sizeBefore = lastLayerTW[i].size();
-				std::string dotBefore = lastLayerTW[i].asDot();
-				auto wordSetBefore = lastLayerTW[i].wordSet();
+				//std::string dotBefore = lastLayerTW[i].asDot();
+				//auto wordSetBefore = lastLayerTW[i].wordSet();
 
 				//std::cout << "Start layer with " << showSet(*iter) << " tw " << i <<" in prev\n";
 				lastLayerTW[i].insertSafe(*iter);
@@ -167,7 +167,7 @@ void DAWGBottomUp::beginLayer(int layer)
 				//assert(lastLayerTW[i].contains(*iter));
 
 				int sizeAfter = lastLayerTW[i].size();
-				if (sizeBefore != sizeAfter - 1)
+				/*if (sizeBefore != sizeAfter - 1)
 				{
 					std::cerr << "SIZE BAD AFTER INSERTION\n";
 
@@ -188,7 +188,7 @@ void DAWGBottomUp::beginLayer(int layer)
 					std::cerr << "\nbefore " << sizeBefore << " after " << sizeAfter << " inserted " << showSet(*iter) << "\n";
 					std::cerr << "\n\n\n" << dotBefore << "\n\n\n" << lastLayerTW[i].asDot() << "\n\n\n";
 					abort();
-				}
+				} */
 			}
 			
 
