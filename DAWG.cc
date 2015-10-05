@@ -69,19 +69,18 @@ void DAWG::minimizeHelper(int layer, State q)
 {
 	if (layer == length) //Transitions are on our possible TW values
 	{
-		auto twVals = (*valueDelta)[q];
+		int twVal = (*valueDelta)[q];
 		//We don't need to traverse further, we know all these states lead to the final state
 		//after reading a TW value
 
-
-		if (EndRegister.find(twVals) == EndRegister.end())
+		if (EndRegister.find(twVal) == EndRegister.end())
 		{
 			StateMap[q] = q;
-			Register[sig(layer, q)] = q;
+			EndRegister[twVal] = q;
 		}
 		else
 		{
-			StateMap[q] = EndRegister[twVals];
+			StateMap[q] = EndRegister[twVal];
 			deleteState(layer, q);
 		}
 
@@ -103,15 +102,16 @@ void DAWG::minimizeHelper(int layer, State q)
 		}
 	}
 
-
-	if (Register.find(sig(layer, q)) == Register.end())
+	auto ourSig = sig(layer, q);
+	auto searchInfo = Register.find(ourSig);
+	if (searchInfo == Register.end())
 	{
 		StateMap[q] = q;
-		Register[sig(layer, q)] = q;
+		searchInfo->second = q;
 	}
 	else
 	{
-		StateMap[q] = Register[sig(layer, q)];
+		StateMap[q] = searchInfo->second;
 		deleteState(layer, q);
 	}
 }

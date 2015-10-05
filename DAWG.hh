@@ -63,7 +63,7 @@ private:
 
 	//Based off of depth-first minimization, stringology paper //TODO cite
 	std::unordered_map<StateSignature, State> Register;
-	std::map<int, State> EndRegister;
+	std::unordered_map<int, State> EndRegister;
 	std::unordered_map<State, State> StateMap;
 
 protected:
