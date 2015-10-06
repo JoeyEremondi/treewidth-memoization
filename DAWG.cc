@@ -68,6 +68,9 @@ void DAWG::addTransition(int depth, State from, State to, bool readLetter)
 State DAWG::minimizeHelper(int layer, State q)
 {
 	auto& reg = Register[layer];
+	auto& sMapPlus1 = StateMap[layer + 1];
+	auto sEndPlus1 = StateMapEnd[layer + 1];
+	
 	if (layer == length) //Transitions are on our possible TW values
 	{
 		int twVal = (*valueDelta)[q];
@@ -91,16 +94,19 @@ State DAWG::minimizeHelper(int layer, State q)
 
 	}
 
+	State tnext0;
+	State tnext1;
+
 	//Look at our true transition
 	auto tnextIter = delta1[layer].find(q); //delta(layer, q, bit);
 	//Don't follow transitions that aren't there
 	if (tnextIter != d1end[layer])
 	{
-		State tnext = tnextIter->second;
-		auto nextSearchInfo = StateMap[layer + 1].find(tnext);
-		if (nextSearchInfo == StateMapEnd[layer + 1])
+		tnext1 = tnextIter->second;
+		auto nextSearchInfo = sMapPlus1.find(tnext1);
+		if (nextSearchInfo == sEndPlus1)
 		{
-			State nextRepr = minimizeHelper(layer + 1, tnext);
+			State nextRepr = minimizeHelper(layer + 1, tnext1);
 			tnextIter->second = nextRepr;
 			//setTransition(layer, q, bit, nextRepr);
 		}
@@ -111,6 +117,10 @@ State DAWG::minimizeHelper(int layer, State q)
 		}
 		//Update our transition to point to the correct vertex
 
+	}
+	else
+	{
+		tnext1 = SINK;
 	}
 
 	//Do the same for false
@@ -118,11 +128,11 @@ State DAWG::minimizeHelper(int layer, State q)
 	//Don't follow transitions that aren't there
 	if (tnextIter != d0end[layer])
 	{
-		State tnext = tnextIter->second;
-		auto nextSearchInfo = StateMap[layer + 1].find(tnext);
-		if (nextSearchInfo == StateMapEnd[layer + 1])
+		tnext0 = tnextIter->second;
+		auto nextSearchInfo = sMapPlus1.find(tnext0);
+		if (nextSearchInfo == sEndPlus1)
 		{
-			State nextRepr = minimizeHelper(layer + 1, tnext);
+			State nextRepr = minimizeHelper(layer + 1, tnext0);
 			tnextIter->second = nextRepr;
 			//setTransition(layer, q, bit, nextRepr);
 		}
@@ -137,7 +147,7 @@ State DAWG::minimizeHelper(int layer, State q)
 
 
 
-	auto ourSig = sig(layer, q);
+	StateSignature ourSig = {tnext0, tnext1};
 	auto searchInfo = reg.find(ourSig);
 	if (searchInfo == RegisterEnd[layer])
 	{
@@ -512,7 +522,7 @@ void DAWG::insert(VSet word, int tw)
 	if (sinkStates[length].find(newStates[length]) != lengthSinkEnd)
 	{
 		newValueDelta->insert({ newStates[length], tw });
-}
+	}
 
 
 	//Empty our old deltas
@@ -549,7 +559,7 @@ void DAWG::insert(VSet word, int tw)
 		std::cerr << "Size before " sizeBefore << " size after " << sizeAfter << "\n";
 		std::cerr << "\n\n" << dotBefore << "\n\n\n" << asDot() << "\n\n";
 		abort();
-	}
+}
 
 #endif
 }
