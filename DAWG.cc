@@ -73,14 +73,14 @@ void DAWG::minimizeHelper(int layer, State q)
 		//We don't need to traverse further, we know all these states lead to the final state
 		//after reading a TW value
 
-		if (EndRegister.find(twVal) == EndRegister.end())
+		if (EndRegister.find(twVal) == EndRegisterEnd)
 		{
-			StateMap[q] = q;
+			StateMap[layer][q] = q;
 			EndRegister[twVal] = q;
 		}
 		else
 		{
-			StateMap[q] = EndRegister[twVal];
+			StateMap[layer][q] = EndRegister[twVal];
 			deleteState(layer, q);
 		}
 
@@ -93,25 +93,25 @@ void DAWG::minimizeHelper(int layer, State q)
 		//Don't follow transitions that aren't there
 		if (tnext != SINK)
 		{
-			if (StateMap.find(tnext) == StateMap.end())
+			if (StateMap[layer+1].find(tnext) == StateMapEnd[layer+1])
 			{
 				minimizeHelper(layer + 1, tnext);
 			}
 			//Update our transition to point to the correct vertex
-			setTransition(layer, q, bit, StateMap[tnext]);
+			setTransition(layer, q, bit, StateMap[layer+1][tnext]);
 		}
 	}
 
 	auto ourSig = sig(layer, q);
-	auto searchInfo = Register.find(ourSig);
-	if (searchInfo == Register.end())
+	auto searchInfo = Register[layer].find(ourSig);
+	if (searchInfo == RegisterEnd[layer])
 	{
-		StateMap[q] = q;
-		searchInfo->second = q;
+		StateMap[layer][q] = q;
+		Register[layer][ourSig] = q;
 	}
 	else
 	{
-		StateMap[q] = searchInfo->second;
+		StateMap[layer][q] = searchInfo->second;
 		deleteState(layer, q);
 	}
 }
@@ -156,17 +156,35 @@ int DAWG::numTransitions()
 void DAWG::minimize()
 {
 	//std::cerr << "Transitions before minimization " << numTransitions() << "\n";
-	Register.clear();
-	StateMap.clear();
-	EndRegister.clear();
+	Register = new std::unordered_map<StateSignature, State>[length+1];
+	StateMap = new std::unordered_map<State, State>[length+1];
+	RegisterEnd = new std::unordered_map<StateSignature, State>::iterator[length];
+	StateMapEnd = new std::unordered_map<State, State>::iterator[length+1];
+
+	//EndRegister.clear();
+
+	for (int i = 0; i < length; ++i)
+	{
+		RegisterEnd[i] = Register[i].end();
+		StateMapEnd[i] = StateMap[i].end();
+	}
+	StateMapEnd[length] = StateMap[length].end();
+	EndRegisterEnd = EndRegister.end();
 
 	minimizeHelper(0, initial);
 
 	//Finally, adjust our initial vertex if need be
-	initial = StateMap[initial];
+	initial = StateMap[0][initial];
 
-	Register.clear();
-	StateMap.clear();
+	delete[] Register;
+	delete[] RegisterEnd;
+	delete[] StateMap;
+	delete[] StateMapEnd;
+
+	EndRegister.clear();
+
+	//Register.clear();
+	//StateMap.clear();
 
 	//std::cerr << "Transitions after minimization " << numTransitions() << "\n";
 }
@@ -265,7 +283,7 @@ void DAWG::insert(VSet word, int tw)
 	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
 	{
-		auto sinkStatesEnd = sinkStates[length].end();
+		
 
 		//We start our layers with the same transitions as our old delta
 		newDelta1[layer] = delta1[layer];
@@ -291,6 +309,7 @@ void DAWG::insert(VSet word, int tw)
 		auto pairMapEnd = pairMap[layer].end();
 		auto nextPairMapEnd = pairMap[layer + 1].end();
 		auto newDeltaEnd = newDelta[layer].end();
+		auto sinkStatesEnd = sinkStates[layer].end();
 
 
 		for (auto iter = thisDelta[layer].begin(); iter != loopEnd; iter = thisDelta[layer].erase(iter))
@@ -463,8 +482,10 @@ void DAWG::insert(VSet word, int tw)
 
 	initial = initialPair;
 
-
-
+#ifdef DEBUG
+	int sizeBefore = size();
+	std::string dotBefore = asDot();
+#endif
 
 	//When we're done, minimize to save space
 	//TODO delete irrelevant vertices?
@@ -472,6 +493,17 @@ void DAWG::insert(VSet word, int tw)
 	//{
 		minimize();
 	//}
+
+#ifdef DEBUG
+		int sizeAfter = size();
+		if (sizeAfter != sizeBefore)
+		{
+			std::cerr << "Size before " sizeBefore << " size after " << sizeAfter << "\n";
+			std::cerr << "\n\n" << dotBefore << "\n\n\n" << asDot() << "\n\n";
+			abort();
+		}
+		
+#endif
 }
 
 void DAWG::insertIntoEmpty(VSet word, int tw)
