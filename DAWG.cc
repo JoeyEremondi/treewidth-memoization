@@ -77,7 +77,7 @@ State DAWG::minimizeHelper(int layer, State q)
 		//We don't need to traverse further, we know all these states lead to the final state
 		//after reading a TW value
 
-		auto searchInfo = EndRegister.insert({ twVal, q });
+		auto searchInfo = EndRegister.emplace ( twVal, q );
 		if (searchInfo.second)
 		{
 			StateMap[layer].emplace(q,q);
@@ -153,7 +153,7 @@ State DAWG::minimizeHelper(int layer, State q)
 
 
 	StateSignature ourSig = {tnext0, tnext1};
-	auto searchInfo = reg.insert({ ourSig, q });
+	auto searchInfo = reg.emplace( ourSig, q );
 	if (searchInfo.second)
 	{
 		StateMap[layer].emplace(q, q);
@@ -395,7 +395,6 @@ void DAWG::insert(VSet word, int tw)
 			//Check if we need to add this transition as a successor to a  "sink" transition
 			if (sinkStates[layer].find(qFrom) != sinkStatesEnd)
 			{
-				//newDelta[layer][qFrom] = qTo; //Already added, since we started with copy
 				sinkStates[layer + 1].insert(qTo);
 			}
 			else
@@ -418,21 +417,16 @@ void DAWG::insert(VSet word, int tw)
 			//Generate an int for our pair state, and store it in the map
 
 			auto searchInfo = pairMap[layer].find({ qFrom, newFrom });
-			if (searchInfo == pairMapEnd)
-			{
-				//Didn't find it, so this pair is not reachable
-
-			}
-			else
+			if (searchInfo != pairMapEnd)
 			{
 				State pairRep = searchInfo->second;
 
 				//First, check if we have a transition already defined on newBit
-				if (newDelta[layer].find(pairRep) == newDeltaEnd)
+				//Try inserting our sink state, will fail if we already have a transition defined
+				auto insertPairRep = newDelta[layer].emplace(pairRep, newTo);
+				if (insertPairRep.second)
 				{
-					//If not, we need a sink transition just on the new state
-					newDelta[layer][pairRep] = newTo;
-
+					//If the insert succeeded, the sink state is our transition
 					//Add this "sink pair" to our map, so we know to add its successors
 					sinkStates[layer + 1].insert(newTo);
 
@@ -442,7 +436,7 @@ void DAWG::insert(VSet word, int tw)
 				pairRep = searchInfo->second;
 
 				//Insert our new transition into our new store
-				newOtherDelta[layer][pairRep] = qTo;
+				newOtherDelta[layer].emplace(pairRep, qTo);
 				//Mark the sink state as seen in our pair map
 				sinkStates[layer + 1].insert(qTo);
 			}
@@ -464,7 +458,7 @@ void DAWG::insert(VSet word, int tw)
 		//And add it if we added the transition before it
 		if (sinkStates[layer].find(newFrom) != sinkStatesEnd)
 		{
-			newDelta[layer][newFrom] = newTo; //Transitions from single word automaton aren't added yet
+			newDelta[layer].emplace(newFrom, newTo); //Transitions from single word automaton aren't added yet
 			//Mark this state as seen, so we add its sucessors
 			sinkStates[layer + 1].insert(newTo);
 		}
@@ -508,7 +502,7 @@ void DAWG::insert(VSet word, int tw)
 			State pairRep = searchInfo->second;
 			//we have a "sink" transition on every TW-value that was supported, 
 			//plus our new TW value
-			newValueDelta->insert({ pairRep, std::min(oldTW, tw) });
+			newValueDelta->emplace( pairRep, std::min(oldTW, tw) );
 		}
 
 	}
@@ -516,7 +510,7 @@ void DAWG::insert(VSet word, int tw)
 	//Add a sink transition to our final state reading input tw, if necessary
 	if (sinkStates[length].find(newStates[length]) != lengthSinkEnd)
 	{
-		newValueDelta->insert({ newStates[length], tw });
+		newValueDelta->emplace( newStates[length], tw );
 	}
 
 
