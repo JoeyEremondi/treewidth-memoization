@@ -115,7 +115,8 @@ State DAWG::minimizeHelper(int layer, State q)
 	if (searchInfo == RegisterEnd[layer])
 	{
 		StateMap[layer][q] = q;
-		Register[layer][ourSig] = q;
+		//Register[layer][ourSig] = q;
+		Register[layer].emplace_hint(searchInfo, ourSig, q);
 		return q;
 	}
 	else
