@@ -77,17 +77,17 @@ State DAWG::minimizeHelper(int layer, State q)
 		//We don't need to traverse further, we know all these states lead to the final state
 		//after reading a TW value
 
-		auto searchInfo = EndRegister.find(twVal);
-		if (searchInfo == EndRegisterEnd)
+		auto searchInfo = EndRegister.insert({ twVal, q });
+		if (searchInfo.second)
 		{
-			StateMap[layer][q] = q;
-			EndRegister.emplace_hint(searchInfo, twVal, q);
+			StateMap[layer].emplace(q,q);
 			return q;
 		}
 		else
 		{
-			State repr = searchInfo->second;
-			StateMap[layer][q] = repr;
+			//It was already in the register, so we just return what's stored in the state map
+			State repr = searchInfo.first->second;
+			StateMap[layer].emplace(q, repr);
 			deleteState(layer, q);
 			return repr;
 		}
@@ -144,23 +144,24 @@ State DAWG::minimizeHelper(int layer, State q)
 		//Update our transition to point to the correct vertex
 
 	}
+	else
+	{
+		tnext0 = SINK;
+	}
+
 
 
 
 	StateSignature ourSig = {tnext0, tnext1};
-	auto searchInfo = reg.find(ourSig);
-	if (searchInfo == RegisterEnd[layer])
+	auto searchInfo = reg.insert({ ourSig, q });
+	if (searchInfo.second)
 	{
-		//StateMap[layer][q] = q;
-		//Register[layer][ourSig] = q;
 		StateMap[layer].emplace(q, q);
-		reg.emplace_hint(searchInfo, ourSig, q);
 		return q;
 	}
 	else
 	{
-		State repr = searchInfo->second;
-		//StateMap[layer][q] = repr;
+		State repr = searchInfo.first->second;
 		StateMap[layer].emplace(q, repr);
 		deleteState(layer, q);
 		return repr;
@@ -209,17 +210,14 @@ void DAWG::minimize()
 	//std::cerr << "Transitions before minimization " << numTransitions() << "\n";
 	Register = new std::unordered_map<StateSignature, State>[length + 1];
 	StateMap = new std::unordered_map<State, State>[length + 1];
-	RegisterEnd = new std::unordered_map<StateSignature, State>::iterator[length];
 	StateMapEnd = new std::unordered_map<State, State>::iterator[length + 1];
 
 	//EndRegister.clear();
 
-	for (int i = 0; i < length; ++i)
+	for (int i = 0; i <= length; ++i)
 	{
-		RegisterEnd[i] = Register[i].end();
 		StateMapEnd[i] = StateMap[i].end();
 	}
-	StateMapEnd[length] = StateMap[length].end();
 	EndRegisterEnd = EndRegister.end();
 
 	minimizeHelper(0, initial);
@@ -228,7 +226,6 @@ void DAWG::minimize()
 	initial = StateMap[0][initial];
 
 	delete[] Register;
-	delete[] RegisterEnd;
 	delete[] StateMap;
 	delete[] StateMapEnd;
 
@@ -367,7 +364,7 @@ void DAWG::insert(VSet word, int tw)
 		auto sinkStatesEnd = sinkStates[layer].end();
 
 
-		for (auto iter = thisDelta[layer].begin(); iter != loopEnd; iter = thisDelta[layer].erase(iter))
+		for (auto iter = thisDelta[layer].begin(); iter != loopEnd; ++iter/*iter = thisDelta[layer].erase(iter)*/)
 		{
 			State qFrom = iter->first;
 			State qTo = iter->second;
@@ -381,20 +378,18 @@ void DAWG::insert(VSet word, int tw)
 
 				//See if the state we're going to is in the pair map
 				//And if not, create a new state for it
-				State nextRep;
-				auto nextSearchInfo = pairMap[layer + 1].find({ qTo, newTo });
-				if (nextSearchInfo == nextPairMapEnd)
+				State nextRep = newState();
+				auto nextSearchInfo = pairMap[layer + 1].emplace(std::pair<State, State>(qTo, newTo), nextRep);
+				//If we already have this vertex pair in our map, the undo our new state creation, and use that one
+				if (!nextSearchInfo.second)
 				{
-					nextRep = newState();
-					pairMap[layer + 1][{ qTo, newTo }] = nextRep;
+					nextRep = nextSearchInfo.first->second;
+					this->nextState--; //Undo our unneeded newstate generation
 				}
-				else
-				{
-					nextRep = searchInfo->second;
-				}
+				
 
 				//Insert our new transition into our new store
-				newDelta[layer][pairRep] = nextRep;
+				newDelta[layer].emplace(pairRep, nextRep);
 			}
 
 			//Check if we need to add this transition as a successor to a  "sink" transition
@@ -493,7 +488,7 @@ void DAWG::insert(VSet word, int tw)
 	auto loopEnd = valueDelta->end();
 	auto lengthSinkEnd = sinkStates[length].end();
 	auto pairMapLenghtEnd = pairMap[length].end();
-	for (auto iter = valueDelta->begin(); iter != loopEnd; iter++)
+	for (auto iter = valueDelta->begin(); iter != loopEnd; ++iter)
 	{
 		State newFrom = newStates[length];
 		State qFrom = iter->first;
