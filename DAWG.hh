@@ -76,7 +76,7 @@ protected:
 	State newState();
 	void addTransition(int depth, State from, State to, bool readLetter);
 	void minimize();
-	void minimizeHelper(int layer, State q);
+	State minimizeHelper(int layer, State q);
 	void deleteState(int layer, State q);
 	void insertIntoEmpty(VSet word, int tw);
 

@@ -65,7 +65,7 @@ void DAWG::addTransition(int depth, State from, State to, bool readLetter)
 	}
 }
 
-void DAWG::minimizeHelper(int layer, State q)
+State DAWG::minimizeHelper(int layer, State q)
 {
 	if (layer == length) //Transitions are on our possible TW values
 	{
@@ -77,14 +77,16 @@ void DAWG::minimizeHelper(int layer, State q)
 		{
 			StateMap[layer][q] = q;
 			EndRegister[twVal] = q;
+			return q;
 		}
 		else
 		{
-			StateMap[layer][q] = EndRegister[twVal];
+			State repr = EndRegister[twVal];
+			StateMap[layer][q] = repr;
 			deleteState(layer, q);
+			return repr;
 		}
 
-		return;
 	}
 
 	for (bool bit : { true, false })
@@ -93,12 +95,18 @@ void DAWG::minimizeHelper(int layer, State q)
 		//Don't follow transitions that aren't there
 		if (tnext != SINK)
 		{
-			if (StateMap[layer+1].find(tnext) == StateMapEnd[layer+1])
+			auto nextSearchInfo = StateMap[layer + 1].find(tnext);
+			if (nextSearchInfo == StateMapEnd[layer+1])
 			{
-				minimizeHelper(layer + 1, tnext);
+				State nextRepr = minimizeHelper(layer + 1, tnext);
+				setTransition(layer, q, bit, nextRepr);
+			}
+			else
+			{
+				setTransition(layer, q, bit, nextSearchInfo->second);
 			}
 			//Update our transition to point to the correct vertex
-			setTransition(layer, q, bit, StateMap[layer+1][tnext]);
+			
 		}
 	}
 
@@ -108,11 +116,14 @@ void DAWG::minimizeHelper(int layer, State q)
 	{
 		StateMap[layer][q] = q;
 		Register[layer][ourSig] = q;
+		return q;
 	}
 	else
 	{
-		StateMap[layer][q] = searchInfo->second;
+		State repr = searchInfo->second;
+		StateMap[layer][q] = repr;
 		deleteState(layer, q);
+		return repr;
 	}
 }
 
