@@ -67,21 +67,23 @@ void DAWG::addTransition(int depth, State from, State to, bool readLetter)
 
 State DAWG::minimizeHelper(int layer, State q)
 {
+	auto& reg = Register[layer];
 	if (layer == length) //Transitions are on our possible TW values
 	{
 		int twVal = (*valueDelta)[q];
 		//We don't need to traverse further, we know all these states lead to the final state
 		//after reading a TW value
 
-		if (EndRegister.find(twVal) == EndRegisterEnd)
+		auto searchInfo = EndRegister.find(twVal);
+		if (searchInfo == EndRegisterEnd)
 		{
 			StateMap[layer][q] = q;
-			EndRegister[twVal] = q;
+			EndRegister.emplace_hint(searchInfo, twVal, q);
 			return q;
 		}
 		else
 		{
-			State repr = EndRegister[twVal];
+			State repr = searchInfo->second;
 			StateMap[layer][q] = repr;
 			deleteState(layer, q);
 			return repr;
@@ -89,40 +91,67 @@ State DAWG::minimizeHelper(int layer, State q)
 
 	}
 
-	for (bool bit : { true, false })
+	//Look at our true transition
+	auto tnextIter = delta1[layer].find(q); //delta(layer, q, bit);
+	//Don't follow transitions that aren't there
+	if (tnextIter != d1end[layer])
 	{
-		State tnext = delta(layer, q, bit);
-		//Don't follow transitions that aren't there
-		if (tnext != SINK)
+		State tnext = tnextIter->second;
+		auto nextSearchInfo = StateMap[layer + 1].find(tnext);
+		if (nextSearchInfo == StateMapEnd[layer + 1])
 		{
-			auto nextSearchInfo = StateMap[layer + 1].find(tnext);
-			if (nextSearchInfo == StateMapEnd[layer+1])
-			{
-				State nextRepr = minimizeHelper(layer + 1, tnext);
-				setTransition(layer, q, bit, nextRepr);
-			}
-			else
-			{
-				setTransition(layer, q, bit, nextSearchInfo->second);
-			}
-			//Update our transition to point to the correct vertex
-			
+			State nextRepr = minimizeHelper(layer + 1, tnext);
+			tnextIter->second = nextRepr;
+			//setTransition(layer, q, bit, nextRepr);
 		}
+		else
+		{
+			tnextIter->second = nextSearchInfo->second;
+			//setTransition(layer, q, bit, nextSearchInfo->second);
+		}
+		//Update our transition to point to the correct vertex
+
 	}
 
+	//Do the same for false
+	tnextIter = delta0[layer].find(q); //delta(layer, q, bit);
+	//Don't follow transitions that aren't there
+	if (tnextIter != d0end[layer])
+	{
+		State tnext = tnextIter->second;
+		auto nextSearchInfo = StateMap[layer + 1].find(tnext);
+		if (nextSearchInfo == StateMapEnd[layer + 1])
+		{
+			State nextRepr = minimizeHelper(layer + 1, tnext);
+			tnextIter->second = nextRepr;
+			//setTransition(layer, q, bit, nextRepr);
+		}
+		else
+		{
+			tnextIter->second = nextSearchInfo->second;
+			//setTransition(layer, q, bit, nextSearchInfo->second);
+		}
+		//Update our transition to point to the correct vertex
+
+	}
+
+
+
 	auto ourSig = sig(layer, q);
-	auto searchInfo = Register[layer].find(ourSig);
+	auto searchInfo = reg.find(ourSig);
 	if (searchInfo == RegisterEnd[layer])
 	{
-		StateMap[layer][q] = q;
+		//StateMap[layer][q] = q;
 		//Register[layer][ourSig] = q;
-		Register[layer].emplace_hint(searchInfo, ourSig, q);
+		StateMap[layer].emplace(q, q);
+		reg.emplace_hint(searchInfo, ourSig, q);
 		return q;
 	}
 	else
 	{
 		State repr = searchInfo->second;
-		StateMap[layer][q] = repr;
+		//StateMap[layer][q] = repr;
+		StateMap[layer].emplace(q, repr);
 		deleteState(layer, q);
 		return repr;
 	}
@@ -168,10 +197,10 @@ int DAWG::numTransitions()
 void DAWG::minimize()
 {
 	//std::cerr << "Transitions before minimization " << numTransitions() << "\n";
-	Register = new std::unordered_map<StateSignature, State>[length+1];
-	StateMap = new std::unordered_map<State, State>[length+1];
+	Register = new std::unordered_map<StateSignature, State>[length + 1];
+	StateMap = new std::unordered_map<State, State>[length + 1];
 	RegisterEnd = new std::unordered_map<StateSignature, State>::iterator[length];
-	StateMapEnd = new std::unordered_map<State, State>::iterator[length+1];
+	StateMapEnd = new std::unordered_map<State, State>::iterator[length + 1];
 
 	//EndRegister.clear();
 
@@ -212,12 +241,16 @@ DAWG::DAWG()
 	this->delta1 = new std::unordered_map<State, State>[length];
 	this->valueDelta = new std::unordered_map<State, int>;
 
+	setIterEnds();
+
 }
 
 DAWG::~DAWG()
 {
 	delete[] delta0;
 	delete[] delta1;
+	delete[] d0end;
+	delete[] d1end;
 	delete valueDelta;
 }
 
@@ -279,7 +312,7 @@ void DAWG::insert(VSet word, int tw)
 	auto newDelta0 = new std::unordered_map<State, State>[length];
 	auto newDelta1 = new std::unordered_map<State, State>[length];
 	auto newValueDelta = new std::unordered_map<State, int>;
-	
+
 
 	//Make a product construction with our existing automaton
 	std::vector<std::map<std::pair<State, State>, State>> pairMap(length + 1);
@@ -295,7 +328,7 @@ void DAWG::insert(VSet word, int tw)
 	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
 	{
-		
+
 
 		//We start our layers with the same transitions as our old delta
 		newDelta1[layer] = delta1[layer];
@@ -315,7 +348,7 @@ void DAWG::insert(VSet word, int tw)
 
 		//Look at all the states with transitions defined the same as our new word
 		//Create new states for their pairs, and add them to the map
-		
+
 		//Cache a bunch of iterator ends
 		auto loopEnd = thisDelta[layer].end();
 		auto pairMapEnd = pairMap[layer].end();
@@ -358,7 +391,7 @@ void DAWG::insert(VSet word, int tw)
 			if (sinkStates[layer].find(qFrom) != sinkStatesEnd)
 			{
 				//newDelta[layer][qFrom] = qTo; //Already added, since we started with copy
-				sinkStates[layer+1].insert(qTo);
+				sinkStates[layer + 1].insert(qTo);
 			}
 			else
 			{
@@ -399,7 +432,7 @@ void DAWG::insert(VSet word, int tw)
 					sinkStates[layer + 1].insert(newTo);
 
 				}
-				
+
 				//Use the pair we already assigned
 				pairRep = searchInfo->second;
 
@@ -476,21 +509,24 @@ void DAWG::insert(VSet word, int tw)
 	}
 
 	//Add a sink transition to our final state reading input tw, if necessary
-	if (sinkStates[length].find(newStates[length] ) != lengthSinkEnd)
+	if (sinkStates[length].find(newStates[length]) != lengthSinkEnd)
 	{
 		newValueDelta->insert({ newStates[length], tw });
-	}
+}
 
 
 	//Empty our old deltas
 	delete[] delta0;
 	delete[] delta1;
+	delete[] d0end;
+	delete[] d1end;
 	delete valueDelta;
 
 	//Set our new delta values
 	delta0 = newDelta0;
 	delta1 = newDelta1;
 	valueDelta = newValueDelta;
+	setIterEnds();
 
 	initial = initialPair;
 
@@ -503,18 +539,18 @@ void DAWG::insert(VSet word, int tw)
 	//TODO delete irrelevant vertices?
 	//if (totalTransitions > 10000) //TODO make this smarter?
 	//{
-		minimize();
+	minimize();
 	//}
 
 #ifdef DEBUG
-		int sizeAfter = size();
-		if (sizeAfter != sizeBefore)
-		{
-			std::cerr << "Size before " sizeBefore << " size after " << sizeAfter << "\n";
-			std::cerr << "\n\n" << dotBefore << "\n\n\n" << asDot() << "\n\n";
-			abort();
-		}
-		
+	int sizeAfter = size();
+	if (sizeAfter != sizeBefore)
+	{
+		std::cerr << "Size before " sizeBefore << " size after " << sizeAfter << "\n";
+		std::cerr << "\n\n" << dotBefore << "\n\n\n" << asDot() << "\n\n";
+		abort();
+	}
+
 #endif
 }
 
