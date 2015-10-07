@@ -72,17 +72,17 @@ State DAWG::minimizeHelper(int layer, State q)
 	auto& reg = Register[layer];
 	auto& sMapPlus1 = StateMap[layer + 1];
 	auto sEndPlus1 = StateMapEnd[layer + 1];
-	
+
 	if (layer == length) //Transitions are on our possible TW values
 	{
 		int twVal = (*valueDelta)[q];
 		//We don't need to traverse further, we know all these states lead to the final state
 		//after reading a TW value
 
-		auto searchInfo = EndRegister.emplace ( twVal, q );
+		auto searchInfo = EndRegister.emplace(twVal, q);
 		if (searchInfo.second)
 		{
-			StateMap[layer].emplace(q,q);
+			StateMap[layer].emplace(q, q);
 			return q;
 		}
 		else
@@ -154,8 +154,8 @@ State DAWG::minimizeHelper(int layer, State q)
 
 
 
-	StateSignature ourSig = {tnext0, tnext1};
-	auto searchInfo = reg.emplace( ourSig, q );
+	StateSignature ourSig = { tnext0, tnext1 };
+	auto searchInfo = reg.emplace(ourSig, q);
 	if (searchInfo.second)
 	{
 		StateMap[layer].emplace(q, q);
@@ -205,6 +205,78 @@ int DAWG::numTransitions()
 	}
 	return ret;
 
+}
+
+void DAWG::trim()
+{
+	//First layer: delete transitions to NO_TW
+	auto transitionIter = valueDelta->begin();
+	while (transitionIter != valueEnd)
+	{
+		if (transitionIter->second == NO_WIDTH)
+		{
+			transitionIter = valueDelta->erase(transitionIter);
+		}
+		else
+		{
+			++transitionIter;
+		}
+	}
+
+	//Second layer: delete transitions that point to something not in ValueDelta
+	for (auto arr : { delta0, delta1 })
+	{
+		auto currentDelta = arr[length];
+		auto iter = currentDelta.begin();
+		auto loopEnd = currentDelta.end();
+		while (iter != loopEnd)
+		{
+			if (valueDelta->find(iter->second) == valueEnd)
+			{
+				iter = currentDelta.erase(iter);
+			}
+			else
+			{
+				++iter;
+			}
+		}
+	}
+
+	//Then, delete every transition that points to an already deleted transition
+	for (int i = length - 2; i >= 0; --i)
+	{
+		for (auto arr : { delta0, delta1 })
+		{
+			auto currentDelta = arr[i];
+			auto iter = currentDelta.begin();
+			auto loopEnd = currentDelta.end();
+
+
+			auto d0next = delta0[i + 1];
+			auto d0nextEnd = d0end[i + 1];
+			auto d1next = delta1[i + 1];
+			auto d1nextEnd = d1end[i + 1];
+
+			auto nextEnd = arr[i + 1].end();
+			while (iter != loopEnd)
+			{
+				//Check if either transition from this state can reach the end
+				if (d0next.find(iter->second) == d0nextEnd && d1next.find(iter->second) == d1nextEnd)
+				{
+					//If not, delete this state
+					iter = currentDelta.erase(iter);
+				}
+				else
+				{
+					++iter;
+				}
+			}
+		}
+	}
+
+
+	//After we've trimmed, minimize
+	this->minimize();
 }
 
 void DAWG::minimize()
@@ -274,6 +346,11 @@ DAWG::DAWG(const DAWG & that)
 	{
 		valueDelta->emplace(transition.first, NO_WIDTH);
 	}
+
+	//Initialize iter ends
+	setIterEnds();
+
+	minimize(); //There could be lots of redundancy removed since we don't store TW values
 }
 
 DAWG::~DAWG()
@@ -412,7 +489,7 @@ void DAWG::insert(VSet word, int tw)
 					nextRep = nextSearchInfo.first->second;
 					this->nextState--; //Undo our unneeded newstate generation
 				}
-				
+
 
 				//Insert our new transition into our new store
 				newDelta[layer].emplace(pairRep, nextRep);
@@ -528,7 +605,7 @@ void DAWG::insert(VSet word, int tw)
 			State pairRep = searchInfo->second;
 			//we have a "sink" transition on every TW-value that was supported, 
 			//plus our new TW value
-			newValueDelta->emplace( pairRep, std::min(oldTW, tw) );
+			newValueDelta->emplace(pairRep, std::min(oldTW, tw));
 		}
 
 	}
@@ -536,8 +613,8 @@ void DAWG::insert(VSet word, int tw)
 	//Add a sink transition to our final state reading input tw, if necessary
 	if (sinkStates[length].find(newStates[length]) != lengthSinkEnd)
 	{
-		newValueDelta->emplace( newStates[length], tw );
-	}
+		newValueDelta->emplace(newStates[length], tw);
+}
 
 
 	//Empty our old deltas
@@ -564,7 +641,7 @@ void DAWG::insert(VSet word, int tw)
 	//TODO delete irrelevant vertices?
 	if (counter % 15 == 0) //TODO make this smarter?
 	{
-	minimize();
+		minimize();
 	}
 	counter++;
 
@@ -575,7 +652,7 @@ void DAWG::insert(VSet word, int tw)
 		std::cerr << "Size before " sizeBefore << " size after " << sizeAfter << "\n";
 		std::cerr << "\n\n" << dotBefore << "\n\n\n" << asDot() << "\n\n";
 		abort();
-}
+	}
 
 #endif
 }

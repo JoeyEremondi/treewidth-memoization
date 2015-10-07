@@ -115,6 +115,8 @@ protected:
 public:
 	void clear();
 	int numTransitions();
+
+	void trim();
 	
 	std::string asDot();
 	DAWG();
