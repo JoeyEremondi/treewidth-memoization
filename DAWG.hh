@@ -73,7 +73,7 @@ private:
 	std::unordered_map<int, State>::iterator EndRegisterEnd;
 
 	std::unordered_map<State, State>* StateMap;
-	std::unordered_map<State, State>::iterator* StateMapEnd;
+	//std::unordered_map<State, State>::iterator* StateMapEnd;
 
 protected:
 	int pathsToEndFrom(int depth, State q);
@@ -127,7 +127,7 @@ public:
 	
 	void insert(VSet word, int tw);
 	int contains(VSet word);
-	inline State delta(int depth, State q, bool bitRead) {
+	State delta(int depth, State q, bool bitRead) {
 		if (depth >= length)
 		{
 			return SINK;

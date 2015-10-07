@@ -2,10 +2,13 @@
 #include <iostream>
 #include "AbstractMemo.hh"
 
+//#define DEBUG
+
 DAWGBottomUp::DAWGBottomUp(const Graph& G) : AbstractBottomUp(G)
 {
 	upperBoundForLayer = new int[VSet::maxNumVerts];
-	TW.resize(VSet::maxNumVerts);
+	//TW.resize(1);
+	TW.resize(1); //Emtpy DAWG for layer 0
 	//Create our initial TW value
 	//This gets repeatedly deleted and allocated
 }
@@ -52,14 +55,14 @@ void DAWGBottomUp::iterNext()
 	{
 		haveSeenInitialElement = true;
 	}
-	
+
 
 	int prevLayer = currentLayer - 1;
 
 	auto pair = TW[prevLayer].nextIter();
 	S = pair.first;
 	r = pair.second;
-	
+
 }
 
 
@@ -69,18 +72,55 @@ void DAWGBottomUp::updateTW(int layer, VSet S, int tw)
 	numUpdates++;
 	if (tw > 0)
 	{
-		
+
 		TW[layer].insert(S, tw);
 	}
 }
 
 void DAWGBottomUp::beginLayer(int layer)
 {
-	int prevLayer = layer - 1;
+
+	//int prevLayer = layer - 1;
 	int numStored = 0;
 
 	//Create an array entry for each possible TW value
 	upperBoundForLayer[layer] = globalUpperBound;
+
+
+
+	if (layer > 0)
+	{
+
+#ifdef DEBUG
+		auto preTrim = TWtest[layer - 1].asDot();
+#endif
+
+		TW[layer - 1].trim();
+
+#ifdef DEBUG
+		std::cout << "Last layer wordSet real: ";
+		for (auto word : TW[layer - 1].wordSet())
+		{
+			std::cout << "\n" << word;
+		}
+		std::cout << "\n\nLast layer wordSet test: ";
+		for (auto word : TWtest[layer - 1].wordSet())
+		{
+			std::cout << "\n" << word;
+		}
+		std::cout << "\n";
+
+		std::cout << "\n\n" << TW[layer - 1].asDot() << "\n\n" << TWtest[layer - 1].asDot() << "\n\n" << preTrim << "\n\n";
+
+#endif
+
+		//Trim the previous layer's DAWG
+		//
+		//Copy the previous DAWG into this layer's entry
+		TW.push_back(DAWG(TW[layer - 1]));
+
+	}
+
 }
 
 void DAWGBottomUp::endLayer(int layer)
