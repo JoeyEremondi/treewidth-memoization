@@ -53,9 +53,9 @@ private:
 
 	std::unordered_map<State, int>* valueDelta;
 
-	std::unordered_map<State, State>::iterator* d0end;
-	std::unordered_map<State, State>::iterator* d1end;
-	std::unordered_map<State, int>::iterator valueEnd;
+	//std::unordered_map<State, State>::iterator* d0end;
+	//std::unordered_map<State, State>::iterator* d1end;
+	//std::unordered_map<State, int>::iterator valueEnd;
 
 	const State SINK = 0;
 	const State FINAL = 1;
@@ -86,17 +86,7 @@ protected:
 
 	std::vector<std::string> DAWG::wordSetHelper(int depth, State q);
 
-	inline void setIterEnds()
-	{
-		d0end = new std::unordered_map<State, State>::iterator[length];
-		d1end = new std::unordered_map<State, State>::iterator[length];
-		for (int i = 0; i < length; i++)
-		{
-			d0end[i] = delta0[i].end();
-			d1end[i] = delta1[i].end();
-		}
-		valueEnd = valueDelta->end();
-	}
+
 
 	/*
 	inline void setTransition(int layer, State q, bool bit, State tnext)
@@ -135,7 +125,7 @@ public:
 		if (bitRead)
 		{
 			auto searchInfo = delta1[depth].find(q);
-			if (searchInfo == d1end[depth])
+			if (searchInfo == delta1[depth].end())
 			{
 				return SINK;
 			}
@@ -144,7 +134,7 @@ public:
 		else
 		{
 			auto searchInfo = delta0[depth].find(q);
-			if (searchInfo == d0end[depth])
+			if (searchInfo == delta0[depth].end())
 			{
 				return SINK;
 			}
