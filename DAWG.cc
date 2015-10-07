@@ -4,6 +4,8 @@
 #include <sstream>
 #include <algorithm>
 
+#include "AbstractMemo.hh"
+
 std::string DAWG::asDot()
 {
 	std::ostringstream ss;
@@ -252,6 +254,28 @@ DAWG::DAWG()
 
 }
 
+DAWG::DAWG(const DAWG & that)
+{
+	//Initialize length and pointers
+	this->length = that.length;
+	this->delta0 = new std::unordered_map<State, State>[length];
+	this->delta1 = new std::unordered_map<State, State>[length];
+	this->valueDelta = new std::unordered_map<State, int>;
+
+	//Copy delta0 and delta1 from input
+	for (int i = 0; i < length; i++)
+	{
+		delta0[i] = that.delta0[i];
+		delta1[i] = that.delta1[i];
+	}
+
+	//Point each entry to NO_WIDTH in ValueDelta to show that they're from an old level
+	for (auto transition : *that.valueDelta)
+	{
+		valueDelta->emplace(transition.first, NO_WIDTH);
+	}
+}
+
 DAWG::~DAWG()
 {
 	delete[] delta0;
@@ -298,6 +322,8 @@ std::vector<std::string> DAWG::wordSetHelper(int depth, State q)
 
 void DAWG::insert(VSet word, int tw)
 {
+	static int counter = 0;
+
 	//Special case: if there are no transitions, we just insert the word normally
 	if (delta0[0].empty() && delta1[0].empty())
 	{
@@ -409,7 +435,7 @@ void DAWG::insert(VSet word, int tw)
 		//Look at all the states with transitions defined the same as our new word
 		//Create new states for their pairs, and add them to the map
 		loopEnd = thatDelta[layer].end();
-		for (auto iter = thatDelta[layer].begin(); iter != loopEnd; iter = thatDelta[layer].erase(iter)) //TODO erase as we go?
+		for (auto iter = thatDelta[layer].begin(); iter != loopEnd; ++iter/*iter = thatDelta[layer].erase(iter)*/) //TODO erase as we go?
 		{
 			State qFrom = iter->first;
 			State qTo = iter->second;
@@ -536,10 +562,11 @@ void DAWG::insert(VSet word, int tw)
 
 	//When we're done, minimize to save space
 	//TODO delete irrelevant vertices?
-	//if (totalTransitions > 10000) //TODO make this smarter?
-	//{
+	if (counter % 15 == 0) //TODO make this smarter?
+	{
 	minimize();
-	//}
+	}
+	counter++;
 
 #ifdef DEBUG
 	int sizeAfter = size();

@@ -118,6 +118,7 @@ public:
 	
 	std::string asDot();
 	DAWG();
+	DAWG(const DAWG& oldDawg);
 	~DAWG();
 	int size();
 	std::vector<std::string> DAWG::wordSet();
