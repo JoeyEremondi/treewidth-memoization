@@ -2,6 +2,8 @@
 #define __DAWG__HH__
 
 #include "VSet.hh"
+#include <unordered_set>
+#include <unordered_map>
 
 typedef uint32_t State;
 
@@ -39,7 +41,7 @@ inline bool operator==(const StateSignature& lhs, const StateSignature& rhs)
 inline bool operator<(const StateSignature& lhs, const StateSignature& rhs)
 {
 	return (lhs.s1 < rhs.s1) || (lhs.s1 == rhs.s1 && lhs.s2 == rhs.s2);
-} 
+}
 //typedef std::pair<State, State> StateSignature;
 
 class DAWG
@@ -48,7 +50,7 @@ private:
 	State nextState = 3;
 	State initial = 2;
 
-	std::vector<std::unordered_map<State, State>> delta0; 
+	std::vector<std::unordered_map<State, State>> delta0;
 	std::vector<std::unordered_map<State, State>> delta1;
 
 	std::unordered_map<State, int> valueDelta;
@@ -59,9 +61,9 @@ private:
 
 	const State SINK = 0;
 	const State FINAL = 1;
-	
 
-	
+
+
 	int length;
 
 	//Based off of depth-first minimization, stringology paper //TODO cite
@@ -83,7 +85,7 @@ protected:
 	void deleteState(int layer, State q);
 	void insertIntoEmpty(VSet word, int tw);
 
-	std::vector<std::string> DAWG::wordSetHelper(int depth, State q);
+	std::vector<std::string> wordSetHelper(int depth, State q);
 
 
 
@@ -99,22 +101,22 @@ protected:
 			delta0[layer][q] = tnext;
 		}
 	} */
-	
+
 
 public:
-	const static int NOT_CONTAINED = -1;
+	const int NOT_CONTAINED = -1;
 	void clear();
 	int numTransitions();
 
 	void trim();
-	
+
 	std::string asDot();
 	DAWG();
 	void copyFrom(const DAWG& oldDawg);
 	~DAWG();
 	int size();
-	std::vector<std::string> DAWG::wordSet();
-	
+	std::vector<std::string> wordSet();
+
 	void insert(VSet word, int tw);
 	int contains(VSet word);
 	State delta(int depth, State q, bool bitRead) {
@@ -147,7 +149,7 @@ public:
 		return{delta(layer, q, false), delta(layer, q, true)};
 	}
 
-	
+
 
 	//Adapted from https://gist.github.com/jeetsukumaran/307264
 	class iterator
@@ -159,7 +161,7 @@ public:
 		typedef std::pair<VSet, int>* pointer;
 		typedef std::forward_iterator_tag iterator_category;
 		typedef int difference_type;
-		
+
 		self_type operator++() { return this->nextIter(); };
 		reference operator*() { return currentPair; }
 		pointer operator->() { return &currentPair; }

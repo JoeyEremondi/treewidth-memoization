@@ -96,7 +96,7 @@ void DAWGBottomUp::beginLayer(int layer)
 #ifdef DEBUG
 		auto preTrim = TWtest[layer - 1].asDot();
 #endif
-		TW[layer - 1].trim();		
+		TW[layer - 1].trim();
 
 		//#ifdef DEBUG
 		std::ostringstream fileName, badFileName;
@@ -125,10 +125,10 @@ void DAWGBottomUp::beginLayer(int layer)
 
 		badGraphFile.close();
 		//#endif
-		
-		
 
-		
+
+
+
 
 #ifdef DEBUG
 		std::cout << "Last layer wordSet real: ";
@@ -166,7 +166,7 @@ void DAWGBottomUp::endLayer(int layer)
 int DAWGBottomUp::finalResult(int finalLayer, VSet SStart)
 {
 	int twVal = TW[finalLayer].contains(SStart);
-	if (twVal == DAWG::NOT_CONTAINED)
+	if (twVal == TW[finalLayer].NOT_CONTAINED)
 	{
 		return globalUpperBound;
 	}

@@ -651,7 +651,7 @@ void DAWG::insert(VSet word, int tw)
 
 		//Add all our newDelta elements to delta
 		//And erase all our elements from our erase list
-		
+
 		if (newBit)
 		{
 			delta0[layer].insert(newOtherDelta.begin(), newOtherDelta.end());
@@ -661,7 +661,7 @@ void DAWG::insert(VSet word, int tw)
 		{
 			delta1[layer].insert(newOtherDelta.begin(), newOtherDelta.end());
 			delta0[layer].insert(newDelta.begin(), newDelta.end());
-		} 
+		}
 
 
 		//Save memory, we don't ever look back a level
@@ -689,7 +689,7 @@ void DAWG::insert(VSet word, int tw)
 		State qFrom = valueTrans->first;
 		int oldTW = valueTrans->second;
 
-		
+
 
 		//As an automaton, our new product state can transition on either oldTW or newTW
 		//But we will only ever take the min value
@@ -697,7 +697,7 @@ void DAWG::insert(VSet word, int tw)
 		if (searchInfo != pairMapLenghtEnd)
 		{
 			State pairRep = searchInfo->second;
-			//we have a "sink" transition on every TW-value that was supported, 
+			//we have a "sink" transition on every TW-value that was supported,
 			//plus our new TW value
 			if (oldTW != NOT_CONTAINED)
 			{
@@ -946,7 +946,7 @@ DAWG::iterator DAWG::iterator::nextIter()
 				std::cerr << "ERROR: Found end-state with no TW value";
 				abort();
 			}
-			else if (searchInfo->second == NOT_CONTAINED)
+			else if (searchInfo->second == super->NOT_CONTAINED)
 			{
 				std::cerr << "ERROR: iterate found non-contained set " << showSet(currentSet) << " " << searchInfo->second << "\n";
 				std::cerr << "State path ";
@@ -962,7 +962,7 @@ DAWG::iterator DAWG::iterator::nextIter()
 				abort();
 			}
 			this->currentPair = { currentSet, searchInfo->second };
-			
+
 
 
 		}

@@ -16,7 +16,7 @@ CPPFLAGS=-g -O2
 LDFLAGS=-g -O2
 LDLIBS=-lm -lboost_system -lboost_timer -lboost_filesystem
 
-SRCS= qset.cc test.cc NaiveMemo.cc BasicMemo.cc DepthBoundedMemo.cc AbstractMemo.cc SimplicialFirstMemo.cc HeuristicUpperBoundMemo.cc TWUtilAlgos.cc DIMACS.cc VSet.cc BottomUpTW.cc TopDownTW.cc UpperBound.cc
+SRCS= qset.cc test.cc NaiveMemo.cc BasicMemo.cc DepthBoundedMemo.cc AbstractMemo.cc SimplicialFirstMemo.cc HeuristicUpperBoundMemo.cc TWUtilAlgos.cc DIMACS.cc VSet.cc BottomUpTW.cc TopDownTW.cc UpperBound.cc AbstractBottomUp.cc DAWG.cc DAWGBottomUp.cc
 OBJS=$(subst .cc,.o,$(SRCS))
 
 all: test
