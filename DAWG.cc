@@ -651,7 +651,7 @@ void DAWG::insert(VSet word, int tw)
 
 		//Add all our newDelta elements to delta
 		//And erase all our elements from our erase list
-		/*
+		
 		if (newBit)
 		{
 			delta0[layer].insert(newOtherDelta.begin(), newOtherDelta.end());
@@ -661,33 +661,7 @@ void DAWG::insert(VSet word, int tw)
 		{
 			delta1[layer].insert(newOtherDelta.begin(), newOtherDelta.end());
 			delta0[layer].insert(newDelta.begin(), newDelta.end());
-		} */
-		for (auto newQ : newDelta)
-		{
-			auto addIter = newBit ? delta1[layer].insert(newQ) : delta0[layer].insert(newQ);
-			if (!addIter.second)
-			{
-				std::cerr << "Tried to add elem from newDelta which was already in map\n";
-				abort();
-			}
-		}
-		for (auto newOtherQ : newOtherDelta)
-		{
-			auto addIter = newBit ? delta0[layer].insert(newOtherQ) : delta1[layer].insert(newOtherQ);
-			if (!addIter.second)
-			{
-				std::cerr << "Tried to add elem from newOtherDelta which was already in map\n";
-				abort();
-			}
-		}
-
-		/*
-		for (State q : eraseList)
-		{
-			delta0[layer].erase(q);
-			delta1[layer].erase(q);
-		}*/
-
+		} 
 
 
 		//Save memory, we don't ever look back a level
@@ -701,24 +675,21 @@ void DAWG::insert(VSet word, int tw)
 	}
 
 	std::unordered_map<State, State> newValueDelta;
-	std::unordered_set<State> valueEraseList;
 
 	//Now that we're at the last layer, add transitions to our TW states as necessary
 	//This lets us store TW values in our DAWG
 	auto lengthSinkEnd = sinkStates[length].end();
 	auto pairMapLenghtEnd = pairMap[length].end();
-	for (auto trans : valueDelta)
+
+	auto valueTrans = valueDelta.begin();
+	auto valueEnd = valueDelta.end();
+	while (valueTrans != valueEnd)
 	{
 		State newFrom = newStates[length];
-		State qFrom = trans.first;
-		int oldTW = trans.second;
+		State qFrom = valueTrans->first;
+		int oldTW = valueTrans->second;
 
-		//Add remove unused old transitions
-		if (sinkStates[length].find(qFrom) == lengthSinkEnd)
-		{
-			valueEraseList.insert(qFrom);
-		}
-		//Otherwise, already in valueDelta
+		
 
 		//As an automaton, our new product state can transition on either oldTW or newTW
 		//But we will only ever take the min value
@@ -738,6 +709,15 @@ void DAWG::insert(VSet word, int tw)
 			}
 
 		}
+		//remove unused old transitions
+		if (sinkStates[length].find(qFrom) == lengthSinkEnd)
+		{
+			valueTrans = valueDelta.erase(valueTrans);
+		}
+		else
+		{
+			++valueTrans;
+		}
 
 	}
 
@@ -751,28 +731,8 @@ void DAWG::insert(VSet word, int tw)
 
 
 	//Add all from our new list, delete our erase list
-	//valueDelta.insert(newValueDelta.begin(), newValueDelta.end());
-	for (auto q : newValueDelta)
-	{
-		valueDelta.insert(q);
-	}
-	for (State q : valueEraseList)
-	{
-		valueDelta.erase(q);
-	}
+	valueDelta.insert(newValueDelta.begin(), newValueDelta.end());
 
-
-	//Empty our old deltas
-	//delete[] delta0;
-	//delete[] delta1;
-	//delete[] d0end;
-	//delete[] d1end;
-	//delete valueDelta;
-
-	//Set our new delta values
-	//delta0 = newDelta0;
-	//delta1 = newDelta1;
-	//valueDelta = newValueDelta;
 
 	initial = initialPair;
 
