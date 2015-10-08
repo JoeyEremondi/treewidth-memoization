@@ -526,12 +526,12 @@ void DAWG::insert(VSet word, int tw)
 
 		//For each transition matching the letter of our new automaton
 		//we add a transition to a new "pair" state
-		const auto& thisDelta = newBit ? delta1 : delta0;
-		const auto& thatDelta = newBit ? delta0 : delta1;
+		auto& thisDelta = newBit ? delta1 : delta0;
+		auto& thatDelta = newBit ? delta0 : delta1;
 
 		std::unordered_map<State, State> newDelta;
 		std::unordered_map<State, State> newOtherDelta;
-		std::unordered_set<State> eraseList;
+		//std::unordered_set<State> eraseList;
 
 		//Look at all the states with transitions defined the same as our new word
 		//Create new states for their pairs, and add them to the map
@@ -542,11 +542,13 @@ void DAWG::insert(VSet word, int tw)
 		auto nextPairMapEnd = pairMap[layer + 1].end();
 		auto sinkStatesEnd = sinkStates[layer].end();
 
-
-		for (auto trans : thisDelta[layer])
+		auto transIter = thisDelta[layer].begin();
+		auto deltaEnd = thisDelta[layer].end();
+		while (transIter != deltaEnd)
 		{
-			State qFrom = trans.first;
-			State qTo = trans.second;
+			State qFrom = transIter->first;
+			State qTo = transIter->second;
+
 
 			//Check, are we in the pair map? If not, then we are not reachable from a previous layer
 			auto searchInfo = pairMap[layer].find({ qFrom, newFrom });
@@ -571,14 +573,16 @@ void DAWG::insert(VSet word, int tw)
 				newDelta.emplace(pairRep, nextRep);
 			}
 
-			//Check if we need to add this transition as a successor to a  "sink" transition
+			//Check if we need to add this transition as a successor to a  "sink" transition, and keep it in our delta
+			//Or if we delete it
 			if (sinkStates[layer].find(qFrom) != sinkStatesEnd)
 			{
 				sinkStates[layer + 1].insert(qTo);
+				++transIter;
 			}
 			else
 			{
-				eraseList.insert(qFrom);
+				transIter = thisDelta[layer].erase(transIter);
 			}
 
 		}
@@ -587,10 +591,12 @@ void DAWG::insert(VSet word, int tw)
 		//we send (qFrom, newFrom) to (qTo, SINK), which we represent as qTo to save labels
 		//Look at all the states with transitions defined the same as our new word
 		//Create new states for their pairs, and add them to the map
-		for (auto trans : thatDelta[layer]) //TODO erase as we go?
+		transIter = thatDelta[layer].begin();
+		deltaEnd = thatDelta[layer].end();
+		while (transIter != deltaEnd) //TODO erase as we go?
 		{
-			State qFrom = trans.first;
-			State qTo = trans.second;
+			State qFrom = transIter->first;
+			State qTo = transIter->second;
 
 			//Generate an int for our pair state, and store it in the map
 
@@ -625,11 +631,11 @@ void DAWG::insert(VSet word, int tw)
 				//Don't add this to the erase list, we'll keep it from our current delta
 				//newOtherDelta[layer][qFrom] = qTo;
 				sinkStates[layer + 1].insert(qTo);
-
+				++transIter;
 			}
 			else
 			{
-				eraseList.insert(qFrom);
+				transIter = thatDelta[layer].erase(transIter);
 			}
 
 		}
@@ -675,11 +681,12 @@ void DAWG::insert(VSet word, int tw)
 			}
 		}
 
+		/*
 		for (State q : eraseList)
 		{
 			delta0[layer].erase(q);
 			delta1[layer].erase(q);
-		}
+		}*/
 
 
 
