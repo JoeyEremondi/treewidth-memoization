@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 	//std::vector<std::string> inFiles({"eil51.tsp.dgf" });
 	std::vector<std::string> inFiles({ "queen5_5.dgf" });
 	//std::vector<std::string> inFiles({ "mildew.dgf" });
-	//std::vector<std::string> inFiles({ "myciel3.dgf" });
+	//std::vector<std::string> inFiles({ "myciel4.dgf" });
 	//std::vector<std::string> inFiles({ "oesoca42.dgf" });
 
 

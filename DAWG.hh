@@ -48,10 +48,10 @@ private:
 	State nextState = 3;
 	State initial = 2;
 
-	std::unordered_map<State, State>* delta0; 
-	std::unordered_map<State, State>* delta1;
+	std::vector<std::unordered_map<State, State>> delta0; 
+	std::vector<std::unordered_map<State, State>> delta1;
 
-	std::unordered_map<State, int>* valueDelta;
+	std::unordered_map<State, int> valueDelta;
 
 	//std::unordered_map<State, State>::iterator* d0end;
 	//std::unordered_map<State, State>::iterator* d1end;
@@ -59,7 +59,7 @@ private:
 
 	const State SINK = 0;
 	const State FINAL = 1;
-	const int NOT_CONTAINED = -1;
+	
 
 	std::vector<StackElem> iterStack;
 	StackElem currentStack;
@@ -103,6 +103,7 @@ protected:
 	
 
 public:
+	const static int NOT_CONTAINED = -1;
 	void clear();
 	int numTransitions();
 
@@ -110,7 +111,7 @@ public:
 	
 	std::string asDot();
 	DAWG();
-	DAWG(const DAWG& oldDawg);
+	void copyFrom(const DAWG& oldDawg);
 	~DAWG();
 	int size();
 	std::vector<std::string> DAWG::wordSet();

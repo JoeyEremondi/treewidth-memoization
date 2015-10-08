@@ -8,21 +8,49 @@
 
 std::string DAWG::asDot()
 {
+	std::unordered_map<State, State> labels;
+	State nextLabel = 1;
+
 	std::ostringstream ss;
 	ss << "digraph G {\n";
 	for (int i = 0; i < length; i++)
 	{
 		for (auto pair : delta0[i])
 		{
+			for (State q : {pair.first, pair.second})
+			{
+				if (labels[q] == 0)
+				{
+					labels[q] = nextLabel;
+					nextLabel++;
+				}
+			}
+
 			ss << "  " << pair.first << " -> " << pair.second << " [label=\"0 " << i << " \"]\n";
 		}
 		for (auto pair : delta1[i])
 		{
+			for (State q : {pair.first, pair.second})
+			{
+				if (labels[q] == 0)
+				{
+					labels[q] = nextLabel;
+					nextLabel++;
+				}
+			}
 			ss << "  " << pair.first << " -> " << pair.second << " [label=\"1 " << i << " \"]\n";
 		}
 	}
-	for (auto pair : *valueDelta)
+
+	if (labels[FINAL] == 0)
 	{
+		labels[FINAL] = nextLabel;
+		nextLabel++;
+	}
+
+	for (auto pair : valueDelta)
+	{
+		//All states should have labels by now
 		ss << "  " << pair.first << " -> " << FINAL << " [label=\"" << pair.second << " \"]\n";
 	}
 	ss << "}";
@@ -50,6 +78,11 @@ State DAWG::newState()
 {
 	State ret = nextState;
 	nextState++;
+	if (nextState <= ret)
+	{
+		std::cerr << "Overflow of states\n";
+		abort();
+	}
 	return ret;
 }
 
@@ -74,8 +107,8 @@ State DAWG::minimizeHelper(int layer, State q)
 
 	if (layer == length) //Transitions are on our possible TW values
 	{
-		auto findVal = valueDelta->find(q);
-		if (findVal != valueDelta->end())
+		auto findVal = valueDelta.find(q);
+		if (findVal != valueDelta.end())
 		{
 			int twVal = findVal->second;
 			//We don't need to traverse further, we know all these states lead to the final state
@@ -99,6 +132,10 @@ State DAWG::minimizeHelper(int layer, State q)
 		else
 		{
 			std::cerr << "ERROR: improperly trimmed, " << q << " not in valueDict\n";
+			for (auto trans : valueDelta)
+			{
+				std::cerr << "Value dict trans " << trans.first << " " << trans.second << "\n";
+			}
 			abort();
 		}
 
@@ -190,7 +227,7 @@ void DAWG::deleteState(int layer, State q)
 	}
 	else
 	{
-		valueDelta->erase(q);
+		valueDelta.erase(q);
 	}
 }
 
@@ -202,7 +239,7 @@ void DAWG::clear()
 		delta0[i].clear();
 		delta1[i].clear();
 	}
-	valueDelta->clear();
+	valueDelta.clear();
 }
 
 int DAWG::numTransitions()
@@ -221,13 +258,13 @@ int DAWG::numTransitions()
 void DAWG::trim()
 {
 	//First layer: delete transitions to NOT_CONTAINED
-	auto transitionIter = valueDelta->begin();
-	auto valueEnd = valueDelta->end();
+	auto transitionIter = valueDelta.begin();
+	auto valueEnd = valueDelta.end();
 	while (transitionIter != valueEnd)
 	{
 		if (transitionIter->second == NOT_CONTAINED)
 		{
-			transitionIter = valueDelta->erase(transitionIter);
+			transitionIter = valueDelta.erase(transitionIter);
 		}
 		else
 		{
@@ -236,24 +273,34 @@ void DAWG::trim()
 	}
 
 	//Second layer: delete transitions that point to something not in ValueDelta
-	for (auto& arr : { delta0, delta1 })
+	auto iter = delta0[length - 1].begin();
+	auto loopEnd = delta0[length - 1].end();
+	while (iter != loopEnd)
 	{
-		bool bit = arr == delta1;
-		auto& currentDelta = arr[length - 1];
-		auto iter = currentDelta.begin();
-		auto loopEnd = currentDelta.end();
-		while (iter != loopEnd)
+		if (valueDelta.find(iter->second) == valueEnd)
 		{
-			if (valueDelta->find(iter->second) == valueEnd)
-			{
-				iter = currentDelta.erase(iter);
-			}
-			else
-			{
-				++iter;
-			}
+			iter = delta0[length - 1].erase(iter);
+		}
+		else
+		{
+			++iter;
 		}
 	}
+	//Same for delta1
+	iter = delta1[length - 1].begin();
+	loopEnd = delta1[length - 1].end();
+	while (iter != loopEnd)
+	{
+		if (valueDelta.find(iter->second) == valueEnd)
+		{
+			iter = delta1[length - 1].erase(iter);
+		}
+		else
+		{
+			++iter;
+		}
+	}
+
 
 	//Then, delete every transition that points to an already deleted transition
 	for (int i = length - 2; i >= 0; --i)
@@ -326,31 +373,39 @@ DAWG::DAWG()
 
 	//Allocate our vectors
 
-	this->delta0 = new std::unordered_map<State, State>[length];
-	this->delta1 = new std::unordered_map<State, State>[length];
-	this->valueDelta = new std::unordered_map<State, int>;
+	this->delta0.resize(length);
+	this->delta1.resize(length);
 
 }
 
-DAWG::DAWG(const DAWG & that)
+void DAWG::copyFrom(const DAWG & that)
 {
 	//Initialize length and pointers
 	this->length = that.length;
-	this->delta0 = new std::unordered_map<State, State>[length];
-	this->delta1 = new std::unordered_map<State, State>[length];
-	this->valueDelta = new std::unordered_map<State, int>;
+	//this->delta0 = new std::unordered_map<State, State>[length];
+	//this->delta1 = new std::unordered_map<State, State>[length];
 
 	//Copy delta0 and delta1 from input
 	for (int i = 0; i < length; i++)
 	{
-		delta0[i] = that.delta0[i];
-		delta1[i] = that.delta1[i];
+		this->delta0[i].insert(that.delta0[i].begin(), that.delta0[i].end());
+		this->delta1[i].insert(that.delta1[i].begin(), that.delta1[i].end());
+	}
+
+	for (auto transition : that.valueDelta)
+	{
+		std::cerr << "ValueDelta of that before copy " << transition.first << " " << transition.second << "\n";
 	}
 
 	//Point each entry to NO_WIDTH in ValueDelta to show that they're from an old level
-	for (auto transition : *that.valueDelta)
+	for (auto transition : that.valueDelta)
 	{
-		valueDelta->emplace(transition.first, NOT_CONTAINED);
+		valueDelta.emplace(transition.first, NOT_CONTAINED);
+	}
+
+	for (auto transition : that.valueDelta)
+	{
+		std::cerr << "ValueDelta of that after copy " << transition.first << " " << transition.second << "\n";
 	}
 
 
@@ -363,9 +418,9 @@ DAWG::DAWG(const DAWG & that)
 
 DAWG::~DAWG()
 {
-	delete[] delta0;
-	delete[] delta1;
-	delete valueDelta;
+	delta0.clear();
+	delta1.clear();
+	valueDelta.clear();
 }
 
 int DAWG::size()
@@ -375,10 +430,7 @@ int DAWG::size()
 
 std::vector<std::string> DAWG::wordSet()
 {
-	for (auto trans : *valueDelta)
-	{
-		std::cout << "Transition " << trans.first << " " << trans.second << "\n";
-	}
+
 	return wordSetHelper(0, initial);
 }
 
@@ -392,8 +444,8 @@ std::vector<std::string> DAWG::wordSetHelper(int depth, State q)
 	else if (depth == length)
 	{
 		std::ostringstream ss;
-		auto searchInfo = valueDelta->find(q);
-		if (searchInfo != valueDelta->end())
+		auto searchInfo = valueDelta.find(q);
+		if (searchInfo != valueDelta.end())
 		{
 			ss << "(" << searchInfo->second << ")";
 			v.push_back(ss.str());
@@ -471,13 +523,13 @@ void DAWG::insert(VSet word, int tw)
 
 	State initialPair = newState();
 	pairMap[0][{initial, newInitial}] = initialPair;
-	
+
 	int totalTransitions = 0;
 
 	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
 	{
-		
+
 
 		State newFrom = newStates[layer];
 		State newTo = newStates[layer + 1];
@@ -584,7 +636,7 @@ void DAWG::insert(VSet word, int tw)
 				//Don't add this to the erase list, we'll keep it from our current delta
 				//newOtherDelta[layer][qFrom] = qTo;
 				sinkStates[layer + 1].insert(qTo);
-				
+
 			}
 			else
 			{
@@ -633,7 +685,7 @@ void DAWG::insert(VSet word, int tw)
 				abort();
 			}
 		}
-		
+
 		for (State q : eraseList)
 		{
 			delta0[layer].erase(q);
@@ -659,7 +711,7 @@ void DAWG::insert(VSet word, int tw)
 	//This lets us store TW values in our DAWG
 	auto lengthSinkEnd = sinkStates[length].end();
 	auto pairMapLenghtEnd = pairMap[length].end();
-	for (auto trans : *valueDelta)
+	for (auto trans : valueDelta)
 	{
 		State newFrom = newStates[length];
 		State qFrom = trans.first;
@@ -703,14 +755,14 @@ void DAWG::insert(VSet word, int tw)
 
 
 	//Add all from our new list, delete our erase list
-	//valueDelta->insert(newValueDelta.begin(), newValueDelta.end());
+	//valueDelta.insert(newValueDelta.begin(), newValueDelta.end());
 	for (auto q : newValueDelta)
 	{
-		valueDelta->insert(q);
+		valueDelta.insert(q);
 	}
 	for (State q : valueEraseList)
 	{
-		valueDelta->erase(q);
+		valueDelta.erase(q);
 	}
 
 
@@ -748,11 +800,12 @@ void DAWG::insert(VSet word, int tw)
 
 	//When we're done, minimize to save space
 	//TODO delete irrelevant vertices?
-	if (counter % 15 == 0) //TODO make this smarter?
-	{
-		//minimize();
-	}
+	//if (counter % 15 == 0) //TODO make this smarter?
+	//{
+	minimize();
+	//}
 	counter++;
+
 
 #ifdef DEBUG
 	int sizeAfter = size();
@@ -781,7 +834,7 @@ void DAWG::insertIntoEmpty(VSet word, int tw)
 		}
 		currentState = nextState;
 	}
-	valueDelta->insert({ currentState, tw });
+	valueDelta.insert({ currentState, tw });
 
 
 }
@@ -799,8 +852,8 @@ int DAWG::contains(VSet word)
 		currentState = nextState;
 	}
 	//Return the smallest treewidth value we can follow from this state
-	auto searchInfo = valueDelta->find(currentState);
-	if (searchInfo == valueDelta->end())
+	auto searchInfo = valueDelta.find(currentState);
+	if (searchInfo == valueDelta.end())
 	{
 		return NOT_CONTAINED;
 	}
@@ -816,6 +869,12 @@ void DAWG::initIter()
 	std::vector<State> initPath;
 	initPath.push_back(initial);
 	iterStack.push_back({ initial, 0, empty, initPath });
+
+	std::cerr << "Iter init value delta " << "\n";
+	for (auto pair : valueDelta)
+	{
+		std::cerr << "Final trans " << pair.first << " " << pair.second << "\n";
+	}
 
 
 
@@ -917,10 +976,25 @@ std::pair<VSet, int> DAWG::nextIter()
 		if (!didFail)
 		{
 			//std::cout << "Returing " << showSet(currentSet) << " after no failures, path " << showStates(currentPath) << "\n";
-			auto searchInfo = valueDelta->find(current);
-			if (searchInfo == valueDelta->end())
+			auto searchInfo = valueDelta.find(current);
+			if (searchInfo == valueDelta.end())
 			{
 				std::cerr << "ERROR: Found end-state with no TW value";
+				abort();
+			}
+			else if (searchInfo->second == NOT_CONTAINED)
+			{
+				std::cerr << "ERROR: iterate found non-contained set " << showSet(currentSet) << " " << searchInfo->second << "\n";
+				std::cerr << "State path ";
+				for (State st : currentPath)
+				{
+					std::cerr << st << " ";
+				}
+				std::cerr << "\n";
+				for (auto pair : valueDelta)
+				{
+					std::cerr << "Final trans " << pair.first << " " << pair.second << "\n";
+				}
 				abort();
 			}
 			return{ currentSet, searchInfo->second };

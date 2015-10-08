@@ -2,12 +2,14 @@
 #include <iostream>
 #include "AbstractMemo.hh"
 
+#include <fstream>
+#include <iostream>
+
 //#define DEBUG
 
 DAWGBottomUp::DAWGBottomUp(const Graph& G) : AbstractBottomUp(G)
 {
 	upperBoundForLayer = new int[VSet::maxNumVerts];
-	//TW.resize(1);
 	TW.resize(1); //Emtpy DAWG for layer 0
 	//Create our initial TW value
 	//This gets repeatedly deleted and allocated
@@ -79,7 +81,6 @@ void DAWGBottomUp::updateTW(int layer, VSet S, int tw)
 
 void DAWGBottomUp::beginLayer(int layer)
 {
-
 	//int prevLayer = layer - 1;
 	int numStored = 0;
 
@@ -91,11 +92,43 @@ void DAWGBottomUp::beginLayer(int layer)
 	if (layer > 0)
 	{
 
+
 #ifdef DEBUG
 		auto preTrim = TWtest[layer - 1].asDot();
 #endif
+		TW[layer - 1].trim();		
 
-		TW[layer - 1].trim();
+		//#ifdef DEBUG
+		std::ostringstream fileName, badFileName;
+		fileName << "dotOut/dawg_" << layer << ".dot";
+		badFileName << "dotOutBad/dawgBad_" << layer << ".dot";
+		std::ofstream  badGraphFile;
+
+
+
+		badGraphFile.open(badFileName.str());
+		badGraphFile << TW[layer - 1].asDot();
+		/*
+		TW[layer - 1].initIter();
+		auto pair = TW[layer - 1].nextIter();
+		while (!TW[layer - 1].iterDone())
+		{
+			VSet s = pair.first;
+			int tw = pair.second;
+			for (int i = 0; i < VSet::maxNumVerts; i++)
+			{
+				badGraphFile << s.contains(i);
+			}
+			badGraphFile << "(" << tw << ")\n";
+			pair = TW[layer - 1].nextIter();
+		}*/
+
+		badGraphFile.close();
+		//#endif
+
+		
+
+		
 
 #ifdef DEBUG
 		std::cout << "Last layer wordSet real: ";
@@ -117,7 +150,10 @@ void DAWGBottomUp::beginLayer(int layer)
 		//Trim the previous layer's DAWG
 		//
 		//Copy the previous DAWG into this layer's entry
-		TW.push_back(DAWG(TW[layer - 1]));
+		std::cerr << "Starting pushback DAWG copy\n";
+		TW.push_back(DAWG());
+		TW[layer].copyFrom(TW[layer - 1]);
+		std::cerr << "Ending pushback DAWG copy\n";
 
 	}
 
@@ -125,6 +161,8 @@ void DAWGBottomUp::beginLayer(int layer)
 
 void DAWGBottomUp::endLayer(int layer)
 {
+
+
 	TW[layer].clear();
 	std::cerr << "Called update " << numUpdates << " times\n";
 	//std::cout << "TW i size: " << currentLayer << " " << numStored() << "\n";
@@ -133,14 +171,12 @@ void DAWGBottomUp::endLayer(int layer)
 
 int DAWGBottomUp::finalResult(int finalLayer, VSet SStart)
 {
-	for (int i = 0; i < globalUpperBound; i++)
+	int twVal = TW[finalLayer].contains(SStart);
+	if (twVal == DAWG::NOT_CONTAINED)
 	{
-		if (!TW[i].empty())
-		{
-			return i;
-		}
+		return globalUpperBound;
 	}
-	return globalUpperBound;
+	return twVal;
 }
 
 int DAWGBottomUp::numStored()
