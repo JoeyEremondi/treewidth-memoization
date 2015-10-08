@@ -160,17 +160,17 @@ public:
 		typedef std::forward_iterator_tag iterator_category;
 		typedef int difference_type;
 		
-		self_type operator++() { /*TODO*/ }
-		self_type operator++(int junk) { /*TODO*/ return *this; }
+		self_type operator++() { return this->nextIter(); };
 		reference operator*() { return currentPair; }
 		pointer operator->() { return &currentPair; }
 		//We cheat: only empty iterators are equal
-		inline bool operator==(const self_type& rhs) { return iterStack.empty() && rhs.iterStack.empty(); }
-		inline bool operator!=(const self_type& rhs) { return !(iterStack.empty() && rhs.iterStack.empty()); }
-		iterator(std::vector<StackElem> stack) : iterStack(stack) {};
-		iterator() : iterStack() {};
+		bool operator==(const self_type& rhs) { return iterStack.empty() && rhs.iterStack.empty(); }
+		bool operator!=(const self_type& rhs) { return !(iterStack.empty() && rhs.iterStack.empty()); }
+		iterator(StackElem elem, DAWG* super);
+		iterator() : iterStack() { super = NULL; };
 	protected:
-		
+		DAWG* super;
+		self_type nextIter();
 		std::vector<StackElem> iterStack;
 		StackElem currentStack;
 		std::pair<VSet, int> currentPair;

@@ -851,20 +851,12 @@ int DAWG::contains(VSet word)
 
 DAWG::iterator DAWG::begin()
 {
-	VSet empty;
-
-	std::vector<State> initPath;
-	std::vector<StackElem> iterStack;
-	initPath.push_back(initial);
-	iterStack.push_back({ initial, 0, empty, initPath });
-
-	return DAWG::iterator(iterStack);
-
+	return DAWG::iterator({ initial, 0, VSet(), std::vector<State>() }, this);
 }
 
 DAWG::iterator DAWG::end()
 {
-	return iterator(std::vector<StackElem>());
+	return iterator();
 }
 
 std::string showStates(std::vector<State> v)
@@ -880,9 +872,27 @@ std::string showStates(std::vector<State> v)
 	return ss.str();
 }
 
-std::pair<VSet, int> DAWG::nextIter()
-{
 
+
+bool DAWG::empty()
+{
+	return delta(0, initial, false) == SINK && delta(0, initial, true) == SINK;
+}
+
+DAWG::iterator::iterator(StackElem elem, DAWG * super)
+	: iterStack()
+{
+	iterStack.push_back(elem);
+	this->super = super;
+}
+
+DAWG::iterator DAWG::iterator::nextIter()
+{
+	//Don't let us advance past the end
+	if (iterStack.empty() && super == NULL)
+	{
+		return *this;
+	}
 	bool didFail = true;
 	while (didFail)
 	{
@@ -891,7 +901,8 @@ std::pair<VSet, int> DAWG::nextIter()
 		{
 			//std::cout << "Returning empty stack\n";
 			VSet ret;
-			return{ ret, 0 };
+			currentPair = { ret, 0 };
+			return *this;
 		}
 
 		//Pop an element off the stack
@@ -908,10 +919,10 @@ std::pair<VSet, int> DAWG::nextIter()
 
 		std::vector<State> currentPath = top.statePath;
 
-		while (currentPos < length)
+		while (currentPos < super->length)
 		{
 			State q0, q1;
-			if ((q0 = delta(currentPos, current, false)) != SINK && (q1 = delta(currentPos, current, true)) != SINK)
+			if ((q0 = super->delta(currentPos, current, false)) != super->SINK && (q1 = super->delta(currentPos, current, true)) != super->SINK)
 			{
 				//Add the 1 path to our stack
 				VSet newSet = currentSet;
@@ -931,7 +942,7 @@ std::pair<VSet, int> DAWG::nextIter()
 
 			}
 			//If only one path, just follow that path
-			else if ((q0 = delta(currentPos, current, false)) != SINK)
+			else if ((q0 = super->delta(currentPos, current, false)) != super->SINK)
 			{
 				//std::cout << "Following " << current << " -> false -> " << q0 << " layer " << currentPos + 1 << "\n";
 
@@ -941,7 +952,7 @@ std::pair<VSet, int> DAWG::nextIter()
 				currentPath.push_back(q0);
 
 			}
-			else if ((q1 = delta(currentPos, current, true)) != SINK)
+			else if ((q1 = super->delta(currentPos, current, true)) != super->SINK)
 			{
 				//std::cout << "Following " << current << " -> true -> " << q1 << " layer " << currentPos + 1 << "\n";
 
@@ -962,8 +973,8 @@ std::pair<VSet, int> DAWG::nextIter()
 		if (!didFail)
 		{
 			//std::cout << "Returing " << showSet(currentSet) << " after no failures, path " << showStates(currentPath) << "\n";
-			auto searchInfo = valueDelta.find(current);
-			if (searchInfo == valueDelta.end())
+			auto searchInfo = super->valueDelta.find(current);
+			if (searchInfo == super->valueDelta.end())
 			{
 				std::cerr << "ERROR: Found end-state with no TW value";
 				abort();
@@ -977,26 +988,18 @@ std::pair<VSet, int> DAWG::nextIter()
 					std::cerr << st << " ";
 				}
 				std::cerr << "\n";
-				for (auto pair : valueDelta)
+				for (auto pair : super->valueDelta)
 				{
 					std::cerr << "Final trans " << pair.first << " " << pair.second << "\n";
 				}
 				abort();
 			}
-			return{ currentSet, searchInfo->second };
+			this->currentPair = { currentSet, searchInfo->second };
+			
 
 
 		}
 
 	}
-}
-
-bool DAWG::iterDone()
-{
-	return iterStack.empty();
-}
-
-bool DAWG::empty()
-{
-	return delta(0, initial, false) == SINK && delta(0, initial, true) == SINK;
+	return *this;
 }

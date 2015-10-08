@@ -61,7 +61,7 @@ void DAWGBottomUp::iterNext()
 
 	int prevLayer = currentLayer - 1;
 
-	currentIter++;
+	++currentIter;
 	S = currentIter->first;
 	r = currentIter->second;
 
