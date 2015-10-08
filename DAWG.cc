@@ -382,19 +382,12 @@ void DAWG::copyFrom(const DAWG & that)
 {
 	//Initialize length and pointers
 	this->length = that.length;
-	//this->delta0 = new std::unordered_map<State, State>[length];
-	//this->delta1 = new std::unordered_map<State, State>[length];
 
 	//Copy delta0 and delta1 from input
 	for (int i = 0; i < length; i++)
 	{
-		this->delta0[i].insert(that.delta0[i].begin(), that.delta0[i].end());
-		this->delta1[i].insert(that.delta1[i].begin(), that.delta1[i].end());
-	}
-
-	for (auto transition : that.valueDelta)
-	{
-		std::cerr << "ValueDelta of that before copy " << transition.first << " " << transition.second << "\n";
+		this->delta0[i] = that.delta0[i];
+		this->delta1[i] = that.delta1[i];
 	}
 
 	//Point each entry to NO_WIDTH in ValueDelta to show that they're from an old level
@@ -403,10 +396,6 @@ void DAWG::copyFrom(const DAWG & that)
 		valueDelta.emplace(transition.first, NOT_CONTAINED);
 	}
 
-	for (auto transition : that.valueDelta)
-	{
-		std::cerr << "ValueDelta of that after copy " << transition.first << " " << transition.second << "\n";
-	}
 
 
 	//Set our initial and next state values
@@ -800,10 +789,10 @@ void DAWG::insert(VSet word, int tw)
 
 	//When we're done, minimize to save space
 	//TODO delete irrelevant vertices?
-	//if (counter % 15 == 0) //TODO make this smarter?
-	//{
-	minimize();
-	//}
+	if (counter % 15 == 0) //TODO make this smarter?
+	{
+		minimize();
+	}
 	counter++;
 
 
@@ -860,25 +849,22 @@ int DAWG::contains(VSet word)
 	return searchInfo->second;
 }
 
-void DAWG::initIter()
+DAWG::iterator DAWG::begin()
 {
-	iterStack.clear();
-
 	VSet empty;
 
 	std::vector<State> initPath;
+	std::vector<StackElem> iterStack;
 	initPath.push_back(initial);
 	iterStack.push_back({ initial, 0, empty, initPath });
 
-	std::cerr << "Iter init value delta " << "\n";
-	for (auto pair : valueDelta)
-	{
-		std::cerr << "Final trans " << pair.first << " " << pair.second << "\n";
-	}
+	return DAWG::iterator(iterStack);
 
+}
 
-
-
+DAWG::iterator DAWG::end()
+{
+	return iterator(std::vector<StackElem>());
 }
 
 std::string showStates(std::vector<State> v)

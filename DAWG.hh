@@ -61,8 +61,7 @@ private:
 	const State FINAL = 1;
 	
 
-	std::vector<StackElem> iterStack;
-	StackElem currentStack;
+	
 	int length;
 
 	//Based off of depth-first minimization, stringology paper //TODO cite
@@ -148,9 +147,37 @@ public:
 		return{delta(layer, q, false), delta(layer, q, true)};
 	}
 
-	void initIter();
-	std::pair<VSet, int> nextIter();
-	bool iterDone();
+	
+
+	//Adapted from https://gist.github.com/jeetsukumaran/307264
+	class iterator
+	{
+	public:
+		typedef iterator self_type;
+		typedef std::pair<VSet, int> value_type;
+		typedef std::pair<VSet, int>& reference;
+		typedef std::pair<VSet, int>* pointer;
+		typedef std::forward_iterator_tag iterator_category;
+		typedef int difference_type;
+		
+		self_type operator++() { /*TODO*/ }
+		self_type operator++(int junk) { /*TODO*/ return *this; }
+		reference operator*() { return currentPair; }
+		pointer operator->() { return &currentPair; }
+		//We cheat: only empty iterators are equal
+		inline bool operator==(const self_type& rhs) { return iterStack.empty() && rhs.iterStack.empty(); }
+		inline bool operator!=(const self_type& rhs) { return !(iterStack.empty() && rhs.iterStack.empty()); }
+		iterator(std::vector<StackElem> stack) : iterStack(stack) {};
+		iterator() : iterStack() {};
+	protected:
+		
+		std::vector<StackElem> iterStack;
+		StackElem currentStack;
+		std::pair<VSet, int> currentPair;
+	};
+
+	iterator begin();
+	iterator end();
 	bool empty();
 };
 

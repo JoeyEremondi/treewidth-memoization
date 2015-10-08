@@ -10,7 +10,7 @@
 DAWGBottomUp::DAWGBottomUp(const Graph& G) : AbstractBottomUp(G)
 {
 	upperBoundForLayer = new int[VSet::maxNumVerts];
-	TW.resize(1); //Emtpy DAWG for layer 0
+	TW.resize(VSet::maxNumVerts);
 	//Create our initial TW value
 	//This gets repeatedly deleted and allocated
 }
@@ -27,7 +27,7 @@ void DAWGBottomUp::beginIter()
 	int prevLayer = currentLayer - 1;
 	if (currentLayer > 1)
 	{
-		TW[prevLayer].initIter();
+		currentIter = TW[prevLayer].begin();
 		//set the first elements after we've done our setup
 		this->iterNext();
 
@@ -48,7 +48,7 @@ bool DAWGBottomUp::iterDone()
 	{
 		return haveSeenInitialElement;
 	}
-	return TW[currentLayer - 1].iterDone();
+	return currentIter == TW[currentLayer - 1].end();
 }
 
 void DAWGBottomUp::iterNext()
@@ -61,9 +61,9 @@ void DAWGBottomUp::iterNext()
 
 	int prevLayer = currentLayer - 1;
 
-	auto pair = TW[prevLayer].nextIter();
-	S = pair.first;
-	r = pair.second;
+	currentIter++;
+	S = currentIter->first;
+	r = currentIter->second;
 
 }
 
@@ -125,7 +125,7 @@ void DAWGBottomUp::beginLayer(int layer)
 
 		badGraphFile.close();
 		//#endif
-
+		
 		
 
 		
@@ -146,14 +146,8 @@ void DAWGBottomUp::beginLayer(int layer)
 		std::cout << "\n\n" << TW[layer - 1].asDot() << "\n\n" << TWtest[layer - 1].asDot() << "\n\n" << preTrim << "\n\n";
 
 #endif
-
-		//Trim the previous layer's DAWG
-		//
 		//Copy the previous DAWG into this layer's entry
-		std::cerr << "Starting pushback DAWG copy\n";
-		TW.push_back(DAWG());
 		TW[layer].copyFrom(TW[layer - 1]);
-		std::cerr << "Ending pushback DAWG copy\n";
 
 	}
 
