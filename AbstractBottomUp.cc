@@ -165,6 +165,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 
 	}
 
+	std::cout << "Finished bottom up with upper bound of " << globalUpperBound << "\n";
 
 	int finalResult = this->finalResult(nSet, SStart);
 	endLayer(nSet);

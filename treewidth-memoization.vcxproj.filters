@@ -137,5 +137,8 @@
     <ClInclude Include="DAWG.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="bloom_filter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

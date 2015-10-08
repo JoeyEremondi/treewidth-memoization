@@ -167,6 +167,7 @@
     <ClInclude Include="DepthBoundedMemo.hh" />
     <ClInclude Include="DIMACS.hh" />
     <ClInclude Include="graphTypes.hh" />
+    <ClInclude Include="bloom_filter.hpp" />
     <ClInclude Include="OppBloom.hh" />
     <ClInclude Include="TreeBottomUp.hh" />
     <ClInclude Include="UpperBound.hh" />

@@ -220,7 +220,7 @@ int DAWG::numTransitions()
 
 void DAWG::trim()
 {
-	//First layer: delete transitions to NO_TW
+	//First layer: delete transitions to NOT_CONTAINED
 	auto transitionIter = valueDelta->begin();
 	auto valueEnd = valueDelta->end();
 	while (transitionIter != valueEnd)
@@ -469,7 +469,6 @@ void DAWG::insert(VSet word, int tw)
 	std::vector<std::unordered_set<State>> sinkStates(length + 1);
 
 
-
 	State initialPair = newState();
 	pairMap[0][{initial, newInitial}] = initialPair;
 	
@@ -478,7 +477,7 @@ void DAWG::insert(VSet word, int tw)
 	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
 	{
-		std::unordered_set<State> eraseList;
+		
 
 		State newFrom = newStates[layer];
 		State newTo = newStates[layer + 1];
@@ -486,11 +485,12 @@ void DAWG::insert(VSet word, int tw)
 
 		//For each transition matching the letter of our new automaton
 		//we add a transition to a new "pair" state
-		auto thisDelta = newBit ? delta1 : delta0;
-		auto thatDelta = newBit ? delta0 : delta1;
+		const auto& thisDelta = newBit ? delta1 : delta0;
+		const auto& thatDelta = newBit ? delta0 : delta1;
 
 		std::unordered_map<State, State> newDelta;
 		std::unordered_map<State, State> newOtherDelta;
+		std::unordered_set<State> eraseList;
 
 		//Look at all the states with transitions defined the same as our new word
 		//Create new states for their pairs, and add them to the map
@@ -499,7 +499,6 @@ void DAWG::insert(VSet word, int tw)
 		auto loopEnd = thisDelta[layer].end();
 		auto pairMapEnd = pairMap[layer].end();
 		auto nextPairMapEnd = pairMap[layer + 1].end();
-		auto newDeltaEnd = newDelta.end();
 		auto sinkStatesEnd = sinkStates[layer].end();
 
 
@@ -554,9 +553,11 @@ void DAWG::insert(VSet word, int tw)
 
 			//Generate an int for our pair state, and store it in the map
 
+			//Check if this pair of states is reachable
 			auto searchInfo = pairMap[layer].find({ qFrom, newFrom });
 			if (searchInfo != pairMapEnd)
 			{
+				//Use the pair rep we already assigned
 				State pairRep = searchInfo->second;
 
 				//First, check if we have a transition already defined on newBit
@@ -570,8 +571,6 @@ void DAWG::insert(VSet word, int tw)
 
 				}
 
-				//Use the pair we already assigned
-				pairRep = searchInfo->second;
 
 				//Insert our new transition into our new store
 				newOtherDelta.emplace(pairRep, qTo);
@@ -582,8 +581,10 @@ void DAWG::insert(VSet word, int tw)
 			//Check if we need to add this transition as a successor to a  "sink" transition
 			if (sinkStates[layer].find(qFrom) != sinkStatesEnd)
 			{
+				//Don't add this to the erase list, we'll keep it from our current delta
 				//newOtherDelta[layer][qFrom] = qTo;
 				sinkStates[layer + 1].insert(qTo);
+				
 			}
 			else
 			{
@@ -616,11 +617,21 @@ void DAWG::insert(VSet word, int tw)
 		} */
 		for (auto newQ : newDelta)
 		{
-			newBit ? delta1[layer].insert(newQ) : delta0[layer].insert(newQ);
+			auto addIter = newBit ? delta1[layer].insert(newQ) : delta0[layer].insert(newQ);
+			if (!addIter.second)
+			{
+				std::cerr << "Tried to add elem from newDelta which was already in map\n";
+				abort();
+			}
 		}
 		for (auto newOtherQ : newOtherDelta)
 		{
-			newBit ? delta0[layer].insert(newOtherQ) : delta1[layer].insert(newOtherQ);
+			auto addIter = newBit ? delta0[layer].insert(newOtherQ) : delta1[layer].insert(newOtherQ);
+			if (!addIter.second)
+			{
+				std::cerr << "Tried to add elem from newOtherDelta which was already in map\n";
+				abort();
+			}
 		}
 		
 		for (State q : eraseList)
@@ -646,20 +657,20 @@ void DAWG::insert(VSet word, int tw)
 
 	//Now that we're at the last layer, add transitions to our TW states as necessary
 	//This lets us store TW values in our DAWG
-	auto loopEnd = valueDelta->end();
 	auto lengthSinkEnd = sinkStates[length].end();
 	auto pairMapLenghtEnd = pairMap[length].end();
-	for (auto iter = valueDelta->begin(); iter != loopEnd; ++iter)
+	for (auto trans : *valueDelta)
 	{
 		State newFrom = newStates[length];
-		State qFrom = iter->first;
-		int oldTW = iter->second;
+		State qFrom = trans.first;
+		int oldTW = trans.second;
 
 		//Add remove unused old transitions
 		if (sinkStates[length].find(qFrom) == lengthSinkEnd)
 		{
 			valueEraseList.insert(qFrom);
 		}
+		//Otherwise, already in valueDelta
 
 		//As an automaton, our new product state can transition on either oldTW or newTW
 		//But we will only ever take the min value
