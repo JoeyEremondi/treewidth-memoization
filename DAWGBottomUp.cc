@@ -96,7 +96,7 @@ void DAWGBottomUp::beginLayer(int layer)
 #ifdef DEBUG
 		auto preTrim = TWtest[layer - 1].asDot();
 #endif
-		TW[layer - 1].trim();
+		//TW[layer - 1].trim();
 
 		//#ifdef DEBUG
 		std::ostringstream fileName, badFileName;
@@ -147,7 +147,7 @@ void DAWGBottomUp::beginLayer(int layer)
 
 #endif
 		//Copy the previous DAWG into this layer's entry
-		TW[layer].copyFrom(TW[layer - 1]);
+		//TW[layer].copyFrom(TW[layer - 1]);
 
 	}
 
@@ -156,7 +156,7 @@ void DAWGBottomUp::beginLayer(int layer)
 void DAWGBottomUp::endLayer(int layer)
 {
 
-
+	std::cerr << "Ending layer with " << TW[layer].numTransitions() << " transitions\n";
 	TW[layer].clear();
 	std::cerr << "Called update " << numUpdates << " times\n";
 	//std::cout << "TW i size: " << currentLayer << " " << numStored() << "\n";

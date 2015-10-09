@@ -47,6 +47,7 @@ inline bool operator<(const StateSignature& lhs, const StateSignature& rhs)
 class DAWG
 {
 private:
+	bool isTrie = true;
 	State nextState = 3;
 	State initial = 2;
 

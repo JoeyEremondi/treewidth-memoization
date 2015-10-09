@@ -341,6 +341,9 @@ void DAWG::trim()
 
 void DAWG::minimize()
 {
+	//Never guaranteed to have a trie after minimization
+	isTrie = false;
+
 	//std::cerr << "Transitions before minimization " << numTransitions() << "\n";
 	Register = new std::unordered_map<StateSignature, State>[length + 1];
 	StateMap = new std::unordered_map<State, State>[length + 1];
@@ -483,9 +486,15 @@ void DAWG::insert(VSet word, int tw)
 #endif
 
 	//Special case: if there are no transitions, we just insert the word normally
-	if (delta0[0].empty() && delta1[0].empty())
+	if (this->isTrie)
 	{
 		insertIntoEmpty(word, tw);
+		if (this->numTransitions() > 1000000)
+		{
+			//Once our trie gets too big, start minimizing and compressing
+			//This slows down insertion but saves space
+			minimize();
+		}//TODO constant?
 		return;
 	}
 
