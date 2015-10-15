@@ -13,7 +13,19 @@
 
 
 
+AbstractTopDown::AbstractTopDown(const Graph& gIn)
+	: G(gIn)
+	, allVertices(boost::vertices(G).first, boost::vertices(G).second)
+	, bottomUpInfo(G, maxBottumUpSize)
+{
+	nGraph = boost::num_vertices(G);
+	std::sort(allVertices.begin(), allVertices.end(),
+		[gIn](auto v1, auto v2) -> bool
+	{
+		return boost::degree(v1, gIn) > boost::degree(v2, gIn);
+	});
 
+}
 
 int AbstractTopDown::topDownTW(const Graph& G)
 {
@@ -86,9 +98,9 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 	}
 
 
-	if (isMemoized(S)) //TODO replace with memo lookup
+	if (isMemoized(nSet, S)) //TODO replace with memo lookup
 	{
-		return memoizedValue(S);
+		return memoizedValue(nSet, S);
 	}
 	else
 	{

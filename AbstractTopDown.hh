@@ -29,10 +29,12 @@ protected:
 
 
 	//Abstract methods
-	virtual bool isMemoized(VSet S) = 0;
-	virtual int memoizedValue(VSet S) = 0;
+	virtual bool isMemoized(int nSet, VSet S) = 0;
+	virtual int memoizedValue(int nSet, VSet S) = 0;
 	virtual void memoizeTW(int nSet, VSet S, int tw) = 0;
 	virtual void cleanMemoized() = 0;
+
+	AbstractTopDown(const Graph& G);
 
 
 };
