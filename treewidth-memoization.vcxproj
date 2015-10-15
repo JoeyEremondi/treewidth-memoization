@@ -137,6 +137,7 @@
   <ItemGroup>
     <ClCompile Include="AbstractBottomUp.cc" />
     <ClCompile Include="AbstractMemo.cc" />
+    <ClCompile Include="AbstractTopDown.cc" />
     <ClCompile Include="ArrayOfSetBottomUp.cc" />
     <ClCompile Include="BasicMemo.cc" />
     <ClCompile Include="BottomUpTW.cc" />
@@ -148,6 +149,7 @@
     <ClCompile Include="NaiveMemo.cc" />
     <ClCompile Include="OppBloom.cc" />
     <ClCompile Include="qset.cc" />
+    <ClCompile Include="Simplicial.cc" />
     <ClCompile Include="SimplicialFirstMemo.cc" />
     <ClCompile Include="TopDownTW.cc" />
     <ClCompile Include="TreeBottomUp.cc" />
@@ -159,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="AbstractBottomUp.hh" />
     <ClInclude Include="AbstractMemo.hh" />
+    <ClInclude Include="AbstractTopDown.hh" />
     <ClInclude Include="ArrayOfSetBottomUp.hh" />
     <ClInclude Include="BasicMemo.hh" />
     <ClInclude Include="BottomUpTW.hh" />
@@ -169,6 +172,7 @@
     <ClInclude Include="graphTypes.hh" />
     <ClInclude Include="bloom_filter.hpp" />
     <ClInclude Include="OppBloom.hh" />
+    <ClInclude Include="Simplicial.hh" />
     <ClInclude Include="TreeBottomUp.hh" />
     <ClInclude Include="UpperBound.hh" />
     <ClInclude Include="TopDownTW.hh" />

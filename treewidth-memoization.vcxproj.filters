@@ -75,6 +75,12 @@
     <ClCompile Include="DAWG.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="AbstractTopDown.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Simplicial.cc">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="AbstractMemo.hh">
@@ -138,6 +144,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="bloom_filter.hpp">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="AbstractTopDown.hh">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Simplicial.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

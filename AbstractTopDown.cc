@@ -1,4 +1,4 @@
-#include "TopDownTW.hh"
+#include "AbstractTopDown.hh"
 
 #include "UpperBound.hh"
 #include "BottomUpTW.hh"
@@ -11,30 +11,11 @@
 #include <sstream> // for ostringstream
 #include <cassert>
 
-const int maxDictSize = 1000000000;
-
-const int maxBottumUpSize = 1000000000;
-
-const int topLevelNoStore = 10;
-
-const int bottomLevelNoStore = 5;
-
-TopDownTW::TopDownTW(const Graph& gIn)
-	: G(gIn)
-	, allVertices(boost::vertices(G).first, boost::vertices(G).second)
-	, bottomUpInfo(G, maxBottumUpSize)
-{
-	nGraph = boost::num_vertices(G);
-	std::sort(allVertices.begin(), allVertices.end(),
-		[gIn](auto v1, auto v2) -> bool
-	{
-		return boost::degree(v1, gIn) > boost::degree(v2, gIn);
-	});
-
-}
 
 
-int TopDownTW::topDownTW(const Graph& G)
+
+
+int AbstractTopDown::topDownTW(const Graph& G)
 {
 
 	//First, check if we found a bottom-up solution without running out of space
@@ -53,7 +34,7 @@ int TopDownTW::topDownTW(const Graph& G)
 	std::vector<Vertex> cliqueVec(maxClique.size());
 	maxClique.members(cliqueVec);
 	std::cout << "Max clique " << showSet(maxClique) << "\n";
-	
+
 	for (auto iter = cliqueVec.begin(); iter != cliqueVec.end(); ++iter)
 	{
 		S.erase(*iter);
@@ -79,9 +60,9 @@ int TopDownTW::topDownTW(const Graph& G)
 
 
 
-int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
+int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 {
-	static std::vector<std::map<VSet, int>> TW(nGraph);
+	
 
 	const int threshold = -1;
 
@@ -104,18 +85,11 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 		}
 	}
 
-	auto setSearch = TW[nSet].find(S);
-	auto setEnd = TW[nSet].end();
 
-	if (setSearch != setEnd) //TODO replace with memo lookup
+	if (isMemoized(S)) //TODO replace with memo lookup
 	{
-		return setSearch->second;
+		return memoizedValue(S);
 	}
-	/*
-	else if (nSet < threshold)
-	{
-		return bottomUpTWFromSet(G, S, sharedUpperBound);
-	}*/
 	else
 	{
 		std::vector<int> qValues(nGraph);
@@ -131,7 +105,7 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 				VSet SminusV(S);
 				SminusV.erase(v);
 				int finalTW = minTW = std::min(minTW, std::max(qValues[v], topDownTWFromSet(G, SminusV, nSet - 1)));
-				TW[nSet][S] = minTW;
+				this->memoizeTW(nSet, S, minTW);
 				return finalTW;
 			}
 		}
@@ -149,14 +123,14 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 				//assert(setUpperBound >= sharedUpperBound);
 
 				//Don't recursively calculate TW if we know Q is bigger
-				
+
 				/*
 				if (q >= setUpperBound)
 				{
-					minTW = std::min(minTW, q);
+				minTW = std::min(minTW, q);
 				}*/
-				
-				if (q < minTW || q < sharedUpperBound )
+
+				if (q < minTW || q < sharedUpperBound)
 				{
 					int setUpperBound = sharedUpperBound;
 
@@ -186,7 +160,7 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 			//Same for the bottom few layers
 			if (nGraph - nSet > topLevelNoStore && nSet > bottomLevelNoStore)
 			{
-				TW[nSet][S] = minTW;
+				memoizeTW(nSet, S, minTW);
 				numInDict++;
 				if (numInDict % 500000 == 0)
 				{
@@ -195,11 +169,12 @@ int TopDownTW::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 			}
 		}
 		catch (const std::bad_alloc& e) {
-			std::cerr << numInDict << " elements stored in Dict\n";
-			std::cerr << "Emptying layer" <<  nSet << ", deleting" << TW[nSet].size() << " elements\n";
-			numInDict -= TW[nSet].size();
-			TW[nSet].clear(); //TODO smarter than emptying entire layer?
-			
+			this->cleanMemoized();
+			//std::cerr << numInDict << " elements stored in Dict\n";
+			//std::cerr << "Emptying layer" << nSet << ", deleting" << TW[nSet].size() << " elements\n";
+			//numInDict -= TW[nSet].size();
+			//TW[nSet].clear(); //TODO smarter than emptying entire layer?
+
 		}
 		return minTW;
 	}

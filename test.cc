@@ -31,6 +31,8 @@
 #include "ArrayOfSetBottomUp.hh"
 #include "DAWGBottomUp.hh"
 
+#include "AbstractTopDown.hh"
+
 #include "HeuristicUpperBoundMemo.hh"
 
 #include <fstream>
