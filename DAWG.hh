@@ -88,7 +88,7 @@ protected:
 
 	std::vector<std::string> wordSetHelper(int depth, State q);
 
-	void intersectWithStaging();
+	void unionWithStaging();
 	State stagingInitial = newState();
 	DAWG* stagingArea;
 
@@ -109,6 +109,8 @@ protected:
 
 
 public:
+	const int ABS_MAX_TRANSITIONS = 10000000;
+	int maxTransitions = ABS_MAX_TRANSITIONS;
 	const int NOT_CONTAINED = -1;
 	void clear();
 	int numTransitions();
