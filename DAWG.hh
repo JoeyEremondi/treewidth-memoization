@@ -50,7 +50,7 @@ private:
 	int counter = 2;
 public:
 	inline int newState(){ int ret = counter; counter++; return ret; }
-	inline int undo() { counter--; };
+	inline void undo() { counter--; };
 };
 
 class DAWG

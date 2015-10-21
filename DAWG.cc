@@ -528,210 +528,56 @@ void DAWG::unionWithStaging()
 
 			auto searchMain0 = delta0[layer].find(qFrom);
 			bool main0 = searchMain0 != delta0[layer].end();
+			State qTo0 = main0 ? searchMain0->second : SINK;
+
 			auto searchMain1 = delta1[layer].find(qFrom);
 			bool main1 = searchMain1 != delta1[layer].end();
+			State qTo1 = main1 ? searchMain1->second : SINK;
 
 			auto searchStaging0 = stagingArea->delta0[layer].find(newFrom);
 			bool stage0 = searchStaging0 != stagingArea->delta0[layer].end();
+			State newTo0 = stage0 ? searchStaging0->second : SINK;
+
 			auto searchStaging1 = stagingArea->delta1[layer].find(newFrom);
 			bool stage1 = searchStaging1 != stagingArea->delta1[layer].end();
+			State newTo1 = stage1 ? searchStaging1->second : SINK;
 
-			//Special cases: if our state is a "sink" state in the copy of one of our automata
-			//Just copy transitions either from our old machine, or the staging area
-			if (qFrom == SINK)
+			if (main0 || stage0)
 			{
 				//Add 0 transition
-				if (stage0)
+				State toPairRep0 = statePool.newState();
+				auto insertInfo = pairMap[layer + 1].insert({ { qTo0, newTo0 }, toPairRep0 });
+				if (insertInfo.second)
 				{
-					State newTo = searchStaging0->second;
-					State newPairTo = statePool.newState();
-					auto insertInfo = pairMap[layer + 1].insert({ { SINK, newTo }, newPairTo });
-					if (insertInfo.second)
-					{
-						newDelta0.emplace(pairRep, newPairTo);
-					}
-					else
-					{
-						//Don't need a new state if this pair is already in the pairMap
-						statePool.undo();
-						newDelta0.emplace(pairRep, insertInfo.first);
-					}
-
+					newDelta0.emplace(pairRep, toPairRep0);
 				}
-
-				//Add 1 transition
-				if (stage1)
+				else
 				{
-					State newTo = searchStaging1->second;
-					State newPairTo = statePool.newState();
-					auto insertInfo = pairMap[layer + 1].insert({ { SINK, newTo }, newPairTo });
-					if (insertInfo.second)
-					{
-						newDelta1.emplace(pairRep, newPairTo);
-					}
-					else
-					{
-						//Don't need a new state if this pair is already in the pairMap
-						statePool.undo();
-						newDelta1.emplace(pairRep, insertInfo.first);
-					}
-
-				}
-			}
-			else if (newFrom == SINK)
-			{
-				//Add 0 transition
-				if (main0)
-				{
-					State qTo = searchMain0->second;
-					State newPairTo = statePool.newState();
-					auto insertInfo = pairMap[layer + 1].insert({ { qTo, SINK }, newPairTo });
-					if (insertInfo.second)
-					{
-						newDelta0.emplace(pairRep, newPairTo);
-					}
-					else
-					{
-						//Don't need a new state if this pair is already in the pairMap
-						statePool.undo();
-						newDelta0.emplace(pairRep, insertInfo.first);
-					}
-				}
-
-				//Add 1 transition
-				if (main1)
-				{
-					State qTo = searchMain1->second;
-					State newPairTo = statePool.newState();
-					auto insertInfo = pairMap[layer + 1].insert({ { qTo, SINK }, newPairTo });
-					if (insertInfo.second)
-					{
-						newDelta1.emplace(pairRep, newPairTo);
-					}
-					else
-					{
-						//Don't need a new state if this pair is already in the pairMap
-						statePool.undo();
-						newDelta1.emplace(pairRep, insertInfo.first);
-					}
-				}
-			}
-			else
-			{
-				//Add 0 transition
-				//3 cases: either defined for both automata, or for just one
-				//Do nothing if defined for neither
-				if (stage0 && main0)
-				{
-					State qTo = searchMain0->second;
-					State newTo = searchStaging0->second;
-					State newPairTo = statePool.newState();
-					auto insertInfo = pairMap[layer + 1].insert({ {qTo, newTo}, newPairTo });
-					if (insertInfo.second)
-					{
-						newDelta0.emplace(pairRep, newPairTo);
-					}
-					else
-					{
-						//Don't need a new state if this pair is already in the pairMap
-						statePool.undo();
-						newDelta0.emplace(pairRep, insertInfo.first);
-					}
-					
-				}
-				else if (stage0 && !main0)
-				{
-					//add transition from pairRep to staging area automaton
-					State newTo = searchStaging0->second;
-					State newPairTo = statePool.newState();
-					auto insertInfo = pairMap[layer + 1].insert({ {SINK, newTo} , newPairTo });
-					if (insertInfo.second)
-					{
-						newDelta0.emplace(pairRep, newPairTo);
-					}
-					else
-					{
-						//Don't need a new state if this pair is already in the pairMap
-						statePool.undo();
-						newDelta0.emplace(pairRep, insertInfo.first);
-					}
-				}
-				else if (!stage0 && main0)
-				{
-					//add transition from pairRep to copy of main automaton
-					State qTo = searchMain0->second;
-					State newPairTo = statePool.newState();
-					auto insertInfo = pairMap[layer + 1].insert({ {qTo, SINK}, newPairTo });
-					if (insertInfo.second)
-					{
-						newDelta0.emplace(pairRep, newPairTo);
-					}
-					else
-					{
-						//Don't need a new state if this pair is already in the pairMap
-						statePool.undo();
-						newDelta0.emplace(pairRep, insertInfo.first);
-					}
-				}
-
-				//Add 1 transition
-				//3 cases: either defined for both automata, or for just one
-				//Do nothing if defined for neither
-				if (stage1 && main1)
-				{
-					State qTo = searchMain1->second;
-					State newTo = searchStaging1->second;
-					State newPairTo = statePool.newState();
-					auto insertInfo = pairMap[layer + 1].insert({ {qTo, newTo}, newPairTo });
-					if (insertInfo.second)
-					{
-						newDelta1.emplace(pairRep, newPairTo);
-					}
-					else
-					{
-						//Don't need a new state if this pair is already in the pairMap
-						statePool.undo();
-						newDelta1.emplace(pairRep, insertInfo.first);
-					}
-
-				}
-				else if (stage1 && !main1)
-				{
-					//add transition from pairRep to staging area automaton
-					State newTo = searchStaging1->second;
-					State newPairTo = statePool.newState();
-					auto insertInfo = pairMap[layer + 1].insert({ {SINK, newTo}, newPairTo });
-					if (insertInfo.second)
-					{
-						newDelta1.emplace(pairRep, newPairTo);
-					}
-					else
-					{
-						//Don't need a new state if this pair is already in the pairMap
-						statePool.undo();
-						newDelta1.emplace(pairRep, insertInfo.first);
-					}
-				}
-				else if (!stage1 && main1)
-				{
-					//add transition from pairRep to copy of main automaton
-					State qTo = searchMain1->second;
-					State newPairTo = statePool.newState();
-					auto insertInfo = pairMap[layer + 1].insert({ {qTo, SINK}, newPairTo });
-					if (insertInfo.second)
-					{
-						newDelta1.emplace(pairRep, newPairTo);
-					}
-					else
-					{
-						//Don't need a new state if this pair is already in the pairMap
-						statePool.undo();
-						newDelta1.emplace(pairRep, insertInfo.first);
-					}
+					//Don't need a new state if this pair is already in the pairMap
+					statePool.undo();
+					newDelta0.emplace(pairRep, insertInfo.first->second);
 				}
 			}
 
+			//Add 1 transition
+			if (main1 || stage1)
+			{
+				State toPairRep1 = statePool.newState();
+				auto insertInfo = pairMap[layer + 1].insert({ { qTo1, newTo1 }, toPairRep1 });
+				if (insertInfo.second)
+				{
+					newDelta1.emplace(pairRep, toPairRep1);
+				}
+				else
+				{
+					//Don't need a new state if this pair is already in the pairMap
+					statePool.undo();
+					newDelta1.emplace(pairRep, insertInfo.first->second);
+				}
+			}
 		}
+
+
 		//Replace our delta0 and delta1 with our new ones
 		this->delta0[layer].clear();
 		this->delta0[layer].insert(newDelta0.begin(), newDelta0.end());
