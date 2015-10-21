@@ -73,9 +73,6 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 
 void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValues)
 {
-	//std::cout << "Multi Q: starting with S = " << showSet(S) << "\n";
-
-	//int n = boost::num_vertices(G);
 
 	//Store which vertices we've seen over all DFSes, makes sure we get all connected components
 	VSet globalUnseen = S;
@@ -86,20 +83,15 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 
 	//For each vertex not in S, store which connected components it connects to
 	std::vector<std::vector<Vertex>> reachableFrom(n);
-	for (int i = 0; i < n; i++)
+	for (auto& subVec : reachableFrom)
 	{
-		reachableFrom[i].reserve(n);
+		subVec.reserve(n);
 	}
 
 	//Also store it as a set, to keep the vector as small as possible
 	std::vector<VSet> reachableFromSet(n);
 
-	//If S is empty: then we just see how many vertices 
-	if (S.empty())
-	{
-
-	}
-	else
+	if (!S.empty())
 	{
 		while (!globalUnseen.empty())
 		{
@@ -117,7 +109,7 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 			VSet closed;
 
 
-			while (open.size() > 0)
+			while (!open.empty())
 			{
 				Vertex w = open.back();
 				open.pop_back();

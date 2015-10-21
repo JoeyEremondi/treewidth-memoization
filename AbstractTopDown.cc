@@ -27,7 +27,7 @@ AbstractTopDown::AbstractTopDown(const Graph& gIn)
 
 }
 
-int AbstractTopDown::topDownTW(const Graph& G)
+int AbstractTopDown::topDownTW()
 {
 
 	//First, check if we found a bottom-up solution without running out of space
@@ -74,7 +74,13 @@ int AbstractTopDown::topDownTW(const Graph& G)
 
 int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 {
-	
+	static int numCalled = 0;
+	numCalled++;
+	if (numCalled % 500000 == 0)
+	{
+		std::cout << "Called recursive fun " << numCalled << " times\n";
+		std::cout << "Simplicial " << numSimplicial << " lower " << improvedByLocalLower << " pruned " << numPruned << "\n";
+	}
 
 	const int threshold = -1;
 
@@ -112,11 +118,13 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 		//Do a simplicial vertex first if it exists
 		for (Vertex v : allVertices)
 		{
-			if (false)//(S.contains(v) && isSimplicial(G, v, SStart))
+			if (S.contains(v) && isSimplicial(G, v, S))
 			{
+				numSimplicial++;
 				VSet SminusV(S);
 				SminusV.erase(v);
-				int finalTW = minTW = std::min(minTW, std::max(qValues[v], topDownTWFromSet(G, SminusV, nSet - 1)));
+				int subVal = topDownTWFromSet(G, SminusV, nSet - 1);
+				int finalTW = minTW = std::min(minTW, std::max(qValues[v], subVal));
 				this->memoizeTW(nSet, S, minTW);
 				return finalTW;
 			}
@@ -149,10 +157,11 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 					std::vector<Vertex> sortedMembers;
 					SminusV.members(sortedMembers);
 
-					setUpperBound = permutTW(nGraph, S, sortedMembers, G);
+					setUpperBound = std::min(setUpperBound, permutTW(nGraph, S, sortedMembers, G));
 
 					if (q >= setUpperBound || setUpperBound < lowerBound)
 					{
+						improvedByLocalLower++;
 						minTW = std::min(minTW, q);
 					}
 					else
@@ -161,6 +170,10 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 						sharedUpperBound = std::min(sharedUpperBound, std::max(minTW, nGraph - nSet - 1));
 					}
 
+				}
+				else
+				{
+					numPruned++;
 				}
 			}
 
@@ -173,16 +186,15 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 			if (nGraph - nSet > topLevelNoStore && nSet > bottomLevelNoStore)
 			{
 				memoizeTW(nSet, S, minTW);
-				numInDict++;
-				if (numInDict % 500000 == 0)
+				if (numInDict % 50000 == 0)
 				{
-					std::cerr << numInDict << " elements currently stored\n";
+					std::cout << numInDict << " elements currently stored\n";
 				}
 			}
 		}
 		catch (const std::bad_alloc& e) {
 			this->cleanMemoized();
-			//std::cerr << numInDict << " elements stored in Dict\n";
+			std::cout << numInDict << " elements stored in Dict\n";
 			//std::cerr << "Emptying layer" << nSet << ", deleting" << TW[nSet].size() << " elements\n";
 			//numInDict -= TW[nSet].size();
 			//TW[nSet].clear(); //TODO smarter than emptying entire layer?

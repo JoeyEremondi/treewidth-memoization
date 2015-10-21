@@ -19,9 +19,9 @@ protected:
 	int retrievedValue;
 
 	//TODO make parameters
-	int numHashes = 100000;
+	int numHashes = 9999991;
 	int numPerHash = 100;
 
-	std::vector<std::vector<std::list<std::pair<VSet, int>>>> memo;
+	std::vector<std::list<std::pair<VSet, int>>> memo;
 };
 

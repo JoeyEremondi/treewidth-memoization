@@ -88,6 +88,10 @@ protected:
 
 	std::vector<std::string> wordSetHelper(int depth, State q);
 
+	void intersectWithStaging();
+	State stagingInitial = newState();
+	DAWG* stagingArea;
+
 
 
 	/*
@@ -113,6 +117,7 @@ public:
 
 	std::string asDot();
 	DAWG();
+	DAWG(DAWG* staging);
 	void copyFrom(const DAWG& oldDawg);
 	~DAWG();
 	int size();

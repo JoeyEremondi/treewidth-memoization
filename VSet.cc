@@ -7,15 +7,24 @@
 int VSet::maxNumVerts = 64; //TODO sensible default?
 
 VSet::VSet()
+	: bitVec(64)
 {
-	bitVec.resize(maxNumVerts);
+	if (maxNumVerts > 64)
+	{
+		bitVec.resize(maxNumVerts);
+	}
+	
 }
 
 
 VSet::VSet(const Graph &G)
+	: bitVec(64)
 {
 	auto iterInfo = boost::vertices(G);
-	bitVec.resize(boost::num_vertices(G));
+	if (maxNumVerts > 64)
+	{
+		bitVec.resize(maxNumVerts);
+	}
 	//Just go through and set the bit for each vertex to 1
 	for (auto iter = iterInfo.first; iter != iterInfo.second; ++iter)
 	{

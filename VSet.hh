@@ -23,7 +23,7 @@ class VSet
 {
 public:
 	//bitSet bitVec = 0;
-	boost::dynamic_bitset<uint_fast64_t> bitVec;
+	boost::dynamic_bitset<uint64_t> bitVec;
 	//int currentSize = 0;
 
 public:
