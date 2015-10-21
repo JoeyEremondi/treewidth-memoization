@@ -109,7 +109,7 @@ protected:
 
 
 public:
-	const int ABS_MAX_TRANSITIONS = 10000000;
+	const int ABS_MAX_TRANSITIONS = 10000;
 	int maxTransitions = ABS_MAX_TRANSITIONS;
 	const int NOT_CONTAINED = -1;
 	void clear();

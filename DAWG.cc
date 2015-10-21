@@ -496,7 +496,10 @@ std::vector<std::string> DAWG::wordSetHelper(int depth, State q)
 
 void DAWG::unionWithStaging()
 {
+	std::cerr << "UnionWithStaging\n";
 
+	auto dotBefore = this->asDot();
+	auto stageDot = stagingArea->asDot();
 
 	//auto newDelta0 = new std::unordered_map<State, State>[length];
 	//auto newDelta1 = new std::unordered_map<State, State>[length];
@@ -522,6 +525,8 @@ void DAWG::unionWithStaging()
 		//State newFrom = newStates[layer];
 		//State newTo = newStates[layer + 1];
 		//bool newBit = word.contains(layer);
+		std::unordered_map<State, State> newDelta0;
+		std::unordered_map<State, State> newDelta1;
 
 		//For each transition matching the letter of our new automaton
 		//we add a transition to a new "pair" state
@@ -532,8 +537,8 @@ void DAWG::unionWithStaging()
 			auto& stagingDelta = newBit ? stagingArea->delta1 : stagingArea->delta0;
 			auto& stagingOtherDelta = newBit ? stagingArea->delta0 : stagingArea->delta1;
 
-			std::unordered_map<State, State> newDelta;
-			std::unordered_map<State, State> newOtherDelta;
+			auto& newDelta = newBit ? newDelta1 : newDelta0;
+			auto& newOtherDelta = newBit ? newDelta0 : newDelta1;
 			//std::unordered_set<State> eraseList;
 
 			//Look at all the states with transitions defined the same as our new word
@@ -548,6 +553,8 @@ void DAWG::unionWithStaging()
 			auto transIter = thisDelta[layer].begin();
 			auto deltaEnd = thisDelta[layer].end();
 			auto stagingEnd = stagingDelta[layer].end();
+
+
 
 			//Look at each pair of states in the layers we're combining
 			while (transIter != deltaEnd)
@@ -629,32 +636,33 @@ void DAWG::unionWithStaging()
 				}
 				else
 				{
-					transIter = thisDelta[layer].erase(transIter);
+					//transIter = thisDelta[layer].erase(transIter);
+					++transIter;
 
 				}
 
 
 			}
 
-			//Add all our transitions we generated in our first traversal
-			for (auto newTrans : newDelta)
-			{
-				thisDelta[layer].insert(newTrans);
-			}
+			
 
 			//add transitions from staging area into this layer, if we reached them in sinkStates in past layer
 			for (auto stagedTrans : stagingDelta[layer])
 			{
 				State newFrom = stagedTrans.first;
 				State newTo = stagedTrans.second;
+				std::cout << "Inserting sink from staging " << newFrom << " " << newTo << " layer " << layer << "\n";
 				auto searchInfo = stagingSinks[layer].find(newFrom);
 				if (searchInfo != stagingSinks[layer].end())
 				{
-					thisDelta[layer].emplace(newFrom, newTo);
+					newDelta.emplace(newFrom, newTo);
 					stagingSinks[layer + 1].emplace(newTo);
 				}
 			}
+
 		}
+		delta0[layer].insert(newDelta0.begin(), newDelta0.end());
+		delta1[layer].insert(newDelta1.begin(), newDelta1.end());
 
 	}
 
@@ -679,7 +687,7 @@ void DAWG::unionWithStaging()
 	}
 	//Replace our valueDelta;
 	valueDelta.clear();
-	valueDelta = newValue;
+	valueDelta.insert(newValue.begin(), newValue.end());
 
 
 	//Now that we're done, set our new initial state;
@@ -692,11 +700,33 @@ void DAWG::unionWithStaging()
 	this->stagingArea->clear();
 	delete this->stagingArea;
 	this->stagingArea = new DAWG(NULL);
+
+	std::cout << "First layer ";
+	for (auto pair : delta0[0])
+	{
+		std::cout << "(" << pair.first << ", " << pair.second << ") ";
+	}
+	for (auto pair : delta1[0])
+	{
+		std::cout << "(" << pair.first << ", " << pair.second << ") ";
+	}
+	std::cout << "\n";
+
+	std::cout << "Finished with " << numTransitions() << " trans, size " << size() <<  "\n";
+
+	std::cout << "Dot before\n " << dotBefore << "\n\n";
+	std::cout << "Dot staging\n " << stageDot << "\\nn";
+	std::cout << "Dot after\n " << asDot() << "\n\n";
 }
 
 void DAWG::insert(VSet word, int tw)
 {
-	this->stagingArea->insertIntoEmpty(word, tw);
+	if (this->stagingArea == NULL)
+	{
+		this->insertIntoEmpty(word, tw);
+		return;
+	}
+	this->stagingArea->insert(word, tw);
 	if (this->stagingArea->numTransitions() > maxTransitions)
 	{
 		this->stagingArea->minimize();
@@ -763,10 +793,21 @@ int DAWG::contains(VSet word)
 
 DAWG::iterator DAWG::begin()
 {
-	//Make sure we've merged with our staging area before we iterate
 	this->stagingArea->minimize();
-	this->unionWithStaging();
-	this->minimize();
+	if (this->numTransitions() > 0)
+	{
+		//Make sure we've merged with our staging area before we iterate
+		this->unionWithStaging();
+		this->minimize();
+	}
+	else
+	{
+		//If we have only used our staging area, then we just move it to be ours
+		this->delta0 = stagingArea->delta0;
+		this->delta1 = stagingArea->delta1;
+		this->valueDelta = stagingArea->valueDelta;
+		this->initial = stagingArea->initial;
+	}
 	return DAWG::iterator({ initial, 0, VSet(), std::vector<State>() }, this);
 }
 
