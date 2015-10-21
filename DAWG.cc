@@ -495,8 +495,8 @@ std::vector<std::string> DAWG::wordSetHelper(int depth, State q)
 
 void DAWG::unionWithStaging()
 {
-	auto dotBefore = this->asDot();
-	auto stageDot = stagingArea->asDot();
+	//auto dotBefore = this->asDot();
+	//auto stageDot = stagingArea->asDot();
 
 
 	//Make a product construction with our existing automaton
@@ -627,9 +627,9 @@ void DAWG::unionWithStaging()
 	delete this->stagingArea;
 	this->stagingArea = new DAWG(NULL);
 
-	std::cout << "Main area before\n" << dotBefore << "\n";
-	std::cout << "\n\nStaging before\n" << stageDot << "\n";
-	std::cout << "\nFinal aut\n" << asDot() << "\n";
+	//std::cout << "Main area before\n" << dotBefore << "\n";
+	//std::cout << "\n\nStaging before\n" << stageDot << "\n";
+	//std::cout << "\nFinal aut\n" << asDot() << "\n";
 
 
 }
