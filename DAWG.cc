@@ -397,7 +397,6 @@ DAWG::DAWG(DAWG* staging)
 	this->delta1.resize(length);
 
 	this->stagingArea = staging;
-	this->stagingInitial = SINK;
 
 }
 
@@ -496,24 +495,15 @@ std::vector<std::string> DAWG::wordSetHelper(int depth, State q)
 
 void DAWG::unionWithStaging()
 {
-	std::cerr << "UnionWithStaging\n";
-
 	auto dotBefore = this->asDot();
 	auto stageDot = stagingArea->asDot();
-
-	//auto newDelta0 = new std::unordered_map<State, State>[length];
-	//auto newDelta1 = new std::unordered_map<State, State>[length];
-	//auto newValueDelta = new std::unordered_map<State, int>;
 
 
 	//Make a product construction with our existing automaton
 	std::vector<std::map<std::pair<State, State>, State>> pairMap(length + 1);
-	std::vector<std::unordered_set<State>> sinkStates(length + 1);
-	std::vector<std::unordered_set<State>> stagingSinks(length + 1);
-
 
 	State initialPair = newState();
-	pairMap[0][{initial, stagingInitial}] = initialPair;
+	pairMap[0][{initial, stagingArea->initial}] = initialPair;
 
 	int totalTransitions = 0;
 
@@ -528,162 +518,155 @@ void DAWG::unionWithStaging()
 		std::unordered_map<State, State> newDelta0;
 		std::unordered_map<State, State> newDelta1;
 
-		//For each transition matching the letter of our new automaton
-		//we add a transition to a new "pair" state
-		for (bool newBit : {false, true})
+		for (auto pairPair : pairMap[layer])
 		{
-			auto& thisDelta = newBit ? delta1 : delta0;
-			auto& thatDelta = newBit ? delta0 : delta1;
-			auto& stagingDelta = newBit ? stagingArea->delta1 : stagingArea->delta0;
-			auto& stagingOtherDelta = newBit ? stagingArea->delta0 : stagingArea->delta1;
+			State qFrom = pairPair.first.first;
+			State newFrom = pairPair.first.second;
+			State pairRep = pairPair.second;
 
-			auto& newDelta = newBit ? newDelta1 : newDelta0;
-			auto& newOtherDelta = newBit ? newDelta0 : newDelta1;
-			//std::unordered_set<State> eraseList;
+			//std::cout << "Looking at pair " << qFrom << " " << newFrom << "\n";
 
-			//Look at all the states with transitions defined the same as our new word
-			//Create new states for their pairs, and add them to the map
+			auto searchMain0 = delta0[layer].find(qFrom);
+			bool main0 = searchMain0 != delta0[layer].end();
+			auto searchMain1 = delta1[layer].find(qFrom);
+			bool main1 = searchMain1 != delta1[layer].end();
 
-			//Cache a bunch of iterator ends
-			auto loopEnd = thisDelta[layer].end();
-			auto pairMapEnd = pairMap[layer].end();
-			auto nextPairMapEnd = pairMap[layer + 1].end();
-			auto sinkStatesEnd = sinkStates[layer].end();
+			auto searchStaging0 = stagingArea->delta0[layer].find(newFrom);
+			bool stage0 = searchStaging0 != stagingArea->delta0[layer].end();
+			auto searchStaging1 = stagingArea->delta1[layer].find(newFrom);
+			bool stage1 = searchStaging1 != stagingArea->delta1[layer].end();
 
-			auto transIter = thisDelta[layer].begin();
-			auto deltaEnd = thisDelta[layer].end();
-			auto stagingEnd = stagingDelta[layer].end();
-
-
-
-			//Look at each pair of states in the layers we're combining
-			while (transIter != deltaEnd)
+			//Special cases: if our state is a "sink" state in the copy of one of our automata
+			//Just copy transitions either from our old machine, or the staging area
+			if (qFrom == SINK)
 			{
-				State qFrom = transIter->first;
-				State qTo = transIter->second;
-
-				auto stagingIter = stagingDelta[layer].begin();
-				while (stagingIter != stagingEnd)
+				//Add 0 transition
+				if (stage0)
 				{
-					State newFrom = stagingIter->first;
-					State newTo = stagingIter->second;
-
-					auto pairIter = pairMap[layer].find({ qFrom, newFrom });
-					if (pairIter != pairMapEnd)
-					{
-						//Generate an int for our pair state, and store it in the map
-						State pairRep = pairIter->second;
-
-						//See if the state we're going to is in the pair map
-						//And if not, create a new state for it
-						State nextRep = newState();
-						auto nextSearchInfo = pairMap[layer + 1].emplace(std::pair<State, State>(qTo, newTo), nextRep);
-						//If we already have this vertex pair in our map, the undo our new state creation, and use that one
-						if (!nextSearchInfo.second)
-						{
-							nextRep = nextSearchInfo.first->second;
-							this->nextState--; //Undo our unneeded newstate generation
-						}
-
-						//Insert our new transition into our new store
-						newDelta.emplace(pairRep, nextRep);
-					}
-
-
-
-
-					//TODO delte if need be
+					State newTo = searchStaging0->second;
+					newDelta0.emplace(newFrom, newTo);
+					pairMap[layer + 1].insert({ { SINK, newTo }, newTo });
 				}
 
-				//After we'd gone through all matches, add edges to sink-state pairs
-				for (auto otherPair : stagingOtherDelta[layer])
+				//Add 1 transition
+				if (stage1)
 				{
-
-					State newFrom = otherPair.first;
-					State newTo = otherPair.second;
-					auto pairIter = pairMap[length].find({ qFrom, newFrom });
-					//Only do this if the pair is reachable
-					if (pairIter != pairMapEnd)
-					{
-						State pairState = pairIter->second;
-						//TODO single intersection?
-						//First, check if for (q,r), if transition on b is defined for r
-						auto falseInfo = stagingDelta[layer].find(newFrom);
-						if (falseInfo == stagingDelta[layer].end())  //TODO cache iter?
-						{
-							newDelta.emplace(pairState, qTo);
-							sinkStates[layer].insert({ qTo, SINK });
-						}
-
-						//Then, check if !b transition defined for q
-						auto trueInfo = thisDelta[layer].find(qTo);
-						if (trueInfo == thisDelta[layer].end())
-						{
-							newOtherDelta.emplace(pairState, newTo);
-							sinkStates[layer].insert({ SINK, newTo });
-						}
-					}
+					State newTo = searchStaging1->second;
+					newDelta1.emplace(newFrom, newTo);
+					pairMap[layer + 1].insert({ { SINK, newTo }, newTo });
 				}
-
-
-
-				//Check if we need to add this transition as a successor to a  "sink" transition, and keep it in our delta
-				//Or if we delete it
-				if (sinkStates[layer].find(qFrom) != sinkStatesEnd)
-				{
-					sinkStates[layer + 1].insert(qTo);
-					++transIter;
-				}
-				else
-				{
-					//transIter = thisDelta[layer].erase(transIter);
-					++transIter;
-
-				}
-
-
 			}
-
-			
-
-			//add transitions from staging area into this layer, if we reached them in sinkStates in past layer
-			for (auto stagedTrans : stagingDelta[layer])
+			else if (newFrom == SINK)
 			{
-				State newFrom = stagedTrans.first;
-				State newTo = stagedTrans.second;
-				std::cout << "Inserting sink from staging " << newFrom << " " << newTo << " layer " << layer << "\n";
-				auto searchInfo = stagingSinks[layer].find(newFrom);
-				if (searchInfo != stagingSinks[layer].end())
+				//Add 0 transition
+				if (main0)
 				{
-					newDelta.emplace(newFrom, newTo);
-					stagingSinks[layer + 1].emplace(newTo);
+					State qTo = searchMain0->second;
+					newDelta0.emplace(qFrom, qTo);
+					pairMap[layer + 1].insert({ { SINK, qTo }, qTo });
+				}
+
+				//add 1 transition
+				if (main1)
+				{
+					State qTo = searchMain1->second;
+					newDelta1.emplace(qFrom, qTo);
+					pairMap[layer + 1].insert({ { SINK, qTo }, qTo });
+				}
+			}
+			else
+			{
+				//Add 0 transition
+				//3 cases: either defined for both automata, or for just one
+				//Do nothing if defined for neither
+				if (stage0 && main0)
+				{
+					std::cout << "Case1\n";
+					State qTo = searchMain0->second;
+					State newTo = searchStaging0->second;
+					State pairTo = newState();
+					pairMap[layer + 1].insert({ {qTo, newTo}, pairTo });
+					newDelta0.emplace(pairRep, pairTo);
+				}
+				else if (stage0 && !main0)
+				{
+					std::cout << "Case2\n";
+					//add transition from pairRep to staging area automaton
+					State newTo = searchStaging0->second;
+					pairMap[layer + 1].insert({ { SINK, newTo }, newTo });
+					newDelta0.emplace(pairRep, newTo);
+				}
+				else if (!stage0 && main0)
+				{
+					std::cout << "Case3\n";
+					//add transition from pairRep to copy of main automaton
+					State qTo = searchMain0->second;
+					pairMap[layer + 1].insert({ { qTo, SINK}, qTo });
+					newDelta0.emplace(pairRep, qTo);
+				}
+
+				//Add 1 transition
+				//3 cases: either defined for both automata, or for just one
+				//Do nothing if defined for neither
+				if (stage1 && main1)
+				{
+					std::cout << "Case4\n";
+					State qTo = searchMain1->second;
+					State newTo = searchStaging1->second;
+					State pairTo = newState();
+					pairMap[layer + 1].insert({ { qTo, newTo }, pairTo });
+					newDelta1.emplace(pairRep, pairTo);
+				}
+				else if (stage1 && !main1)
+				{
+					std::cout << "Case5\n";
+					//add transition from pairRep to staging area automaton
+					State newTo = searchStaging1->second;
+					pairMap[layer + 1].insert({ { SINK, newTo }, newTo });
+					newDelta1.emplace(pairRep, newTo);
+				}
+				else if (!stage1 && main1)
+				{
+					std::cout << "Case6\n";
+					//add transition from pairRep to copy of main automaton
+					State qTo = searchMain1->second;
+					pairMap[layer + 1].insert({ { qTo, SINK }, qTo });
+					newDelta1.emplace(pairRep, qTo);
 				}
 			}
 
 		}
-		delta0[layer].insert(newDelta0.begin(), newDelta0.end());
-		delta1[layer].insert(newDelta1.begin(), newDelta1.end());
+		//Replace our delta0 and delta1 with our new ones
+		this->delta0[layer].clear();
+		this->delta0[layer].insert(newDelta0.begin(), newDelta0.end());
+		this->delta1[layer].clear();
+		this->delta1[layer].insert(newDelta1.begin(), newDelta1.end());
 
 	}
 
 	//Merge our final deltas
-	
+
 	std::unordered_map<State, int> newValue;
 	for (auto pairPair : pairMap[length])
 	{
 		State qFrom = pairPair.first.first;
 		State newFrom = pairPair.first.second;
-		//TODO assume can reach a value delta?
-		int newTW = std::min(valueDelta[qFrom], stagingArea->valueDelta[newFrom]);
-		newValue.emplace(pairPair.second, newTW);
-	}
-	for (auto q : sinkStates[length])
-	{
-		newValue.emplace(q, valueDelta[q]);
-	}
-	for (auto q : stagingSinks[length])
-	{
-		newValue.emplace(q, stagingArea->valueDelta[q]);
+
+		if (qFrom == SINK)
+		{
+			newValue.emplace(newFrom, stagingArea->valueDelta[newFrom]);
+		}
+		else if (newFrom == SINK)
+		{
+			newValue.emplace(qFrom, valueDelta[qFrom]);
+		}
+		else
+		{
+			State pairRep = pairPair.second;
+			int newTW = std::min(valueDelta[qFrom], stagingArea->valueDelta[newFrom]);
+			newValue.emplace(pairPair.second, newTW);
+		}
+
 	}
 	//Replace our valueDelta;
 	valueDelta.clear();
@@ -701,22 +684,11 @@ void DAWG::unionWithStaging()
 	delete this->stagingArea;
 	this->stagingArea = new DAWG(NULL);
 
-	std::cout << "First layer ";
-	for (auto pair : delta0[0])
-	{
-		std::cout << "(" << pair.first << ", " << pair.second << ") ";
-	}
-	for (auto pair : delta1[0])
-	{
-		std::cout << "(" << pair.first << ", " << pair.second << ") ";
-	}
-	std::cout << "\n";
+	std::cout << "Main area before\n" << dotBefore << "\n";
+	std::cout << "\n\nStaging before\n" << stageDot << "\n";
+	std::cout << "\nFinal aut\n" << asDot() << "\n";
 
-	std::cout << "Finished with " << numTransitions() << " trans, size " << size() <<  "\n";
 
-	std::cout << "Dot before\n " << dotBefore << "\n\n";
-	std::cout << "Dot staging\n " << stageDot << "\\nn";
-	std::cout << "Dot after\n " << asDot() << "\n\n";
 }
 
 void DAWG::insert(VSet word, int tw)
@@ -794,20 +766,11 @@ int DAWG::contains(VSet word)
 DAWG::iterator DAWG::begin()
 {
 	this->stagingArea->minimize();
-	if (this->numTransitions() > 0)
-	{
-		//Make sure we've merged with our staging area before we iterate
-		this->unionWithStaging();
-		this->minimize();
-	}
-	else
-	{
-		//If we have only used our staging area, then we just move it to be ours
-		this->delta0 = stagingArea->delta0;
-		this->delta1 = stagingArea->delta1;
-		this->valueDelta = stagingArea->valueDelta;
-		this->initial = stagingArea->initial;
-	}
+
+	//Make sure we've merged with our staging area before we iterate
+	this->unionWithStaging();
+	this->minimize();
+
 	return DAWG::iterator({ initial, 0, VSet(), std::vector<State>() }, this);
 }
 

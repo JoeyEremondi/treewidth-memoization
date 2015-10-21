@@ -89,7 +89,6 @@ protected:
 	std::vector<std::string> wordSetHelper(int depth, State q);
 
 	void unionWithStaging();
-	State stagingInitial = newState();
 	DAWG* stagingArea;
 
 
