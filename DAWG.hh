@@ -44,12 +44,22 @@ inline bool operator<(const StateSignature& lhs, const StateSignature& rhs)
 }
 //typedef std::pair<State, State> StateSignature;
 
+class StatePool
+{
+private:
+	int counter = 2;
+public:
+	inline int newState(){ int ret = counter; counter++; return ret; }
+	inline int undo() { counter--; };
+};
+
 class DAWG
 {
 private:
 	bool isTrie = true;
 	State nextState = 3;
-	State initial = 2;
+	const int startInitial = 2;
+	State initial = startInitial;
 
 	std::vector<std::unordered_map<State, State>> delta0;
 	std::vector<std::unordered_map<State, State>> delta1;

@@ -505,7 +505,7 @@ void DAWG::unionWithStaging()
 	State initialPair = newState();
 	pairMap[0][{initial, stagingArea->initial}] = initialPair;
 
-	int totalTransitions = 0;
+	StatePool statePool;
 
 	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
@@ -544,16 +544,38 @@ void DAWG::unionWithStaging()
 				if (stage0)
 				{
 					State newTo = searchStaging0->second;
-					newDelta0.emplace(newFrom, newTo);
-					pairMap[layer + 1].insert({ { SINK, newTo }, newTo });
+					State newPairTo = statePool.newState();
+					auto insertInfo = pairMap[layer + 1].insert({ { SINK, newTo }, newPairTo });
+					if (insertInfo.second)
+					{
+						newDelta0.emplace(pairRep, newPairTo);
+					}
+					else
+					{
+						//Don't need a new state if this pair is already in the pairMap
+						statePool.undo();
+						newDelta0.emplace(pairRep, insertInfo.first);
+					}
+
 				}
 
 				//Add 1 transition
 				if (stage1)
 				{
 					State newTo = searchStaging1->second;
-					newDelta1.emplace(newFrom, newTo);
-					pairMap[layer + 1].insert({ { SINK, newTo }, newTo });
+					State newPairTo = statePool.newState();
+					auto insertInfo = pairMap[layer + 1].insert({ { SINK, newTo }, newPairTo });
+					if (insertInfo.second)
+					{
+						newDelta1.emplace(pairRep, newPairTo);
+					}
+					else
+					{
+						//Don't need a new state if this pair is already in the pairMap
+						statePool.undo();
+						newDelta1.emplace(pairRep, insertInfo.first);
+					}
+
 				}
 			}
 			else if (newFrom == SINK)
@@ -562,16 +584,36 @@ void DAWG::unionWithStaging()
 				if (main0)
 				{
 					State qTo = searchMain0->second;
-					newDelta0.emplace(qFrom, qTo);
-					pairMap[layer + 1].insert({ { SINK, qTo }, qTo });
+					State newPairTo = statePool.newState();
+					auto insertInfo = pairMap[layer + 1].insert({ { qTo, SINK }, newPairTo });
+					if (insertInfo.second)
+					{
+						newDelta0.emplace(pairRep, newPairTo);
+					}
+					else
+					{
+						//Don't need a new state if this pair is already in the pairMap
+						statePool.undo();
+						newDelta0.emplace(pairRep, insertInfo.first);
+					}
 				}
 
-				//add 1 transition
+				//Add 1 transition
 				if (main1)
 				{
 					State qTo = searchMain1->second;
-					newDelta1.emplace(qFrom, qTo);
-					pairMap[layer + 1].insert({ { SINK, qTo }, qTo });
+					State newPairTo = statePool.newState();
+					auto insertInfo = pairMap[layer + 1].insert({ { qTo, SINK }, newPairTo });
+					if (insertInfo.second)
+					{
+						newDelta1.emplace(pairRep, newPairTo);
+					}
+					else
+					{
+						//Don't need a new state if this pair is already in the pairMap
+						statePool.undo();
+						newDelta1.emplace(pairRep, insertInfo.first);
+					}
 				}
 			}
 			else
@@ -581,28 +623,55 @@ void DAWG::unionWithStaging()
 				//Do nothing if defined for neither
 				if (stage0 && main0)
 				{
-					std::cout << "Case1\n";
 					State qTo = searchMain0->second;
 					State newTo = searchStaging0->second;
-					State pairTo = newState();
-					pairMap[layer + 1].insert({ {qTo, newTo}, pairTo });
-					newDelta0.emplace(pairRep, pairTo);
+					State newPairTo = statePool.newState();
+					auto insertInfo = pairMap[layer + 1].insert({ {qTo, newTo}, newPairTo });
+					if (insertInfo.second)
+					{
+						newDelta0.emplace(pairRep, newPairTo);
+					}
+					else
+					{
+						//Don't need a new state if this pair is already in the pairMap
+						statePool.undo();
+						newDelta0.emplace(pairRep, insertInfo.first);
+					}
+					
 				}
 				else if (stage0 && !main0)
 				{
-					std::cout << "Case2\n";
 					//add transition from pairRep to staging area automaton
 					State newTo = searchStaging0->second;
-					pairMap[layer + 1].insert({ { SINK, newTo }, newTo });
-					newDelta0.emplace(pairRep, newTo);
+					State newPairTo = statePool.newState();
+					auto insertInfo = pairMap[layer + 1].insert({ {SINK, newTo} , newPairTo });
+					if (insertInfo.second)
+					{
+						newDelta0.emplace(pairRep, newPairTo);
+					}
+					else
+					{
+						//Don't need a new state if this pair is already in the pairMap
+						statePool.undo();
+						newDelta0.emplace(pairRep, insertInfo.first);
+					}
 				}
 				else if (!stage0 && main0)
 				{
-					std::cout << "Case3\n";
 					//add transition from pairRep to copy of main automaton
 					State qTo = searchMain0->second;
-					pairMap[layer + 1].insert({ { qTo, SINK}, qTo });
-					newDelta0.emplace(pairRep, qTo);
+					State newPairTo = statePool.newState();
+					auto insertInfo = pairMap[layer + 1].insert({ {qTo, SINK}, newPairTo });
+					if (insertInfo.second)
+					{
+						newDelta0.emplace(pairRep, newPairTo);
+					}
+					else
+					{
+						//Don't need a new state if this pair is already in the pairMap
+						statePool.undo();
+						newDelta0.emplace(pairRep, insertInfo.first);
+					}
 				}
 
 				//Add 1 transition
@@ -610,28 +679,55 @@ void DAWG::unionWithStaging()
 				//Do nothing if defined for neither
 				if (stage1 && main1)
 				{
-					std::cout << "Case4\n";
 					State qTo = searchMain1->second;
 					State newTo = searchStaging1->second;
-					State pairTo = newState();
-					pairMap[layer + 1].insert({ { qTo, newTo }, pairTo });
-					newDelta1.emplace(pairRep, pairTo);
+					State newPairTo = statePool.newState();
+					auto insertInfo = pairMap[layer + 1].insert({ {qTo, newTo}, newPairTo });
+					if (insertInfo.second)
+					{
+						newDelta1.emplace(pairRep, newPairTo);
+					}
+					else
+					{
+						//Don't need a new state if this pair is already in the pairMap
+						statePool.undo();
+						newDelta1.emplace(pairRep, insertInfo.first);
+					}
+
 				}
 				else if (stage1 && !main1)
 				{
-					std::cout << "Case5\n";
 					//add transition from pairRep to staging area automaton
 					State newTo = searchStaging1->second;
-					pairMap[layer + 1].insert({ { SINK, newTo }, newTo });
-					newDelta1.emplace(pairRep, newTo);
+					State newPairTo = statePool.newState();
+					auto insertInfo = pairMap[layer + 1].insert({ {SINK, newTo}, newPairTo });
+					if (insertInfo.second)
+					{
+						newDelta1.emplace(pairRep, newPairTo);
+					}
+					else
+					{
+						//Don't need a new state if this pair is already in the pairMap
+						statePool.undo();
+						newDelta1.emplace(pairRep, insertInfo.first);
+					}
 				}
 				else if (!stage1 && main1)
 				{
-					std::cout << "Case6\n";
 					//add transition from pairRep to copy of main automaton
 					State qTo = searchMain1->second;
-					pairMap[layer + 1].insert({ { qTo, SINK }, qTo });
-					newDelta1.emplace(pairRep, qTo);
+					State newPairTo = statePool.newState();
+					auto insertInfo = pairMap[layer + 1].insert({ {qTo, SINK}, newPairTo });
+					if (insertInfo.second)
+					{
+						newDelta1.emplace(pairRep, newPairTo);
+					}
+					else
+					{
+						//Don't need a new state if this pair is already in the pairMap
+						statePool.undo();
+						newDelta1.emplace(pairRep, insertInfo.first);
+					}
 				}
 			}
 
@@ -651,20 +747,21 @@ void DAWG::unionWithStaging()
 	{
 		State qFrom = pairPair.first.first;
 		State newFrom = pairPair.first.second;
+		State newRep = pairPair.second;
 
 		if (qFrom == SINK)
 		{
-			newValue.emplace(newFrom, stagingArea->valueDelta[newFrom]);
+			newValue.emplace(newRep, stagingArea->valueDelta[newFrom]);
 		}
 		else if (newFrom == SINK)
 		{
-			newValue.emplace(qFrom, valueDelta[qFrom]);
+			newValue.emplace(newRep, valueDelta[qFrom]);
 		}
 		else
 		{
 			State pairRep = pairPair.second;
 			int newTW = std::min(valueDelta[qFrom], stagingArea->valueDelta[newFrom]);
-			newValue.emplace(pairPair.second, newTW);
+			newValue.emplace(newRep, newTW);
 		}
 
 	}
