@@ -497,7 +497,7 @@ void DAWG::unionWithStaging()
 {
 	//auto dotBefore = this->asDot();
 	//auto stageDot = stagingArea->asDot();
-
+	std::cerr << "Startuing union\n";
 
 	//Make a product construction with our existing automaton
 	std::vector<std::map<std::pair<State, State>, State>> pairMap(length + 1);
@@ -510,7 +510,7 @@ void DAWG::unionWithStaging()
 	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
 	{
-
+		//std::cerr << "Starting layer " << layer << "\n";
 
 		//State newFrom = newStates[layer];
 		//State newTo = newStates[layer + 1];
@@ -583,6 +583,9 @@ void DAWG::unionWithStaging()
 		this->delta0[layer].insert(newDelta0.begin(), newDelta0.end());
 		this->delta1[layer].clear();
 		this->delta1[layer].insert(newDelta1.begin(), newDelta1.end());
+		//Clear delta in our staging area, to save memory
+		stagingArea->delta0[layer].clear();
+		stagingArea->delta1[layer].clear();
 
 	}
 
@@ -619,17 +622,22 @@ void DAWG::unionWithStaging()
 	//Now that we're done, set our new initial state;
 	this->initial = initialPair;
 
-	//And, minimize our combined automaton
-	this->minimize();
-
 	//Delete and re-initialize our staging area
 	this->stagingArea->clear();
 	delete this->stagingArea;
 	this->stagingArea = new DAWG(NULL);
 
+	//And, minimize our combined automaton
+	std::cerr << "Starting minimization\n";
+	this->minimize();
+	std::cerr << "done minimization\n";
+
+	
+
 	//std::cout << "Main area before\n" << dotBefore << "\n";
 	//std::cout << "\n\nStaging before\n" << stageDot << "\n";
 	//std::cout << "\nFinal aut\n" << asDot() << "\n";
+	std::cerr << "Done union\n";
 
 
 }

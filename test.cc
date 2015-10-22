@@ -90,7 +90,7 @@ int main(int argc, char** argv)
 	//std::vector<std::string>& inFiles = filesInDir;
 
 	//std::vector<std::string> inFiles({"eil51.tsp.dgf" });
-	std::vector<std::string> inFiles({ "queen6_6.dgf" });
+	std::vector<std::string> inFiles({ "queen7_7.dgf" });
 	//std::vector<std::string> inFiles({ "mildew.dgf" });
 	//std::vector<std::string> inFiles({ "myciel4.dgf" });
 	//std::vector<std::string> inFiles({ "oesoca42.dgf" });
@@ -122,7 +122,7 @@ int main(int argc, char** argv)
 		//boost::generate_random_graph(gRand, vc, ec, rng, true, true);
 
 
-		try {
+		//try {
 			auto_cpu_timer* timer;
 
 			//std::cout << "Set based Bottom-up Memoization" << std::endl;
@@ -183,11 +183,11 @@ int main(int argc, char** argv)
 			delete memo5;
 			delete timer;
 			*/
-		}
+		/*}
 		catch (const std::bad_alloc& e) {
 			std::cerr << "Allocation failed in main: " << e.what() << '\n';
 			//return -1;
-		}
+		}*/
 
 
 	}

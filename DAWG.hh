@@ -61,10 +61,10 @@ private:
 	const int startInitial = 2;
 	State initial = startInitial;
 
-	std::vector<std::unordered_map<State, State>> delta0;
-	std::vector<std::unordered_map<State, State>> delta1;
+	std::vector<std::map<State, State>> delta0;
+	std::vector<std::map<State, State>> delta1;
 
-	std::unordered_map<State, int> valueDelta;
+	std::map<State, int> valueDelta;
 
 	//std::unordered_map<State, State>::iterator* d0end;
 	//std::unordered_map<State, State>::iterator* d1end;
@@ -118,7 +118,7 @@ protected:
 
 
 public:
-	const int ABS_MAX_TRANSITIONS = 100000000;
+	const int ABS_MAX_TRANSITIONS = 10000000;
 	int maxTransitions = ABS_MAX_TRANSITIONS;
 	const int NOT_CONTAINED = -1;
 	void clear();

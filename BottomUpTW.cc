@@ -191,7 +191,7 @@ int bottomUpTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound)
 			} */
 		}
 		catch (const std::bad_alloc& e) {
-			std::cerr << "Allocation failed: " << e.what() << '\n';
+			std::cerr << "Allocation failed BUTW2: " << e.what() << '\n';
 			//Free up our resources
 			delete TW[i - 1];
 			delete TW[i];
@@ -377,7 +377,7 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 		}
 		catch (const std::bad_alloc& e) {
 			std::cerr << "Level " << i << ", num in Dict " << numStoredElements << "\n";
-			std::cerr << "allocation failed: " << e.what() << '\n';
+			std::cerr << "allocation failed in BUTW: " << e.what() << '\n';
 
 			//Keep going, like we hit our limit
 

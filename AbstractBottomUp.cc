@@ -82,7 +82,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 	for (i = 1; i <= nSet; ++i)
 	{
 		currentLayer = i;
-		try {
+		//try {
 			std::cout << "Level " << i << "\n";
 			//std::cout << "Num Q " << numQCalled << "\n";
 
@@ -153,15 +153,15 @@ int AbstractBottomUp::twForSet(VSet SStart)
 			endLayer(i - 1);
 
 
-		}
-		catch (const std::bad_alloc& e) {
-			std::cerr << "Allocation failed: " << e.what() << '\n';
+		//}
+		/*catch (const std::bad_alloc& e) {
+			std::cerr << "Allocation failed AbstractBottomUp: " << e.what() << '\n';
 			//Free up our resources
 			std::cerr << numStored() << " elements in the failing layer\n";
 			endLayer(i - 1);
 			endLayer(i);
 			return -1;
-		}
+		}*/
 
 	}
 
