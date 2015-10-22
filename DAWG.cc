@@ -632,7 +632,7 @@ void DAWG::unionWithStaging()
 	this->minimize();
 	std::cerr << "done minimization\n";
 
-	
+
 
 	//std::cout << "Main area before\n" << dotBefore << "\n";
 	//std::cout << "\n\nStaging before\n" << stageDot << "\n";
@@ -644,14 +644,18 @@ void DAWG::unionWithStaging()
 
 void DAWG::insert(VSet word, int tw)
 {
+	static int numInserts = 0;
+	numInserts++;
+	/*
 	if (this->stagingArea == NULL)
 	{
 		this->insertIntoEmpty(word, tw);
 		return;
-	}
-	this->stagingArea->insert(word, tw);
-	if (this->stagingArea->numTransitions() > maxTransitions)
+	}*/
+	stagingArea->insertIntoEmpty(word, tw);
+	if (numInserts > maxTransitions)
 	{
+		numInserts = 0;
 		this->stagingArea->minimize();
 		this->unionWithStaging();
 		this->maxTransitions = ABS_MAX_TRANSITIONS - this->numTransitions();
@@ -667,16 +671,48 @@ void DAWG::insertIntoEmpty(VSet word, int tw)
 {
 
 	State currentState = initial;
-	for (int i = 0; i < length; ++i)
+	bool stillSearching = true;
+	//First, read as much of the word as we can in our trie
+	int i;
+	for (i = 0; i < length && stillSearching; ++i)
 	{
-		State nextState = delta(i, currentState, word.contains(i));
-		if (nextState == SINK)
+		bool bit = word.contains(i);
+		State theNextState = newState();
+		std::pair<std::unordered_map<State, State>::iterator, bool> searchInfo;
+		if (bit)
 		{
-
-			nextState = newState();
-			addTransition(i, currentState, nextState, word.contains(i));
+			searchInfo = delta1[i].emplace(currentState, theNextState);
 		}
-		currentState = nextState;
+		else
+		{
+			searchInfo = delta0[i].emplace(currentState, theNextState);
+		}
+		//Then, set current state to either the found or newly generated state
+		if (searchInfo.second)
+		{
+			stillSearching = false;
+			currentState = theNextState;
+		}
+		else
+		{
+			//Undo our new state creation, next state is already in our map
+			nextState--;
+			currentState = searchInfo.first->second;
+		}
+	}
+	//Then, just loop and insert new states for our word
+	for (; i < length; i++)
+	{
+		State theNewState = newState();
+		if (word.contains(i))
+		{
+			delta1[i].emplace(currentState, theNewState);
+		}
+		else
+		{
+			delta0[i].emplace(currentState, theNewState);
+		}
+		currentState = theNewState;
 	}
 	valueDelta.insert({ currentState, tw });
 

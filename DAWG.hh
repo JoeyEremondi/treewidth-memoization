@@ -61,10 +61,10 @@ private:
 	const int startInitial = 2;
 	State initial = startInitial;
 
-	std::vector<std::map<State, State>> delta0;
-	std::vector<std::map<State, State>> delta1;
+	std::vector<std::unordered_map<State, State>> delta0;
+	std::vector<std::unordered_map<State, State>> delta1;
 
-	std::map<State, int> valueDelta;
+	std::unordered_map<State, int> valueDelta;
 
 	//std::unordered_map<State, State>::iterator* d0end;
 	//std::unordered_map<State, State>::iterator* d1end;
