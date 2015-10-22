@@ -88,26 +88,26 @@ void DAWGBottomUp::beginLayer(int layer)
 	upperBoundForLayer[layer] = globalUpperBound;
 
 
-
+#ifdef DEBUG
 	if (layer > 0)
 	{
 
 
-#ifdef DEBUG
-		auto preTrim = TWtest[layer - 1].asDot();
-#endif
+
+		//auto preTrim = TWtest[layer - 1].asDot();
+
 		//TW[layer - 1].trim();
 
 		//#ifdef DEBUG
-		std::ostringstream fileName, badFileName;
-		fileName << "dotOut/dawg_" << layer << ".dot";
-		badFileName << "dotOutBad/dawgBad_" << layer << ".dot";
-		std::ofstream  badGraphFile;
+		//std::ostringstream fileName, badFileName;
+		//fileName << "dotOut/dawg_" << layer << ".dot";
+		//badFileName << "dotOutBad/dawgBad_" << layer << ".dot";
+		//std::ofstream  badGraphFile;
 
 
 
-		badGraphFile.open(badFileName.str());
-		badGraphFile << TW[layer - 1].asDot();
+		//badGraphFile.open(badFileName.str());
+		//badGraphFile << TW[layer - 1].asDot();
 		/*
 		TW[layer - 1].initIter();
 		auto pair = TW[layer - 1].nextIter();
@@ -123,33 +123,34 @@ void DAWGBottomUp::beginLayer(int layer)
 			pair = TW[layer - 1].nextIter();
 		}*/
 
-		badGraphFile.close();
+		//badGraphFile.close();
 		//#endif
-
-
+	}
+#endif
 
 
 
 #ifdef DEBUG
-		std::cout << "Last layer wordSet real: ";
-		for (auto word : TW[layer - 1].wordSet())
-		{
-			std::cout << "\n" << word;
-		}
-		std::cout << "\n\nLast layer wordSet test: ";
-		for (auto word : TWtest[layer - 1].wordSet())
-		{
-			std::cout << "\n" << word;
-		}
-		std::cout << "\n";
+	std::cout << "Last layer wordSet real: ";
+	for (auto word : TW[layer - 1].wordSet())
+	{
+		std::cout << "\n" << word;
+	}
+	std::cout << "\n\nLast layer wordSet test: ";
+	for (auto word : TWtest[layer - 1].wordSet())
+	{
+		std::cout << "\n" << word;
+	}
+	std::cout << "\n";
 
-		std::cout << "\n\n" << TW[layer - 1].asDot() << "\n\n" << TWtest[layer - 1].asDot() << "\n\n" << preTrim << "\n\n";
+	std::cout << "\n\n" << TW[layer - 1].asDot() << "\n\n" << TWtest[layer - 1].asDot() << "\n\n" << preTrim << "\n\n";
+
 
 #endif
-		//Copy the previous DAWG into this layer's entry
-		//TW[layer].copyFrom(TW[layer - 1]);
+	//Copy the previous DAWG into this layer's entry
+	//TW[layer].copyFrom(TW[layer - 1]);
 
-	}
+
 
 }
 
