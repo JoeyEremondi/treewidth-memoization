@@ -645,6 +645,7 @@ void DAWG::unionWithStaging()
 void DAWG::insert(VSet word, int tw)
 {
 	static int numInserts = 0;
+	static bool didFail = false;
 	numInserts++;
 	/*
 	if (this->stagingArea == NULL)
@@ -652,7 +653,29 @@ void DAWG::insert(VSet word, int tw)
 		this->insertIntoEmpty(word, tw);
 		return;
 	}*/
-	stagingArea->insertIntoEmpty(word, tw);
+	try
+	{
+		stagingArea->insertIntoEmpty(word, tw);
+	}
+	catch (const std::bad_alloc& e)
+	{
+		std::cerr << "Doing union after bad alloc";
+		if (didFail)
+		{
+			throw e;
+		}
+		else
+		{
+			//Avoid inifinitely throwing out of memory error
+			didFail = true;
+			stagingArea->minimize();
+			unionWithStaging();
+			insert(word, tw);
+			didFail = false;
+			return;
+		}
+	}
+	
 	if (numInserts > maxTransitions)
 	{
 		numInserts = 0;
