@@ -87,22 +87,24 @@ int main(int argc, char** argv)
 	}
 
 	//separate variable makes switching for testing easier
-	//std::vector<std::string>& inFiles = filesInDir;
+	std::vector<std::string>& inFiles = filesInDir;
 
 	//std::vector<std::string> inFiles({"eil51.tsp.dgf" });
-	std::vector<std::string> inFiles({ "queen7_7.dgf" });
+	//std::vector<std::string> inFiles({ "queen7_7.dgf" });
 	//std::vector<std::string> inFiles({ "mildew.dgf" });
 	//std::vector<std::string> inFiles({ "myciel4.dgf" });
 	//std::vector<std::string> inFiles({ "oesoca42.dgf" });
 
+	//std::vector<std::string> inFiles({ "queen5_5.dgf", "queen6_6.dgf", "myciel3.dgf", "myciel4.dgf" });
 
 
-	for (auto iter = inFiles.begin(); iter != inFiles.end(); iter++)
+
+	for (auto inFile : inFiles)
 	{
 
 		std::ifstream inGraphFile;
-		inGraphFile.open("testGraphs/" + *iter);
-		std::cout << "\n\n***********\nTesting on graph " << *iter << "\n***********\n";
+		inGraphFile.open("testGraphs/" + inFile);
+		std::cout << "\n\n***********\nTesting on graph " << inFile << "\n***********\n";
 
 		//std::ofstream outGraph;
 		//outGraph.open("testGraphs/DOT/" + *iter + ".dot");

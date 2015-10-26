@@ -157,9 +157,9 @@ void DAWGBottomUp::beginLayer(int layer)
 void DAWGBottomUp::endLayer(int layer)
 {
 
-	std::cerr << "Ending layer with " << TW[layer].numTransitions() << " transitions\n";
+	//std::cerr << "Ending layer with " << TW[layer].numTransitions() << " transitions\n";
 	TW[layer].clear();
-	std::cerr << "Called update " << numUpdates << " times\n";
+	//std::cerr << "Called update " << numUpdates << " times\n";
 	//std::cout << "TW i size: " << currentLayer << " " << numStored() << "\n";
 	//TODO anything else to do here?
 }
