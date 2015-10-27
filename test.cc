@@ -89,6 +89,11 @@ int main(int argc, char** argv)
 	//separate variable makes switching for testing easier
 	std::vector<std::string>& inFiles = filesInDir;
 
+	if (argc > 1)
+	{
+		inFiles = { argv[1] };
+	}
+
 	//std::vector<std::string> inFiles({"eil51.tsp.dgf" });
 	//std::vector<std::string> inFiles({ "queen7_7.dgf" });
 	//std::vector<std::string> inFiles({ "mildew.dgf" });
