@@ -9,7 +9,7 @@ class AbstractTopDown
 {
 protected:
 	const int maxDictSize = 1000000000;
-	const int maxBottumUpSize = 10000;
+	const int maxBottumUpSize = 1;
 	const int topLevelNoStore = 0;
 	const int bottomLevelNoStore = 0;
 
