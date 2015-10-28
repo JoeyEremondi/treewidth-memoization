@@ -138,3 +138,32 @@ Simplicial 0 lower 213901 pruned 315049
 
  4.259845s wall, 4.240000s user + 0.020000s system = 4.260000s CPU (100.0%)
 178316
+
+
+***********
+Testing on graph barley-pp.dgf
+***********
+Num Vertices: 26
+Num Edges: 78
+
+Top Down 1
+Found global upper bound 10
+Bottom up using map
+Treewidth: Bottom up finished after 0 levels
+Max clique {10 ; 11 ; 12 ; 17 ; 18 ; }
+d2 lower 4
+MMD lower 4
+Found lower bound 4
+-2143050000 elements currently stored
+-2143000000 elements currently stored
+Called recursive fun 500000 times
+Simplicial 0 lower 121484 pruned 166700
+-2142950000 elements currently stored
+-2142900000 elements currently stored
+Called recursive fun 1000000 times
+Simplicial 0 lower 219725 pruned 311743
+7
+
+
+ 4.225757s wall, 4.220000s user + 0.000000s system = 4.220000s CPU (99.9%)
+178112

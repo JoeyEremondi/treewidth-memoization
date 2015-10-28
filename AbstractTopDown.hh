@@ -9,7 +9,6 @@ class AbstractTopDown
 {
 protected:
 	const int maxDictSize = 1000000000;
-	const int maxBottumUpSize = 1;
 	const int topLevelNoStore = 0;
 	const int bottomLevelNoStore = 0;
 
@@ -25,7 +24,7 @@ protected:
 
 	//std::vector<std::map<VSet, int>> TW;
 
-	
+
 	int topDownTWFromSet(const Graph& G, const VSet& S, int nSet);
 
 
@@ -38,6 +37,7 @@ protected:
 	AbstractTopDown(const Graph& G);
 
 public:
+	static const int maxBottumUpSize = 1;
 	int topDownTW();
 
 	//TODO remove

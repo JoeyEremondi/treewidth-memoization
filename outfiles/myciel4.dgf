@@ -144,3 +144,45 @@ Treewidth: Bottom up found solution
 
  0.130208s wall, 0.110000s user + 0.010000s system = 0.120000s CPU (92.2%)
 160076
+
+
+***********
+Testing on graph myciel4.dgf
+***********
+Num Vertices: 23
+Num Edges: 71
+
+Top Down 1
+Found global upper bound 10
+Bottom up using map
+Treewidth: Bottom up finished after 0 levels
+Max clique {5 ; 22 ; }
+d2 lower 4
+MMD lower 4
+Found lower bound 4
+-615250000 elements currently stored
+-615200000 elements currently stored
+Called recursive fun 500000 times
+Simplicial 0 lower 0 pruned 684725
+-615150000 elements currently stored
+Called recursive fun 1000000 times
+Simplicial 0 lower 0 pruned 1217744
+-615100000 elements currently stored
+-615050000 elements currently stored
+Called recursive fun 1500000 times
+Simplicial 0 lower 0 pruned 1743131
+-615000000 elements currently stored
+Called recursive fun 2000000 times
+Simplicial 0 lower 0 pruned 2220137
+-614950000 elements currently stored
+-614900000 elements currently stored
+Called recursive fun 2500000 times
+Simplicial 0 lower 0 pruned 2637801
+-614850000 elements currently stored
+Called recursive fun 3000000 times
+Simplicial 0 lower 0 pruned 2940757
+10
+
+
+ 16.818603s wall, 16.790000s user + 0.040000s system = 16.830000s CPU (100.1%)
+204952

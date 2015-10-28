@@ -128,3 +128,24 @@ Found lower bound 4
 
  0.778679s wall, 0.760000s user + 0.020000s system = 0.780000s CPU (100.2%)
 161436
+
+
+***********
+Testing on graph david-pp.dgf
+***********
+Num Vertices: 29
+Num Edges: 191
+
+Top Down 1
+Found global upper bound 18
+Bottom up using map
+Treewidth: Bottom up finished after 0 levels
+Max clique {0 ; 1 ; 2 ; 3 ; 4 ; 5 ; 10 ; 12 ; 18 ; 20 ; }
+d2 lower 4
+MMD lower 4
+Found lower bound 4
+13
+
+
+ 0.693034s wall, 0.670000s user + 0.010000s system = 0.680000s CPU (98.1%)
+160800

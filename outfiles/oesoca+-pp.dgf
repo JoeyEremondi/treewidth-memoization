@@ -96,3 +96,24 @@ Treewidth: Bottom up found solution
 
  0.035397s wall, 0.020000s user + 0.010000s system = 0.030000s CPU (84.8%)
 160084
+
+
+***********
+Testing on graph oesoca+-pp.dgf
+***********
+Num Vertices: 14
+Num Edges: 75
+
+Top Down 1
+Found global upper bound 11
+Bottom up using map
+Treewidth: Bottom up finished after 0 levels
+Max clique {0 ; 1 ; 2 ; 3 ; 5 ; 7 ; 9 ; 10 ; 12 ; }
+d2 lower 2
+MMD lower 2
+Found lower bound 2
+11
+
+
+ 0.030558s wall, 0.010000s user + 0.010000s system = 0.020000s CPU (65.4%)
+160096

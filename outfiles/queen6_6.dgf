@@ -6007,3 +6007,14 @@ Simplicial 0 lower 50 pruned 119509389
 -1660000000 elements currently stored
 Called recursive fun 1043Command terminated by signal 2
 6931776
+
+
+***********
+Testing on graph queen6_6.dgf
+***********
+Num Vertices: 36
+Num Edges: 290
+
+Top Down 1
+Command terminated by signal 2
+230428

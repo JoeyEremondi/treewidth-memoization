@@ -99,3 +99,24 @@ Treewidth: Bottom up found solution
 
  0.025420s wall, 0.010000s user + 0.010000s system = 0.020000s CPU (78.7%)
 159908
+
+
+***********
+Testing on graph MCSTestGraph2.dgf
+***********
+Num Vertices: 9
+Num Edges: 13
+
+Top Down 1
+Found global upper bound 3
+Bottom up using map
+Treewidth: Bottom up finished after 0 levels
+Max clique {1 ; 3 ; 4 ; }
+d2 lower 1
+MMD lower 1
+Found lower bound 1
+3
+
+
+ 0.060415s wall, 0.030000s user + 0.020000s system = 0.050000s CPU (82.8%)
+159936

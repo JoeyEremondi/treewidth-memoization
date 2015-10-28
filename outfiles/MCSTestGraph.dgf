@@ -93,3 +93,24 @@ Treewidth: Bottom up found solution
 
  0.049647s wall, 0.010000s user + 0.030000s system = 0.040000s CPU (80.6%)
 160164
+
+
+***********
+Testing on graph MCSTestGraph.dgf
+***********
+Num Vertices: 7
+Num Edges: 11
+
+Top Down 1
+Found global upper bound 3
+Bottom up using map
+TW i size: 1 1
+TW i size: 2 0
+TW i size: 3 0
+TW i size: 4 0
+Treewidth: Bottom up found solution
+3
+
+
+ 0.032344s wall, 0.010000s user + 0.020000s system = 0.030000s CPU (92.8%)
+160160

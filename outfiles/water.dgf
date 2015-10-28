@@ -156,3 +156,50 @@ Simplicial 0 lower 205100 pruned 2765506
 
  12.251890s wall, 12.240000s user + 0.010000s system = 12.250000s CPU (100.0%)
 195840
+
+
+***********
+Testing on graph water.dgf
+***********
+Num Vertices: 32
+Num Edges: 123
+
+Top Down 1
+Command terminated by signal 2
+160108
+
+
+***********
+Testing on graph water.dgf
+***********
+Num Vertices: 32
+Num Edges: 123
+
+Top Down 1
+Found global upper bound 11
+Bottom up using map
+Treewidth: Bottom up finished after 0 levels
+Max clique {0 ; 2 ; 4 ; 6 ; 14 ; 17 ; }
+d2 lower 6
+MMD lower 6
+Found lower bound 6
+-767900000 elements currently stored
+Called recursive fun 500000 times
+Simplicial 0 lower 86320 pruned 131360
+-767850000 elements currently stored
+-767800000 elements currently stored
+Called recursive fun 1000000 times
+Simplicial 0 lower 168682 pruned 340864
+-767750000 elements currently stored
+-767700000 elements currently stored
+Called recursive fun 1500000 times
+Simplicial 0 lower 208608 pruned 1445313
+-767650000 elements currently stored
+-767600000 elements currently stored
+Called recursive fun 2000000 times
+Simplicial 0 lower 208608 pruned 2758673
+9
+
+
+ 12.231087s wall, 12.210000s user + 0.030000s system = 12.240000s CPU (100.1%)
+195632

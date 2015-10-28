@@ -141,3 +141,81 @@ Treewidth: Bottom up found solution
 
  0.043521s wall, 0.020000s user + 0.010000s system = 0.030000s CPU (68.9%)
 160140
+
+
+***********
+Testing on graph queen5_5.dgf
+***********
+Num Vertices: 25
+Num Edges: 160
+
+Top Down 1
+Found global upper bound 19
+Bottom up using map
+Treewidth: Bottom up finished after 0 levels
+Max clique {0 ; 1 ; 2 ; 3 ; 4 ; }
+d2 lower 9
+MMD lower 9
+Found lower bound 9
+-2055500000 elements currently stored
+Called recursive fun 500000 times
+Simplicial 0 lower 5 pruned 113383
+-2055450000 elements currently stored
+Called recursive fun 1000000 times
+Simplicial 0 lower 5 pruned 170863
+-2055400000 elements currently stored
+Called recursive fun 1500000 times
+Simplicial 0 lower 5 pruned 214078
+-2055350000 elements currently stored
+Called recursive fun 2000000 times
+Simplicial 0 lower 5 pruned 239213
+-2055300000 elements currently stored
+Called recursive fun 2500000 times
+Simplicial 0 lower 5 pruned 292545
+-2055250000 elements currently stored
+-2055200000 elements currently stored
+Called recursive fun 3000000 times
+Simplicial 0 lower 5 pruned 315937
+-2055150000 elements currently stored
+Called recursive fun 3500000 times
+Simplicial 0 lower 5 pruned 344307
+-2055100000 elements currently stored
+Called recursive fun 4000000 times
+Simplicial 0 lower 5 pruned 356240
+-2055050000 elements currently stored
+Called recursive fun 4500000 times
+Simplicial 0 lower 5 pruned 383999
+-2055000000 elements currently stored
+Called recursive fun 5000000 times
+Simplicial 0 lower 5 pruned 430535
+-2054950000 elements currently stored
+Called recursive fun 5500000 times
+Simplicial 0 lower 5 pruned 447375
+-2054900000 elements currently stored
+Called recursive fun 6000000 times
+Simplicial 0 lower 5 pruned 477481
+-2054850000 elements currently stored
+Called recursive fun 6500000 times
+Simplicial 0 lower 5 pruned 489333
+-2054800000 elements currently stored
+Called recursive fun 7000000 times
+Simplicial 0 lower 5 pruned 509356
+-2054750000 elements currently stored
+Called recursive fun 7500000 times
+Simplicial 0 lower 5 pruned 526151
+-2054700000 elements currently stored
+Called recursive fun 8000000 times
+Simplicial 0 lower 5 pruned 533538
+Called recursive fun 8500000 times
+Simplicial 0 lower 5 pruned 544453
+-2054650000 elements currently stored
+Called recursive fun 9000000 times
+Simplicial 0 lower 5 pruned 548480
+-2054600000 elements currently stored
+Called recursive fun 9500000 times
+Simplicial 0 lower 5 pruned 549522
+18
+
+
+ 54.991626s wall, 54.960000s user + 0.080000s system = 55.040000s CPU (100.1%)
+258912

@@ -99,3 +99,24 @@ Treewidth: Bottom up found solution
 
  0.030918s wall, 0.020000s user + 0.000000s system = 0.020000s CPU (64.7%)
 159940
+
+
+***********
+Testing on graph pathfinder-pp.dgf
+***********
+Num Vertices: 12
+Num Edges: 43
+
+Top Down 1
+Found global upper bound 7
+Bottom up using map
+Treewidth: Bottom up finished after 0 levels
+Max clique {0 ; 1 ; 4 ; 5 ; 9 ; 11 ; }
+d2 lower 3
+MMD lower 3
+Found lower bound 3
+6
+
+
+ 0.031930s wall, 0.020000s user + 0.010000s system = 0.030000s CPU (94.0%)
+160044

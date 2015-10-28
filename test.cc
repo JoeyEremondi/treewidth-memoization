@@ -144,7 +144,7 @@ int main(int argc, char** argv)
 			//std::cout << "Treewidth: " << dawgSearcher.tw() << "\n\n\n";
 			//delete timer;
 
-			std::cout << "Top Down" << std::endl;
+			std::cout << "Top Down " << AbstractTopDown::maxBottumUpSize << std::endl;
 			timer = new auto_cpu_timer();
 			LastInsertedTopDown tdtw(testGraph);
 			std::cout << "Treewidth: " << tdtw.topDownTW() << "\n\n\n";

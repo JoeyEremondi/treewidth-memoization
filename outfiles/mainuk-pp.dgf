@@ -93,3 +93,24 @@ Treewidth: Bottom up found solution
 
  0.026088s wall, 0.000000s user + 0.020000s system = 0.020000s CPU (76.7%)
 159940
+
+
+***********
+Testing on graph mainuk-pp.dgf
+***********
+Num Vertices: 9
+Num Edges: 28
+
+Top Down 1
+Found global upper bound 6
+Bottom up using map
+Treewidth: Bottom up finished after 0 levels
+Max clique {0 ; 2 ; 3 ; 4 ; 5 ; }
+d2 lower 2
+MMD lower 2
+Found lower bound 2
+6
+
+
+ 0.026991s wall, 0.000000s user + 0.020000s system = 0.020000s CPU (74.1%)
+160080

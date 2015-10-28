@@ -120,3 +120,24 @@ Treewidth: Bottom up found solution
 
  0.071163s wall, 0.040000s user + 0.020000s system = 0.060000s CPU (84.3%)
 160264
+
+
+***********
+Testing on graph anna-pp.dgf
+***********
+Num Vertices: 22
+Num Edges: 148
+
+Top Down 1
+Found global upper bound 13
+Bottom up using map
+Treewidth: Bottom up finished after 0 levels
+Max clique {0 ; 1 ; 5 ; 10 ; 13 ; 17 ; 18 ; 20 ; 21 ; }
+d2 lower 5
+MMD lower 5
+Found lower bound 5
+12
+
+
+ 0.263551s wall, 0.220000s user + 0.040000s system = 0.260000s CPU (98.7%)
+160084
