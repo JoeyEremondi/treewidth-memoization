@@ -1,0 +1,120 @@
+
+
+
+***********
+Testing on graph ship-ship-pp.dgf
+***********
+Num Vertices: 30
+Num Edges: 77
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 9
+Finished bottom up with upper bound of 8
+8
+
+
+ 436.564222s wall, 436.210000s user + 0.760000s system = 436.970000s CPU (100.1%)
+1027740
+
+
+***********
+Testing on graph ship-ship-pp.dgf
+***********
+Num Vertices: 30
+Num Edges: 77
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 9
+Finished bottom up with upper bound of 8
+8
+
+
+ 487.109983s wall, 486.670000s user + 0.940000s system = 487.610000s CPU (100.1%)
+1141488
+
+
+***********
+Testing on graph ship-ship-pp.dgf
+***********
+Num Vertices: 30
+Num Edges: 77
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 9
+Finished bottom up with upper bound of 8
+8
+
+
+ 443.500463s wall, 443.100000s user + 0.750000s system = 443.850000s CPU (100.1%)
+1028028
+
+
+***********
+Testing on graph ship-ship-pp.dgf
+***********
+Num Vertices: 30
+Num Edges: 77
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 9
+0 from last level
+Called update 28 times
+27 from last level
+Called update 780 times
+328 from last level
+Called update 8119 times
+2417 from last level
+Called update 57043 times
+12222 from last level
+Called update 283611 times
+45395 from last level
+Called update 1056023 times
+129213 from last level
+Called update 3072898 times
+289871 from last level
+Called update 7211226 times
+522105 from last level
+Called update 13992532 times
+764170 from last level
+Called update 22957444 times
+916463 from last level
+Called update 32595252 times
+908530 from last level
+Called update 41114313 times
+755937 from last level
+Called update 47447712 times
+544502 from last level
+Called update 51598801 times
+358697 from last level
+Called update 54179672 times
+230784 from last level
+Called update 55790244 times
+149544 from last level
+Called update 56791677 times
+96011 from last level
+Called update 57393491 times
+59623 from last level
+Called update 57736642 times
+34569 from last level
+Called update 57913382 times
+17929 from last level
+Called update 57913382 times
+0 from last level
+Called update 57913382 times
+0 from last level
+Called update 57913382 times
+0 from last level
+Called update 57913382 times
+0 from last level
+Called update 57913382 times
+0 from last level
+Called update 57913382 times
+0 from last level
+Called update 57913382 times
+Finished bottom up with upper bound of 8
+Called update 57913382 times
+8
+
+
+ 95.904252s wall, 95.950000s user + 0.060000s system = 96.010000s CPU (100.1%)
+151560

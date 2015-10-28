@@ -83,7 +83,7 @@ int AbstractBottomUp::twForSet(VSet SStart)
 	{
 		currentLayer = i;
 		try {
-			std::cout << "Level " << i << "\n";
+			//std::cout << "Level " << i << "\n";
 			//std::cout << "Num Q " << numQCalled << "\n";
 
 			//Initialize our dictionary at this level
@@ -171,4 +171,3 @@ int AbstractBottomUp::twForSet(VSet SStart)
 	endLayer(nSet);
 	return finalResult;
 }
-

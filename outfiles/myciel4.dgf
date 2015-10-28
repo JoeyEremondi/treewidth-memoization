@@ -1,0 +1,146 @@
+
+
+
+***********
+Testing on graph myciel4.dgf
+***********
+Num Vertices: 23
+Num Edges: 71
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 10
+Finished bottom up with upper bound of 10
+10
+
+
+ 0.322440s wall, 0.320000s user + 0.000000s system = 0.320000s CPU (99.2%)
+8216
+
+
+***********
+Testing on graph myciel4.dgf
+***********
+Num Vertices: 23
+Num Edges: 71
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 10
+Finished bottom up with upper bound of 10
+10
+
+
+ 0.326082s wall, 0.310000s user + 0.010000s system = 0.320000s CPU (98.1%)
+8072
+
+
+***********
+Testing on graph myciel4.dgf
+***********
+Num Vertices: 23
+Num Edges: 71
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 10
+Finished bottom up with upper bound of 10
+10
+
+
+ 0.323941s wall, 0.320000s user + 0.000000s system = 0.320000s CPU (98.8%)
+8044
+
+
+***********
+Testing on graph myciel4.dgf
+***********
+Num Vertices: 23
+Num Edges: 71
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 10
+0 from last level
+Called update 21 times
+20 from last level
+Called update 384 times
+152 from last level
+Called update 2259 times
+609 from last level
+Called update 8273 times
+1493 from last level
+Called update 20503 times
+2439 from last level
+Called update 37237 times
+2784 from last level
+Called update 53037 times
+2255 from last level
+Called update 63239 times
+1274 from last level
+Called update 67521 times
+475 from last level
+Called update 68565 times
+104 from last level
+Called update 68675 times
+10 from last level
+Called update 68675 times
+0 from last level
+Called update 68675 times
+0 from last level
+Called update 68675 times
+0 from last level
+Called update 68675 times
+0 from last level
+Called update 68675 times
+0 from last level
+Called update 68675 times
+0 from last level
+Called update 68675 times
+0 from last level
+Called update 68675 times
+0 from last level
+Called update 68675 times
+0 from last level
+Called update 68675 times
+Finished bottom up with upper bound of 10
+Called update 68675 times
+10
+
+
+ 0.110339s wall, 0.110000s user + 0.000000s system = 0.110000s CPU (99.7%)
+4348
+
+
+***********
+Testing on graph myciel4.dgf
+***********
+Num Vertices: 23
+Num Edges: 71
+
+Top Down
+Found global upper bound 10
+Bottom up using map
+TW i size: 1 20
+TW i size: 2 152
+TW i size: 3 609
+TW i size: 4 1493
+TW i size: 5 2439
+TW i size: 6 2784
+TW i size: 7 2255
+TW i size: 8 1274
+TW i size: 9 475
+TW i size: 10 104
+TW i size: 11 10
+TW i size: 12 0
+TW i size: 13 0
+TW i size: 14 0
+TW i size: 15 0
+TW i size: 16 0
+TW i size: 17 0
+TW i size: 18 0
+TW i size: 19 0
+TW i size: 20 0
+TW i size: 21 0
+Treewidth: Bottom up found solution
+10
+
+
+ 0.130208s wall, 0.110000s user + 0.010000s system = 0.120000s CPU (92.2%)
+160076

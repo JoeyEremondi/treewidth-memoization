@@ -1,0 +1,95 @@
+
+
+
+***********
+Testing on graph mainuk-pp.dgf
+***********
+Num Vertices: 9
+Num Edges: 28
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 6
+Finished bottom up with upper bound of 6
+6
+
+
+ 0.001005s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+4028
+
+
+***********
+Testing on graph mainuk-pp.dgf
+***********
+Num Vertices: 9
+Num Edges: 28
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 6
+Finished bottom up with upper bound of 6
+6
+
+
+ 0.000273s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+4032
+
+
+***********
+Testing on graph mainuk-pp.dgf
+***********
+Num Vertices: 9
+Num Edges: 28
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 6
+Finished bottom up with upper bound of 6
+6
+
+
+ 0.000396s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+4048
+
+
+***********
+Testing on graph mainuk-pp.dgf
+***********
+Num Vertices: 9
+Num Edges: 28
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 6
+0 from last level
+Called update 3 times
+2 from last level
+Called update 3 times
+0 from last level
+Called update 3 times
+0 from last level
+Called update 3 times
+Finished bottom up with upper bound of 6
+Called update 3 times
+6
+
+
+ 0.000959s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+4016
+
+
+***********
+Testing on graph mainuk-pp.dgf
+***********
+Num Vertices: 9
+Num Edges: 28
+
+Top Down
+Found global upper bound 6
+Bottom up using map
+TW i size: 1 2
+TW i size: 2 0
+TW i size: 3 0
+TW i size: 4 0
+Treewidth: Bottom up found solution
+6
+
+
+ 0.026088s wall, 0.000000s user + 0.020000s system = 0.020000s CPU (76.7%)
+159940

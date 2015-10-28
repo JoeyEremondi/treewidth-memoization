@@ -1,0 +1,118 @@
+
+
+
+***********
+Testing on graph water.dgf
+***********
+Num Vertices: 32
+Num Edges: 123
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 11
+Finished bottom up with upper bound of 10
+10
+
+
+ 26.983633s wall, 26.940000s user + 0.070000s system = 27.010000s CPU (100.1%)
+68604
+
+
+***********
+Testing on graph water.dgf
+***********
+Num Vertices: 32
+Num Edges: 123
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 11
+Finished bottom up with upper bound of 10
+10
+
+
+ 26.753676s wall, 26.730000s user + 0.050000s system = 26.780000s CPU (100.1%)
+68512
+
+
+***********
+Testing on graph water.dgf
+***********
+Num Vertices: 32
+Num Edges: 123
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 11
+Finished bottom up with upper bound of 10
+10
+
+
+ 26.796299s wall, 26.760000s user + 0.060000s system = 26.820000s CPU (100.1%)
+68696
+
+
+***********
+Testing on graph water.dgf
+***********
+Num Vertices: 32
+Num Edges: 123
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 11
+0 from last level
+Called update 22 times
+21 from last level
+Called update 568 times
+197 from last level
+Called update 4009 times
+1114 from last level
+Called update 20919 times
+4294 from last level
+Called update 79392 times
+12086 from last level
+Called update 227980 times
+26025 from last level
+Called update 517593 times
+44449 from last level
+Called update 966236 times
+61913 from last level
+Called update 1532850 times
+71532 from last level
+Called update 2123418 times
+68987 from last level
+Called update 2632775 times
+55759 from last level
+Called update 2998273 times
+38403 from last level
+Called update 3222681 times
+23739 from last level
+Called update 3350942 times
+14788 from last level
+Called update 3431980 times
+10973 from last level
+Called update 3499467 times
+10775 from last level
+Called update 3574025 times
+12919 from last level
+Called update 3668539 times
+16864 from last level
+Called update 3792630 times
+20809 from last level
+Called update 3935760 times
+19542 from last level
+Called update 3939196 times
+628 from last level
+Called update 3939196 times
+0 from last level
+Called update 3939196 times
+0 from last level
+Called update 3939196 times
+0 from last level
+Called update 3939196 times
+0 from last level
+Called update 3939196 times
+Finished bottom up with upper bound of 9
+Called update 3939196 times
+9
+
+
+ 7.170258s wall, 7.160000s user + 0.010000s system = 7.170000s CPU (100.0%)
+14936

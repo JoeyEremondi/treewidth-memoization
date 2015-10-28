@@ -1,0 +1,122 @@
+
+
+
+***********
+Testing on graph anna-pp.dgf
+***********
+Num Vertices: 22
+Num Edges: 148
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 13
+Finished bottom up with upper bound of 12
+12
+
+
+ 0.024015s wall, 0.020000s user + 0.000000s system = 0.020000s CPU (83.3%)
+4256
+
+
+***********
+Testing on graph anna-pp.dgf
+***********
+Num Vertices: 22
+Num Edges: 148
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 13
+Finished bottom up with upper bound of 12
+12
+
+
+ 0.024648s wall, 0.020000s user + 0.000000s system = 0.020000s CPU (81.1%)
+4424
+
+
+***********
+Testing on graph anna-pp.dgf
+***********
+Num Vertices: 22
+Num Edges: 148
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 13
+Finished bottom up with upper bound of 12
+12
+
+
+ 0.029511s wall, 0.030000s user + 0.000000s system = 0.030000s CPU (101.7%)
+4456
+
+
+***********
+Testing on graph anna-pp.dgf
+***********
+Num Vertices: 22
+Num Edges: 148
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 13
+0 from last level
+Called update 11 times
+10 from last level
+Called update 120 times
+37 from last level
+Called update 337 times
+65 from last level
+Called update 579 times
+60 from last level
+Called update 728 times
+31 from last level
+Called update 783 times
+12 from last level
+Called update 810 times
+11 from last level
+Called update 847 times
+18 from last level
+Called update 847 times
+0 from last level
+Called update 847 times
+0 from last level
+Called update 847 times
+0 from last level
+Called update 847 times
+0 from last level
+Called update 847 times
+Finished bottom up with upper bound of 12
+Called update 847 times
+12
+
+
+ 0.022372s wall, 0.020000s user + 0.000000s system = 0.020000s CPU (89.4%)
+4060
+
+
+***********
+Testing on graph anna-pp.dgf
+***********
+Num Vertices: 22
+Num Edges: 148
+
+Top Down
+Found global upper bound 13
+Bottom up using map
+TW i size: 1 10
+TW i size: 2 37
+TW i size: 3 65
+TW i size: 4 60
+TW i size: 5 31
+TW i size: 6 12
+TW i size: 7 11
+TW i size: 8 18
+TW i size: 9 0
+TW i size: 10 0
+TW i size: 11 0
+TW i size: 12 0
+TW i size: 13 0
+Treewidth: Bottom up found solution
+12
+
+
+ 0.071163s wall, 0.040000s user + 0.020000s system = 0.060000s CPU (84.3%)
+160264

@@ -1,0 +1,110 @@
+
+
+
+***********
+Testing on graph myciel3.dgf
+***********
+Num Vertices: 11
+Num Edges: 20
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 5
+Finished bottom up with upper bound of 5
+5
+
+
+ 0.001220s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+3968
+
+
+***********
+Testing on graph myciel3.dgf
+***********
+Num Vertices: 11
+Num Edges: 20
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 5
+Finished bottom up with upper bound of 5
+5
+
+
+ 0.001518s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+3920
+
+
+***********
+Testing on graph myciel3.dgf
+***********
+Num Vertices: 11
+Num Edges: 20
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 5
+Finished bottom up with upper bound of 5
+5
+
+
+ 0.001161s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+3968
+
+
+***********
+Testing on graph myciel3.dgf
+***********
+Num Vertices: 11
+Num Edges: 20
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 5
+0 from last level
+Called update 10 times
+9 from last level
+Called update 62 times
+23 from last level
+Called update 128 times
+21 from last level
+Called update 154 times
+6 from last level
+Called update 154 times
+0 from last level
+Called update 154 times
+0 from last level
+Called update 154 times
+0 from last level
+Called update 154 times
+0 from last level
+Called update 154 times
+Finished bottom up with upper bound of 5
+Called update 154 times
+5
+
+
+ 0.000652s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+4024
+
+
+***********
+Testing on graph myciel3.dgf
+***********
+Num Vertices: 11
+Num Edges: 20
+
+Top Down
+Found global upper bound 5
+Bottom up using map
+TW i size: 1 9
+TW i size: 2 23
+TW i size: 3 21
+TW i size: 4 6
+TW i size: 5 0
+TW i size: 6 0
+TW i size: 7 0
+TW i size: 8 0
+TW i size: 9 0
+Treewidth: Bottom up found solution
+5
+
+
+ 0.028410s wall, 0.010000s user + 0.010000s system = 0.020000s CPU (70.4%)
+159996

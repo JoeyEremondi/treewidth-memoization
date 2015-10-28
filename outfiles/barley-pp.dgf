@@ -1,0 +1,140 @@
+
+
+
+***********
+Testing on graph barley-pp.dgf
+***********
+Num Vertices: 26
+Num Edges: 78
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 10
+Finished bottom up with upper bound of 8
+8
+
+
+ 31.569948s wall, 31.480000s user + 0.120000s system = 31.600000s CPU (100.1%)
+90632
+
+
+***********
+Testing on graph barley-pp.dgf
+***********
+Num Vertices: 26
+Num Edges: 78
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 10
+Finished bottom up with upper bound of 8
+8
+
+
+ 30.682496s wall, 30.630000s user + 0.080000s system = 30.710000s CPU (100.1%)
+90684
+
+
+***********
+Testing on graph barley-pp.dgf
+***********
+Num Vertices: 26
+Num Edges: 78
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 10
+Finished bottom up with upper bound of 8
+8
+
+
+ 31.380464s wall, 31.310000s user + 0.100000s system = 31.410000s CPU (100.1%)
+90628
+
+
+***********
+Testing on graph barley-pp.dgf
+***********
+Num Vertices: 26
+Num Edges: 78
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 10
+0 from last level
+Called update 22 times
+21 from last level
+Called update 509 times
+204 from last level
+Called update 4253 times
+1219 from last level
+Called update 24364 times
+5021 from last level
+Called update 99738 times
+15147 from last level
+Called update 306534 times
+34869 from last level
+Called update 739663 times
+63671 from last level
+Called update 1461167 times
+95557 from last level
+Called update 2449531 times
+119997 from last level
+Called update 3576164 times
+125800 from last level
+Called update 4638685 times
+109769 from last level
+Called update 5463842 times
+79852 from last level
+Called update 5988928 times
+47925 from last level
+Called update 6258119 times
+23292 from last level
+Called update 6371194 times
+10116 from last level
+Called update 6391559 times
+1871 from last level
+Called update 6393056 times
+144 from last level
+Called update 6393056 times
+0 from last level
+Called update 6393056 times
+0 from last level
+Called update 6393056 times
+0 from last level
+Called update 6393056 times
+Finished bottom up with upper bound of 7
+Called update 6393056 times
+7
+
+
+ 10.072900s wall, 10.070000s user + 0.010000s system = 10.080000s CPU (100.1%)
+23952
+
+
+***********
+Testing on graph barley-pp.dgf
+***********
+Num Vertices: 26
+Num Edges: 78
+
+Top Down
+Found global upper bound 10
+Bottom up using map
+TW i size: 1 21
+TW i size: 2 204
+TW i size: 3 1219
+TW i size: 4 5021
+Treewidth: Bottom up finished after 4 levels
+Max clique {10 ; 11 ; 12 ; 17 ; 18 ; }
+d2 lower 4
+MMD lower 4
+Found lower bound 4
+229900000 elements currently stored
+229950000 elements currently stored
+Called recursive fun 500000 times
+Simplicial 0 lower 117173 pruned 171564
+230000000 elements currently stored
+Called recursive fun 1000000 times
+Simplicial 0 lower 213901 pruned 315049
+7
+
+
+ 4.259845s wall, 4.240000s user + 0.020000s system = 4.260000s CPU (100.0%)
+178316

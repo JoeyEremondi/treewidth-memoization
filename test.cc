@@ -138,17 +138,17 @@ int main(int argc, char** argv)
 			//std::cout << "Treewidth: " << bottomUpSearcher.tw() << "\n\n\n";
 			//delete timer;
 
-			std::cout << "DAWG based Bottom-up Memoization" << std::endl;
-			timer = new auto_cpu_timer();
-			DAWGBottomUp dawgSearcher(testGraph);
-			std::cout << "Treewidth: " << dawgSearcher.tw() << "\n\n\n";
-			delete timer;
-
-			//std::cout << "Top Down" << std::endl;
+			//std::cout << "DAWG based Bottom-up Memoization, max " << DAWG::ABS_MAX_TRANSITIONS << std::endl;
 			//timer = new auto_cpu_timer();
-			//LastInsertedTopDown tdtw(testGraph);
-			//std::cout << "Treewidth: " << tdtw.topDownTW() << "\n\n\n";
+			//DAWGBottomUp dawgSearcher(testGraph);
+			//std::cout << "Treewidth: " << dawgSearcher.tw() << "\n\n\n";
 			//delete timer;
+
+			std::cout << "Top Down" << std::endl;
+			timer = new auto_cpu_timer();
+			LastInsertedTopDown tdtw(testGraph);
+			std::cout << "Treewidth: " << tdtw.topDownTW() << "\n\n\n";
+			delete timer;
 
 			/*
 			std::cout << "Simplicial-first Memoization" << std::endl;

@@ -1,0 +1,101 @@
+
+
+
+***********
+Testing on graph pathfinder-pp.dgf
+***********
+Num Vertices: 12
+Num Edges: 43
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 7
+Finished bottom up with upper bound of 7
+7
+
+
+ 0.000907s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+3992
+
+
+***********
+Testing on graph pathfinder-pp.dgf
+***********
+Num Vertices: 12
+Num Edges: 43
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 7
+Finished bottom up with upper bound of 7
+7
+
+
+ 0.000788s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+4064
+
+
+***********
+Testing on graph pathfinder-pp.dgf
+***********
+Num Vertices: 12
+Num Edges: 43
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 7
+Finished bottom up with upper bound of 7
+7
+
+
+ 0.000577s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+4144
+
+
+***********
+Testing on graph pathfinder-pp.dgf
+***********
+Num Vertices: 12
+Num Edges: 43
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 7
+0 from last level
+Called update 4 times
+3 from last level
+Called update 12 times
+3 from last level
+Called update 16 times
+2 from last level
+Called update 17 times
+1 from last level
+Called update 17 times
+0 from last level
+Called update 17 times
+Finished bottom up with upper bound of 6
+Called update 17 times
+6
+
+
+ 0.000999s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+3988
+
+
+***********
+Testing on graph pathfinder-pp.dgf
+***********
+Num Vertices: 12
+Num Edges: 43
+
+Top Down
+Found global upper bound 7
+Bottom up using map
+TW i size: 1 3
+TW i size: 2 3
+TW i size: 3 2
+TW i size: 4 1
+TW i size: 5 0
+TW i size: 6 0
+Treewidth: Bottom up found solution
+6
+
+
+ 0.030918s wall, 0.020000s user + 0.000000s system = 0.020000s CPU (64.7%)
+159940

@@ -1,0 +1,98 @@
+
+
+
+***********
+Testing on graph oesoca+-pp.dgf
+***********
+Num Vertices: 14
+Num Edges: 75
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 11
+Finished bottom up with upper bound of 11
+11
+
+
+ 0.000752s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+4096
+
+
+***********
+Testing on graph oesoca+-pp.dgf
+***********
+Num Vertices: 14
+Num Edges: 75
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 11
+Finished bottom up with upper bound of 11
+11
+
+
+ 0.001038s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+4100
+
+
+***********
+Testing on graph oesoca+-pp.dgf
+***********
+Num Vertices: 14
+Num Edges: 75
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 11
+Finished bottom up with upper bound of 11
+11
+
+
+ 0.000632s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+4208
+
+
+***********
+Testing on graph oesoca+-pp.dgf
+***********
+Num Vertices: 14
+Num Edges: 75
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 11
+0 from last level
+Called update 5 times
+4 from last level
+Called update 15 times
+3 from last level
+Called update 15 times
+0 from last level
+Called update 15 times
+0 from last level
+Called update 15 times
+Finished bottom up with upper bound of 11
+Called update 15 times
+11
+
+
+ 0.000811s wall, 0.000000s user + 0.000000s system = 0.000000s CPU (n/a%)
+3928
+
+
+***********
+Testing on graph oesoca+-pp.dgf
+***********
+Num Vertices: 14
+Num Edges: 75
+
+Top Down
+Found global upper bound 11
+Bottom up using map
+TW i size: 1 4
+TW i size: 2 3
+TW i size: 3 0
+TW i size: 4 0
+TW i size: 5 0
+Treewidth: Bottom up found solution
+11
+
+
+ 0.035397s wall, 0.020000s user + 0.010000s system = 0.030000s CPU (84.8%)
+160084

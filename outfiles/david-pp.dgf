@@ -1,0 +1,130 @@
+
+
+
+***********
+Testing on graph david-pp.dgf
+***********
+Num Vertices: 29
+Num Edges: 191
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 18
+Finished bottom up with upper bound of 13
+13
+
+
+ 5.707615s wall, 5.680000s user + 0.020000s system = 5.700000s CPU (99.9%)
+29616
+
+
+***********
+Testing on graph david-pp.dgf
+***********
+Num Vertices: 29
+Num Edges: 191
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 18
+Finished bottom up with upper bound of 13
+13
+
+
+ 5.751223s wall, 5.740000s user + 0.010000s system = 5.750000s CPU (100.0%)
+29664
+
+
+***********
+Testing on graph david-pp.dgf
+***********
+Num Vertices: 29
+Num Edges: 191
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 18
+Finished bottom up with upper bound of 13
+13
+
+
+ 5.999074s wall, 5.990000s user + 0.010000s system = 6.000000s CPU (100.0%)
+29488
+
+
+***********
+Testing on graph david-pp.dgf
+***********
+Num Vertices: 29
+Num Edges: 191
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 18
+0 from last level
+Called update 20 times
+19 from last level
+Called update 514 times
+168 from last level
+Called update 3404 times
+910 from last level
+Called update 16901 times
+3354 from last level
+Called update 61165 times
+8912 from last level
+Called update 165673 times
+17685 from last level
+Called update 349436 times
+26904 from last level
+Called update 597571 times
+32520 from last level
+Called update 862113 times
+31642 from last level
+Called update 1082034 times
+23724 from last level
+Called update 1196282 times
+11590 from last level
+Called update 1237762 times
+4100 from last level
+Called update 1246702 times
+937 from last level
+Called update 1247583 times
+111 from last level
+Called update 1247594 times
+3 from last level
+Called update 1247594 times
+0 from last level
+Called update 1247594 times
+0 from last level
+Called update 1247594 times
+0 from last level
+Called update 1247594 times
+Finished bottom up with upper bound of 13
+Called update 1247594 times
+13
+
+
+ 2.194903s wall, 2.190000s user + 0.000000s system = 2.190000s CPU (99.8%)
+9344
+
+
+***********
+Testing on graph david-pp.dgf
+***********
+Num Vertices: 29
+Num Edges: 191
+
+Top Down
+Found global upper bound 18
+Bottom up using map
+TW i size: 1 19
+TW i size: 2 168
+TW i size: 3 910
+TW i size: 4 3354
+TW i size: 5 8912
+Treewidth: Bottom up finished after 5 levels
+Max clique {0 ; 1 ; 2 ; 3 ; 4 ; 5 ; 10 ; 12 ; 18 ; 20 ; }
+d2 lower 4
+MMD lower 4
+Found lower bound 4
+13
+
+
+ 0.778679s wall, 0.760000s user + 0.020000s system = 0.780000s CPU (100.2%)
+161436

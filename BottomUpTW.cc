@@ -105,7 +105,7 @@ int bottomUpTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound)
 	for (int i = 1; i <= nSet; ++i)
 	{
 		try {
-			std::cout << "Level " << i << "\n";
+			//std::cout << "Level " << i << "\n";
 			//std::cout << "Num Q " << numQCalled << "\n";
 
 			//Initialize our dictionary at this level
@@ -200,7 +200,7 @@ int bottomUpTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound)
 		}
 
 	}
-	
+
 	//std::cout << "Num Q " << numQCalled << "\n";
 
 
@@ -259,7 +259,7 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 	this->twValueFound = NO_WIDTH;
 	this->maxLevelReached = -1;
 	this->topLevelDictFound = NULL;
-	
+
 
 	//TODO remove
 	//globalUpperBound = 26;

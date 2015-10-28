@@ -1,0 +1,143 @@
+
+
+
+***********
+Testing on graph queen5_5.dgf
+***********
+Num Vertices: 25
+Num Edges: 160
+
+DAWG based Bottom-up Memoization, max 100000000
+Treewidth: Found global upper bound 19
+Finished bottom up with upper bound of 18
+18
+
+
+ 0.073155s wall, 0.070000s user + 0.000000s system = 0.070000s CPU (95.7%)
+5216
+
+
+***********
+Testing on graph queen5_5.dgf
+***********
+Num Vertices: 25
+Num Edges: 160
+
+DAWG based Bottom-up Memoization, max 10000000
+Treewidth: Found global upper bound 19
+Finished bottom up with upper bound of 18
+18
+
+
+ 0.061443s wall, 0.060000s user + 0.000000s system = 0.060000s CPU (97.7%)
+5364
+
+
+***********
+Testing on graph queen5_5.dgf
+***********
+Num Vertices: 25
+Num Edges: 160
+
+DAWG based Bottom-up Memoization, max 50000000
+Treewidth: Found global upper bound 19
+Finished bottom up with upper bound of 18
+18
+
+
+ 0.060988s wall, 0.060000s user + 0.000000s system = 0.060000s CPU (98.4%)
+5416
+
+
+***********
+Testing on graph queen5_5.dgf
+***********
+Num Vertices: 25
+Num Edges: 160
+
+Set based Bottom-up Memoization
+Treewidth: Found global upper bound 19
+0 from last level
+Called update 21 times
+20 from last level
+Called update 387 times
+167 from last level
+Called update 2082 times
+552 from last level
+Called update 5384 times
+845 from last level
+Called update 8762 times
+908 from last level
+Called update 8848 times
+20 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+0 from last level
+Called update 8848 times
+Finished bottom up with upper bound of 18
+Called update 8848 times
+18
+
+
+ 0.026975s wall, 0.020000s user + 0.000000s system = 0.020000s CPU (74.1%)
+3980
+
+
+***********
+Testing on graph queen5_5.dgf
+***********
+Num Vertices: 25
+Num Edges: 160
+
+Top Down
+Found global upper bound 19
+Bottom up using map
+TW i size: 1 20
+TW i size: 2 167
+TW i size: 3 552
+TW i size: 4 845
+TW i size: 5 908
+TW i size: 6 20
+TW i size: 7 0
+TW i size: 8 0
+TW i size: 9 0
+TW i size: 10 0
+TW i size: 11 0
+TW i size: 12 0
+TW i size: 13 0
+TW i size: 14 0
+TW i size: 15 0
+TW i size: 16 0
+TW i size: 17 0
+TW i size: 18 0
+TW i size: 19 0
+TW i size: 20 0
+Treewidth: Bottom up found solution
+18
+
+
+ 0.043521s wall, 0.020000s user + 0.010000s system = 0.030000s CPU (68.9%)
+160140
