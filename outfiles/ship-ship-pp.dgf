@@ -118,3 +118,91 @@ Called update 57913382 times
 
  95.904252s wall, 95.950000s user + 0.060000s system = 96.010000s CPU (100.1%)
 151560
+
+
+***********
+Testing on graph ship-ship-pp.dgf
+***********
+Num Vertices: 30
+Num Edges: 77
+
+Top Down
+Found global upper bound 9
+Bottom up using map
+TW i size: 1 27
+TW i size: 2 328
+TW i size: 3 2417
+Treewidth: Bottom up finished after 3 levels
+Max clique {1 ; 2 ; 3 ; }
+d2 lower 4
+MMD lower 3
+Found lower bound 4
+1295200000 elements currently stored
+1295250000 elements currently stored
+Called recursive fun 500000 times
+Simplicial 0 lower 440789 pruned 51882
+1295300000 elements currently stored
+1295350000 elements currently stored
+Called recursive fun 1000000 times
+Simplicial 0 lower 710950 pruned 86774
+1295400000 elements currently stored
+1295450000 elements currently stored
+Called recursive fun 1500000 times
+Simplicial 0 lower 983210 pruned 119916
+1295500000 elements currently stored
+1295550000 elements currently stored
+Called recursive fun 2000000 times
+Simplicial 0 lower 1041327 pruned 1435653
+1295600000 elements currently stored
+1295650000 elements currently stored
+Called recursive fun 2500000 times
+Simplicial 0 lower 1041327 pruned 2636214
+1295700000 elements currently stored
+1295750000 elements currently stored
+Called recursive fun 3000000 times
+Simplicial 0 lower 1041327 pruned 3691930
+1295800000 elements currently stored
+Called recursive fun 3500000 times
+Simplicial 0 lower 1041327 pruned 4243992
+1295850000 elements currently stored
+1295900000 elements currently stored
+Called recursive fun 4000000 times
+Simplicial 0 lower 1041327 pruned 4789412
+1295950000 elements currently stored
+Called recursive fun 4500000 times
+Simplicial 0 lower 1041327 pruned 5449481
+1296000000 elements currently stored
+1296050000 elements currently stored
+Called recursive fun 5000000 times
+Simplicial 0 lower 1041327 pruned 5979073
+1296100000 elements currently stored
+Called recursive fun 5500000 times
+Simplicial 0 lower 1041327 pruned 6682343
+1296150000 elements currently stored
+1296200000 elements currently stored
+Called recursive fun 6000000 times
+Simplicial 0 lower 1041327 pruned 7323190
+1296250000 elements currently stored
+Called recursive fun 6500000 times
+Simplicial 0 lower 1041327 pruned 7997637
+1296300000 elements currently stored
+1296350000 elements currently stored
+Called recursive fun 7000000 times
+Simplicial 0 lower 1041327 pruned 8699726
+1296400000 elements currently stored
+1296450000 elements currently stored
+Called recursive fun 7500000 times
+Simplicial 0 lower 1041327 pruned 9593956
+1296500000 elements currently stored
+Called recursive fun 8000000 times
+Simplicial 0 lower 1041327 pruned 10611289
+1296550000 elements currently stored
+1296600000 elements currently stored
+Called recursive fun 8500000 times
+Simplicial 0 lower 1041327 pruned 11243723
+1296650000 elements currently stored
+8
+
+
+ 52.896318s wall, 52.890000s user + 0.060000s system = 52.950000s CPU (100.1%)
+303132

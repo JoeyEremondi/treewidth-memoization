@@ -116,3 +116,43 @@ Called update 3939196 times
 
  7.170258s wall, 7.160000s user + 0.010000s system = 7.170000s CPU (100.0%)
 14936
+
+
+***********
+Testing on graph water.dgf
+***********
+Num Vertices: 32
+Num Edges: 123
+
+Top Down
+Found global upper bound 11
+Bottom up using map
+TW i size: 1 21
+TW i size: 2 197
+TW i size: 3 1114
+TW i size: 4 4294
+Treewidth: Bottom up finished after 4 levels
+Max clique {0 ; 2 ; 4 ; 6 ; 14 ; 17 ; }
+d2 lower 6
+MMD lower 6
+Found lower bound 6
+245250000 elements currently stored
+245300000 elements currently stored
+Called recursive fun 500000 times
+Simplicial 0 lower 85383 pruned 131044
+245350000 elements currently stored
+Called recursive fun 1000000 times
+Simplicial 0 lower 167586 pruned 340497
+245400000 elements currently stored
+245450000 elements currently stored
+Called recursive fun 1500000 times
+Simplicial 0 lower 205100 pruned 1462878
+245500000 elements currently stored
+245550000 elements currently stored
+Called recursive fun 2000000 times
+Simplicial 0 lower 205100 pruned 2765506
+9
+
+
+ 12.251890s wall, 12.240000s user + 0.010000s system = 12.250000s CPU (100.0%)
+195840
