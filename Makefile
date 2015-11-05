@@ -1,43 +1,55 @@
-#Adapted from http://stackoverflow.com/questions/2481269/how-to-make-simple-c-makefile
+# ------------------------------------------------
+# Generic Makefile
+# Adapted from http://stackoverflow.com/questions/5820303/how-do-i-force-make-gcc-to-show-me-the-commands
+# Author: yanick.rochon@gmail.com
+# Date  : 2011-08-10
+#
+# Used by: Joey Eremondi, Utrecht University, November 2015
+#
+# Changelog :
+#   2010-11-05 - first version
+#   2011-08-10 - added structure : sources, objects, binaries
+#                thanks to http://stackoverflow.com/users/128940/beta
+# ------------------------------------------------
 
-UNAME := $(shell uname)
+# project name (generate executable with this name)
+TARGET   = test
 
-ifeq ($(UNAME), MINGW32_NT-6.2)
-INCLUDES="D:\Program Files\boost_1_59_0"# do something Linux-y
-endif
-ifeq ($(UNAME), Linux)
-INCLUDES=""
-endif
+CXX=clang++ -std=c++14 -I$(INCDIR)
+# compiling flags here
+CFLAGS   = -g -O2
 
-CC=clang
-CXX=clang++ -std=c++14 -I$(INCLUDES)
-RM=rm -f
-CPPFLAGS=-g -O2
-LDFLAGS=-g -O2
+LINKER   = clang++ -std=c++14 -o
+# linking flags here
+LDFLAGS   = -g -O2
 LDLIBS=-lm -lboost_system -lboost_timer -lboost_filesystem
 
-SRCS= qset.cc test.cc NaiveMemo.cc BasicMemo.cc DepthBoundedMemo.cc AbstractMemo.cc SimplicialFirstMemo.cc HeuristicUpperBoundMemo.cc TWUtilAlgos.cc DIMACS.cc VSet.cc BottomUpTW.cc TopDownTW.cc UpperBound.cc AbstractBottomUp.cc DAWG.cc DAWGBottomUp.cc ArrayOfSetBottomUp.cc LastInsertedTopDown.cc AbstractTopDown.cc Simplicial.cc
-OBJS=$(subst .cc,.o,$(SRCS))
 
-all: test
+# change these to set the proper directories where each files shoould be
+SRCDIR   = src
+INCDIR   = include
+OBJDIR   = obj
+BINDIR   = bin
 
+SOURCES  := $(wildcard $(SRCDIR)/*.cc)
+#INCLUDES := $(wildcard $(INCDIR)/*.hh)
+OBJECTS  := $(SOURCES:$(SRCDIR)/%.cc=$(OBJDIR)/%.o)
+rm       = rm -f
 
-test: $(OBJS)
-	$(CXX) $(LDFLAGS) -o test $(OBJS) $(LDLIBS)
+$(BINDIR)/$(TARGET): $(OBJECTS)
+	@$(LINKER) $@ $(LDFLAGS) $(LDLIBS) $(OBJECTS)
+	@echo "Linking complete!"
 
-depend: .depend
+$(OBJECTS): $(OBJDIR)/%.o : $(SRCDIR)/%.cc
+	@$(CXX) $(CFLAGS) -c $< -o $@
+	@echo "Compiled "$<" successfully!"
 
-.depend: $(SRCS)
-	rm -f ./.depend
-	$(CXX) $(CPPFLAGS) -MM $^>>./.depend;
-
+.PHONEY: clean
 clean:
-	$(RM) $(OBJS)
+	@$(rm) $(OBJECTS)
+	@echo "Cleanup complete!"
 
-dist-clean: clean
-	$(RM) *~ .depend
-
-check-syntax:
-	$(CXX) $(CPPFLAGS) -o nul -S ${CHK_SOURCES}
-
-include .depend
+.PHONEY: remove
+remove: clean
+	@$(rm) $(BINDIR)/$(TARGET)
+	@echo "Executable removed!"
