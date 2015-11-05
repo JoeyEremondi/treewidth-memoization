@@ -1,7 +1,6 @@
 #include "AbstractBottomUp.hh"
 #include "VSet.hh"
 #include "qset.hh"
-#include "AbstractMemo.hh" //TODO better place for constants?
 #include "UpperBound.hh"
 #include "TWUtilAlgos.hh"
 

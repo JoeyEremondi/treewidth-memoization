@@ -2,7 +2,6 @@
 
 #include "qset.hh"
 #include "TWUtilAlgos.hh"
-#include "AbstractMemo.hh"
 #include "BottomUpTW.hh"
 
 class AbstractTopDown

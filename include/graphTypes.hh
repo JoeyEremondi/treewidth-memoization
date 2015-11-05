@@ -8,4 +8,6 @@ typedef boost::adjacency_list < boost::vecS, boost::vecS, boost::undirectedS > G
 typedef boost::graph_traits<Graph>::edge_descriptor Edge;
 typedef boost::graph_traits<Graph>::vertex_descriptor Vertex;
 
+const int NO_WIDTH = -1;
+
 #endif

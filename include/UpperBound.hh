@@ -3,7 +3,6 @@
 
 #include "qset.hh"
 #include "TWUtilAlgos.hh"
-#include "AbstractMemo.hh"
 
 int calcUpperBound(const Graph& G, const VSet& S);
 

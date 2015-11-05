@@ -18,6 +18,40 @@
       <Platform>x64</Platform>
     </ProjectConfiguration>
   </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\AbstractBottomUp.cc" />
+    <ClCompile Include="src\AbstractTopDown.cc" />
+    <ClCompile Include="src\ArrayOfSetBottomUp.cc" />
+    <ClCompile Include="src\BottomUpTW.cc" />
+    <ClCompile Include="src\DAWG.cc" />
+    <ClCompile Include="src\DAWGBottomUp.cc" />
+    <ClCompile Include="src\DIMACS.cc" />
+    <ClCompile Include="src\LastInsertedTopDown.cc" />
+    <ClCompile Include="src\qset.cc" />
+    <ClCompile Include="src\Simplicial.cc" />
+    <ClCompile Include="src\test.cc" />
+    <ClCompile Include="src\TreeBottomUp.cc" />
+    <ClCompile Include="src\TWUtilAlgos.cc" />
+    <ClCompile Include="src\UpperBound.cc" />
+    <ClCompile Include="src\VSet.cc" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\AbstractBottomUp.hh" />
+    <ClInclude Include="include\AbstractTopDown.hh" />
+    <ClInclude Include="include\ArrayOfSetBottomUp.hh" />
+    <ClInclude Include="include\BottomUpTW.hh" />
+    <ClInclude Include="include\DAWG.hh" />
+    <ClInclude Include="include\DAWGBottomUp.hh" />
+    <ClInclude Include="include\DIMACS.hh" />
+    <ClInclude Include="include\graphTypes.hh" />
+    <ClInclude Include="include\LastInsertedTopDown.hh" />
+    <ClInclude Include="include\qset.hh" />
+    <ClInclude Include="include\Simplicial.hh" />
+    <ClInclude Include="include\TreeBottomUp.hh" />
+    <ClInclude Include="include\TWUtilAlgos.hh" />
+    <ClInclude Include="include\UpperBound.hh" />
+    <ClInclude Include="include\VSet.hh" />
+  </ItemGroup>
   <PropertyGroup Label="Globals">
     <ProjectGuid>{33620AE2-27AF-4BDF-956D-4A1570E7B30B}</ProjectGuid>
     <Keyword>Win32Proj</Keyword>
@@ -104,6 +138,7 @@
       <DebugInformationFormat>ProgramDatabase</DebugInformationFormat>
       <FavorSizeOrSpeed>Speed</FavorSizeOrSpeed>
       <AdditionalOptions>/Qpar %(AdditionalOptions)</AdditionalOptions>
+      <AdditionalIncludeDirectories>include;</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <TargetMachine>MachineX86</TargetMachine>
@@ -126,6 +161,7 @@
       <OmitFramePointers>false</OmitFramePointers>
       <InlineFunctionExpansion>AnySuitable</InlineFunctionExpansion>
       <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>include;</AdditionalIncludeDirectories>
     </ClCompile>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
@@ -134,57 +170,6 @@
       <AdditionalLibraryDirectories>D:\Program Files\boost_1_59_0\lib;D:\Program Files\boost_1_59_0\stage\lib</AdditionalLibraryDirectories>
     </Link>
   </ItemDefinitionGroup>
-  <ItemGroup>
-    <ClCompile Include="AbstractBottomUp.cc" />
-    <ClCompile Include="AbstractMemo.cc" />
-    <ClCompile Include="AbstractTopDown.cc" />
-    <ClCompile Include="ArrayOfSetBottomUp.cc" />
-    <ClCompile Include="BasicMemo.cc" />
-    <ClCompile Include="BottomUpTW.cc" />
-    <ClCompile Include="DAWG.cc" />
-    <ClCompile Include="DAWGBottomUp.cc" />
-    <ClCompile Include="DepthBoundedMemo.cc" />
-    <ClCompile Include="DIMACS.cc" />
-    <ClCompile Include="HeuristicUpperBoundMemo.cc" />
-    <ClCompile Include="LastInsertedTopDown.cc" />
-    <ClCompile Include="NaiveMemo.cc" />
-    <ClCompile Include="OppBloom.cc" />
-    <ClCompile Include="qset.cc" />
-    <ClCompile Include="Simplicial.cc" />
-    <ClCompile Include="SimplicialFirstMemo.cc" />
-    <ClCompile Include="TopDownTW.cc" />
-    <ClCompile Include="TreeBottomUp.cc" />
-    <ClCompile Include="UpperBound.cc" />
-    <ClCompile Include="test.cc" />
-    <ClCompile Include="TWUtilAlgos.cc" />
-    <ClCompile Include="VSet.cc" />
-  </ItemGroup>
-  <ItemGroup>
-    <ClInclude Include="AbstractBottomUp.hh" />
-    <ClInclude Include="AbstractMemo.hh" />
-    <ClInclude Include="AbstractTopDown.hh" />
-    <ClInclude Include="ArrayOfSetBottomUp.hh" />
-    <ClInclude Include="BasicMemo.hh" />
-    <ClInclude Include="BottomUpTW.hh" />
-    <ClInclude Include="DAWG.hh" />
-    <ClInclude Include="DAWGBottomUp.hh" />
-    <ClInclude Include="DepthBoundedMemo.hh" />
-    <ClInclude Include="DIMACS.hh" />
-    <ClInclude Include="graphTypes.hh" />
-    <ClInclude Include="bloom_filter.hpp" />
-    <ClInclude Include="LastInsertedTopDown.hh" />
-    <ClInclude Include="OppBloom.hh" />
-    <ClInclude Include="Simplicial.hh" />
-    <ClInclude Include="TreeBottomUp.hh" />
-    <ClInclude Include="UpperBound.hh" />
-    <ClInclude Include="TopDownTW.hh" />
-    <ClInclude Include="HeuristicUpperBoundMemo.hh" />
-    <ClInclude Include="NaiveMemo.hh" />
-    <ClInclude Include="qset.hh" />
-    <ClInclude Include="SimplicialFirstMemo.hh" />
-    <ClInclude Include="TWUtilAlgos.hh" />
-    <ClInclude Include="VSet.hh" />
-  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>

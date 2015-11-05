@@ -1,6 +1,5 @@
 #include "ArrayOfSetBottomUp.hh"
 #include <iostream>
-#include "AbstractMemo.hh"
 
 ArrayOfSetBottomUp::ArrayOfSetBottomUp(const Graph& G) : AbstractBottomUp(G)
 {

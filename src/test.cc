@@ -22,10 +22,6 @@
 #include <utility>
 #include <ctime>
 
-#include "AbstractMemo.hh"
-#include "DepthBoundedMemo.hh"
-#include "SimplicialFirstMemo.hh"
-#include "BasicMemo.hh"
 
 #include "TreeBottomUp.hh"
 #include "ArrayOfSetBottomUp.hh"
@@ -33,15 +29,12 @@
 
 #include "LastInsertedTopDown.hh"
 
-#include "HeuristicUpperBoundMemo.hh"
-
 #include <fstream>
 
 #include <sstream>
 
 #include "DIMACS.hh"
 //#include "BottomUpTW.hh"
-#include "TopDownTW.hh"
 
 #include "qset.hh"
 

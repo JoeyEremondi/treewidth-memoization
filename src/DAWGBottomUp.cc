@@ -1,6 +1,5 @@
 #include "DAWGBottomUp.hh"
 #include <iostream>
-#include "AbstractMemo.hh"
 
 #include <fstream>
 #include <iostream>

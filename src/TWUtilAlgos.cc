@@ -3,7 +3,6 @@
 #include <map>
 
 #include "TWUtilAlgos.hh"
-#include "AbstractMemo.hh"
 
 #include <boost/graph/subgraph.hpp>
 #include <boost/graph/adjacency_list.hpp>

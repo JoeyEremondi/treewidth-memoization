@@ -3,7 +3,6 @@
 
 #include "qset.hh"
 #include "TWUtilAlgos.hh"
-#include "AbstractMemo.hh"
 
 int bottomUpTW(const Graph& G);
 

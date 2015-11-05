@@ -15,147 +15,96 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="AbstractMemo.cc">
+    <ClCompile Include="src\AbstractBottomUp.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BasicMemo.cc">
+    <ClCompile Include="src\AbstractTopDown.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="BottomUpTW.cc">
+    <ClCompile Include="src\ArrayOfSetBottomUp.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DepthBoundedMemo.cc">
+    <ClCompile Include="src\BottomUpTW.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="DIMACS.cc">
+    <ClCompile Include="src\DAWG.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="HeuristicUpperBoundMemo.cc">
+    <ClCompile Include="src\DAWGBottomUp.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="NaiveMemo.cc">
+    <ClCompile Include="src\DIMACS.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="qset.cc">
+    <ClCompile Include="src\LastInsertedTopDown.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="test.cc">
+    <ClCompile Include="src\qset.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TWUtilAlgos.cc">
+    <ClCompile Include="src\Simplicial.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="VSet.cc">
+    <ClCompile Include="src\test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="SimplicialFirstMemo.cc">
+    <ClCompile Include="src\TreeBottomUp.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="UpperBound.cc">
+    <ClCompile Include="src\TWUtilAlgos.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="TopDownTW.cc">
+    <ClCompile Include="src\UpperBound.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="OppBloom.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AbstractBottomUp.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="TreeBottomUp.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="ArrayOfSetBottomUp.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DAWGBottomUp.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="DAWG.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="AbstractTopDown.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="Simplicial.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="LastInsertedTopDown.cc">
+    <ClCompile Include="src\VSet.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="AbstractMemo.hh">
+    <ClInclude Include="include\AbstractBottomUp.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BasicMemo.hh">
+    <ClInclude Include="include\AbstractTopDown.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="BottomUpTW.hh">
+    <ClInclude Include="include\ArrayOfSetBottomUp.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DepthBoundedMemo.hh">
+    <ClInclude Include="include\BottomUpTW.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="DIMACS.hh">
+    <ClInclude Include="include\DAWG.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="HeuristicUpperBoundMemo.hh">
+    <ClInclude Include="include\DAWGBottomUp.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="NaiveMemo.hh">
+    <ClInclude Include="include\DIMACS.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="qset.hh">
+    <ClInclude Include="include\graphTypes.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TWUtilAlgos.hh">
+    <ClInclude Include="include\LastInsertedTopDown.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="VSet.hh">
+    <ClInclude Include="include\qset.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="SimplicialFirstMemo.hh">
+    <ClInclude Include="include\Simplicial.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="graphTypes.hh">
+    <ClInclude Include="include\TreeBottomUp.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="TopDownTW.hh">
+    <ClInclude Include="include\TWUtilAlgos.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="UpperBound.hh">
+    <ClInclude Include="include\UpperBound.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="OppBloom.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AbstractBottomUp.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="TreeBottomUp.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="ArrayOfSetBottomUp.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DAWGBottomUp.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="DAWG.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="bloom_filter.hpp">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="AbstractTopDown.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="Simplicial.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="LastInsertedTopDown.hh">
+    <ClInclude Include="include\VSet.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
