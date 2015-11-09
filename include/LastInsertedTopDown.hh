@@ -7,7 +7,7 @@ class LastInsertedTopDown :
 	public AbstractTopDown
 {
 public:
-	LastInsertedTopDown(const Graph&) ;
+	LastInsertedTopDown(const Graph& Gin, int maxBottom) ;
 	~LastInsertedTopDown();
 
 protected:

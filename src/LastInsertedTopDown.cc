@@ -2,8 +2,8 @@
 
 
 
-LastInsertedTopDown::LastInsertedTopDown(const Graph& G) 
-	: AbstractTopDown(G)
+LastInsertedTopDown::LastInsertedTopDown(const Graph& G, int maxBottom) 
+	: AbstractTopDown(G, maxBottom)
 {
 	//Initialize our vectors
 	this->memo.resize(numHashes);

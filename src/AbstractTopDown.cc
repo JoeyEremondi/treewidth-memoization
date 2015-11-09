@@ -13,10 +13,11 @@
 
 
 
-AbstractTopDown::AbstractTopDown(const Graph& gIn)
+AbstractTopDown::AbstractTopDown(const Graph& gIn, int maxBottom)
 	: G(gIn)
+	, maxBottomUpSize(maxBottom)
 	, allVertices(boost::vertices(G).first, boost::vertices(G).second)
-	, bottomUpInfo(G, maxBottumUpSize)
+	, bottomUpInfo(G, maxBottomUpSize)
 {
 	nGraph = boost::num_vertices(G);
 	std::sort(allVertices.begin(), allVertices.end(),
@@ -74,16 +75,6 @@ int AbstractTopDown::topDownTW()
 
 int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 {
-	static int numCalled = 0;
-	numCalled++;
-	if (numCalled % 500000 == 0)
-	{
-		std::cout << "Called recursive fun " << numCalled << " times\n";
-		std::cout << "Simplicial " << numSimplicial << " lower " << improvedByLocalLower << " pruned " << numPruned << "\n";
-	}
-
-	const int threshold = -1;
-
 
 
 	if (S.empty())
@@ -120,7 +111,6 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 		{
 			if (S.contains(v) && isSimplicial(G, v, S))
 			{
-				numSimplicial++;
 				VSet SminusV(S);
 				SminusV.erase(v);
 				int subVal = topDownTWFromSet(G, SminusV, nSet - 1);
@@ -161,7 +151,6 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 
 					if (q >= setUpperBound || setUpperBound < lowerBound)
 					{
-						improvedByLocalLower++;
 						minTW = std::min(minTW, q);
 					}
 					else
@@ -171,10 +160,7 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 					}
 
 				}
-				else
-				{
-					numPruned++;
-				}
+
 			}
 
 		}
@@ -205,6 +191,11 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 
 
 
+}
+
+int AbstractTopDown::getMaxBottomUp()
+{
+	return maxBottomUpSize;
 }
 
 

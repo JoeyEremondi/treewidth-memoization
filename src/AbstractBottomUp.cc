@@ -18,6 +18,7 @@ AbstractBottomUp::AbstractBottomUp(const Graph & Gin)
 
 AbstractBottomUp::~AbstractBottomUp()
 {
+	//Nothing to do, we don't have any heap variables
 }
 
 int AbstractBottomUp::tw()
@@ -37,106 +38,88 @@ int AbstractBottomUp::tw()
 	globalUpperBound = calcUpperBound(G, S);
 
 	//Set the lower bound
+	//We don't use this in the bottom-up version, so we just set it to 0
 	lowerBound = 0;
-	/*
-	lowerBound = d2degen(S, G);
-	std::cout << "d2 lower " << lowerBound << "\n";
-	lowerBound = std::max(lowerBound, MMD(S, G));
-	std::cout << "MMD lower " << MMD(S, G) << "\n";
 
-	std::cout << "Found lower bound " << lowerBound << "\n";
-	*/
-
+	//Run our main algorithm on our set with clique-vertices eliminated
 	return twForSet(S);
 }
 
 int AbstractBottomUp::twForSet(VSet SStart)
 {
-
+	//Used a bunch, just for convenience
 	VSet emptySet;
+
 	//Initialize our store
 	beginLayer(0);
-	updateTW(0, emptySet, lowerBound/*NO_WIDTH*/);
+	
+	//Emptyset given our lower-bound value, since we know other values will exceed it
+	updateTW(0, emptySet, lowerBound);
 
+	//Keep track of the size of sets we're currently looking at
 	int nSet = SStart.size();
 
-
+	//Vector we use each iteration to store the vertices of our set in a vector for fast iteration
+	//We cache the iterators for speed
 	std::vector<Vertex> vertInfo;
-
-	auto allVertInfo = boost::vertices(G);
-	std::vector<Vertex> allVerts(allVertInfo.first, allVertInfo.second);
-	//VSet SStart(allVerts);
-
-
 	SStart.members(vertInfo); // boost::vertices(G);
 	auto vertInfoStart = vertInfo.begin();
 	auto vertInfoEnd = vertInfo.end();
 
-	//VSet clique;
+	//Also cache all the vertices of our graph for speed
+	auto allVertInfo = boost::vertices(G);
+	std::vector<Vertex> allVerts(allVertInfo.first, allVertInfo.second);
 
-
-
+	//Declare this here so we can get at it after the loop
 	int i;
-
 	for (i = 1; i <= nSet; ++i)
 	{
 		currentLayer = i;
 		try {
-			//std::cout << "Level " << i << "\n";
-			//std::cout << "Num Q " << numQCalled << "\n";
 
 			//Initialize our dictionary at this level
 			this->beginLayer(i);
 
-			//TODO what is this? Taken from Java version
+			//We keep track of the smallest TW value we've found in this layer
+			//Which is used to refine our upper-bound later
 			int minTW = globalUpperBound;
-
-			//std::unordered_map<VSet, int> currentTW;
 
 			//Store the |Q| values, overwritten each layer
 			std::vector<int> qSizes(nGraph);
 
+			//Look at all Sets and TW values calculated in the last layer
 			for (beginIter(); !iterDone(); iterNext())
 			{
-
+				//Ignore sets if our lower-bound was refined since we last saw them
+				//and they now exceed it
 				if (r < globalUpperBound)
 				{
 
-					//std::cout << "On set " << showSet(S);
+					//Find all values of |Q(S, v)| for each vertex in our graph
+					findQvalues(nGraph, S, G, qSizes); 
 
-					Vertex firstSet = S.first();
-
-					findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
-
+					//For each vertex v, see if we can refine TW(S U v) with the q value 
 					for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
 					{
 						Vertex v = *x;
-						if ((!S.contains(v)) /*&& (!clique.contains(v)) && v < firstSet*/) //TODO check if in clique here?
+						if ((!S.contains(v)) ) 
 						{
-
-
-
 							VSet SUx = S;
 							SUx.insert(v);
 
 							int q = qSizes[v];
-							//int trueQ = qCheck(nGraph, S, v, G);
-							//int qOld = sizeQ(nGraph, S, v, G);
-							//assert(q == trueQ);
-
-
 							int rr = std::max(r, q);
 
-							//if (rr >= nGraph - i - 1 && rr < minTW) {
+							//Refine our minTW value, and global upper-bound if we can
 							minTW = std::min(minTW, rr);
 							globalUpperBound = std::min(globalUpperBound, std::max(minTW, nGraph - i - 1));
-							//}
+							
 
+							//If our new value doesn't exceed our upper-bound, set it as the TW value for (S U x)
+							//If (S U x) already has a lower value, this has no effect
 							if (rr < globalUpperBound && rr >= lowerBound)
 							{
 								updateTW(i, SUx, rr);
-
-
 							}
 
 						}
@@ -153,13 +136,13 @@ int AbstractBottomUp::twForSet(VSet SStart)
 
 
 		}
-		catch (int e){ // (const std::bad_alloc& e) {
-			//std::cerr << "Allocation failed AbstractBottomUp: " << e.what() << '\n';
+		catch  (const std::bad_alloc& e) {
+			std::cerr << "Allocation failed AbstractBottomUp: " << e.what() << '\n';
 			//Free up our resources
-			//std::cerr << numStored() << " elements in the failing layer\n";
-			//endLayer(i - 1);
-			//endLayer(i);
-			//return -1;
+			std::cerr << numStored() << " elements in the failing layer\n";
+			endLayer(i - 1);
+			endLayer(i);
+			return -1;
 		}
 
 	}

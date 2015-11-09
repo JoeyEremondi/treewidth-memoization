@@ -6,8 +6,22 @@
 
 class AbstractTopDown
 {
+
+
+public:
+	/*Make a new instance of the algorithm runner,
+	to find the treewidth of the given graph*/
+	AbstractTopDown(const Graph& G, int maxBottom);
+
+	/*Run the algorithm and get the calculated treewidth*/
+	int topDownTW();
+
+	/*Get the value stored for the maximum bottom-up size*/
+	int getMaxBottomUp();
+
 protected:
-	const int maxDictSize = 1000000000;
+	//How many transitions we allow our bottom-up solver to have before aborting
+	int maxBottomUpSize = 1;
 	const int topLevelNoStore = 0;
 	const int bottomLevelNoStore = 0;
 
@@ -26,6 +40,8 @@ protected:
 
 	int topDownTWFromSet(const Graph& G, const VSet& S, int nSet);
 
+	
+
 
 	//Abstract methods
 	virtual bool isMemoized(int nSet, VSet S) = 0;
@@ -33,16 +49,7 @@ protected:
 	virtual void memoizeTW(int nSet, VSet S, int tw) = 0;
 	virtual void cleanMemoized() = 0;
 
-	AbstractTopDown(const Graph& G);
-
-public:
-	static const int maxBottumUpSize = 1;
-	int topDownTW();
-
-	//TODO remove
-	int numSimplicial = 0;
-	int improvedByLocalLower = 0;
-	int numPruned;
+	
 
 
 };
