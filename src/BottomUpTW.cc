@@ -36,8 +36,6 @@ BottomUpTW::BottomUpTW(const Graph & gIn, int maxLayerSizeIn)
 
 void BottomUpTW::fillTWSet(const VSet& SStart)
 {
-	std::cout << "Bottom up using map\n";
-
 	auto TW = new std::map<VSet, int>*[VSet::maxNumVerts];
 
 	VSet emptySet;
@@ -152,8 +150,6 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 
 
 			}
-
-			std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
 
 			//De-allocate our old level of the tree, to save space
 			delete TW[i - 1];

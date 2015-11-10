@@ -6,6 +6,7 @@
 #include <vector>
 #include <unordered_map>
 #include "graphTypes.hh"
+//Allows us to hash bitsest
 #define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
 #include "boost/dynamic_bitset.hpp"
 
@@ -47,8 +48,6 @@ public:
 	//We improve performance by setting this globally
 	//And always initializing new VSets to this value
 	static int maxNumVerts;
-	
-
 
 
 };

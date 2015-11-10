@@ -1,12 +1,17 @@
 #include "DAWGBottomUp.hh"
+#include "DAWG.hh"
 #include <iostream>
 
 #include <fstream>
 #include <iostream>
 
-DAWGBottomUp::DAWGBottomUp(const Graph& G) : AbstractBottomUp(G)
+DAWGBottomUp::DAWGBottomUp(const Graph& G, int maxTransitions)
+	: AbstractBottomUp(G)
+	, maxTrans(maxTransitions)
 {
+	DAWG::maxCombinedTransitions = maxTransitions;
 	upperBoundForLayer = new int[VSet::maxNumVerts];
+	//Emplace n new DAWGS in our TW vector
 	TW.resize(VSet::maxNumVerts);
 }
 
@@ -15,6 +20,11 @@ DAWGBottomUp::~DAWGBottomUp()
 {
 	TW.clear();
 	delete[] upperBoundForLayer;
+}
+
+int DAWGBottomUp::maxTransitions()
+{
+	return maxTrans;
 }
 
 void DAWGBottomUp::beginIter()

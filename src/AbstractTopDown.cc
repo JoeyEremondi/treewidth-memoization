@@ -15,11 +15,11 @@
 
 AbstractTopDown::AbstractTopDown(const Graph& gIn, int maxBottom)
 	: G(gIn)
+	, bottomUpInfo(G, maxBottom)
 	, maxBottomUpSize(maxBottom)
+	, nGraph(boost::num_vertices(G))
 	, allVertices(boost::vertices(G).first, boost::vertices(G).second)
-	, bottomUpInfo(G, maxBottomUpSize)
 {
-	nGraph = boost::num_vertices(G);
 	//As a heuristic, we sort our vertices by degree
 	std::sort(allVertices.begin(), allVertices.end(),
 		[gIn](auto v1, auto v2) -> bool
@@ -35,6 +35,12 @@ int AbstractTopDown::topDownTW()
 	//First, check if we found a bottom-up solution without running out of space
 	if (bottomUpInfo.foundSolution())
 	{
+		//Try setting our lower-bound to the higest value we can find
+		VSet S(G);
+		lowerBound = d2degen(S, G);
+		lowerBound = std::max(lowerBound, MMD(S, G));
+
+		std::cout << "Found lower bound " << lowerBound << "\n";
 		std::cout << "Bottom up found solution\n";
 		return bottomUpInfo.solution();
 	}

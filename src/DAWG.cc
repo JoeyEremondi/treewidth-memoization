@@ -4,6 +4,9 @@
 #include <sstream>
 #include <algorithm>
 
+//Static class variable
+int DAWG::maxCombinedTransitions;
+
 //Helpful method for rendering DAWGs as graphs
 std::string DAWG::asDot()
 {
@@ -335,6 +338,7 @@ void DAWG::minimize()
 
 DAWG::DAWG()
 {
+	this->isTrie = false;
 	this->length = VSet::maxNumVerts;
 
 	//Allocate our vectors
@@ -343,14 +347,16 @@ DAWG::DAWG()
 	this->delta1.resize(length);
 
 	//Ensure we don't infinitely recurse
-	this->stagingArea = new DAWG(NULL);
+	this->stagingArea = new DAWG(0, 0);
 
 }
 
 //Special version to avoid infinite recursion
 //So we can store a DAWG inside a DAWG
-DAWG::DAWG(DAWG* staging)
+DAWG::DAWG(int foo, int bar)
 {
+	this->isTrie = true;
+
 	this->length = VSet::maxNumVerts;
 
 	//Allocate our vectors
@@ -358,7 +364,7 @@ DAWG::DAWG(DAWG* staging)
 	this->delta0.resize(length);
 	this->delta1.resize(length);
 
-	this->stagingArea = staging;
+	this->stagingArea = NULL;
 
 }
 
@@ -575,9 +581,9 @@ void DAWG::unionWithStaging()
 	this->initial = initialPair;
 
 	//Delete and re-initialize our staging area
-	this->stagingArea->clear();
-	delete this->stagingArea;
-	this->stagingArea = new DAWG(NULL);
+	stagingArea->clear();
+	delete stagingArea;
+	stagingArea = new DAWG(0, 0);
 
 	//And, minimize our combined automaton
 	this->minimize();
@@ -617,7 +623,7 @@ void DAWG::insert(VSet word, int tw)
 		numInserts = 0;
 		this->stagingArea->minimize();
 		this->unionWithStaging();
-		this->maxTransitions = ABS_MAX_TRANSITIONS - this->numTransitions();
+		this->maxTransitions = DAWG::maxCombinedTransitions - this->numTransitions();
 		if (maxTransitions < 1)
 		{
 			std::cerr << "Ran out of transitions\n";
@@ -628,7 +634,6 @@ void DAWG::insert(VSet word, int tw)
 
 void DAWG::insertIntoEmpty(VSet word, int tw)
 {
-
 	State currentState = initial;
 	bool stillSearching = true;
 	//First, read as much of the word as we can in our trie
@@ -673,7 +678,7 @@ void DAWG::insertIntoEmpty(VSet word, int tw)
 		}
 		currentState = theNewState;
 	}
-	valueDelta.insert({ currentState, tw });
+	valueDelta.emplace(currentState, tw);
 
 
 }

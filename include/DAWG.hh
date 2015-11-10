@@ -55,14 +55,19 @@ public:
 class DAWG
 {
 public:
-	//Construct and empty DAWG, containing no words
+	//Construct and empty DAWG, containing no words, with the given
+	//Maximum number of transitions
+	//This determines when we compact from trie to DAWG
 	DAWG();
 	~DAWG();
 
+	//Set this variable from DAWGBottomUp to determine max # of transitions
+	static int maxCombinedTransitions;
 
 	//How large do we allow our staging area to get before minimizing?
-	static const int ABS_MAX_TRANSITIONS = 50000000;
-	int maxTransitions = ABS_MAX_TRANSITIONS;
+	//Is Max combined - # transitions in DAWG
+	int maxTransitions = maxCombinedTransitions;
+
 	//Special TW value for sets not in the DAWG
 	const int NOT_CONTAINED = -1;
 
@@ -103,7 +108,7 @@ private:
 
 	//Internal constructor: we give NULL to create a staging area
 	//Otherwise, we give the address of the staging area for this DAWG
-	DAWG(DAWG* staging);
+	DAWG(int, int);
 
 	//Is this a true DAWG, or just a staging area?
 	bool isTrie = false;
@@ -158,7 +163,7 @@ protected:
 	//And add them into our transition set using a product construction
 	void unionWithStaging();
 	//The trie which stores words to be added
-	DAWG* stagingArea;
+	DAWG* stagingArea = NULL;
 
 
 	//Utility function for looking up a transition for a state and letter

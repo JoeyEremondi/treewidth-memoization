@@ -3,7 +3,7 @@
 
 
 LastInsertedTopDown::LastInsertedTopDown(const Graph& Gin, int maxBottom, int numHashesIn, int numPerHashIn)
-	: AbstractTopDown(G, maxBottom)
+	: AbstractTopDown(Gin, maxBottom)
 	, numHashes(numHashesIn)
 	, numPerHash(numPerHashIn)
 {

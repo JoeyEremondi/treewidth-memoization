@@ -2,9 +2,8 @@
 #include <cstdio>
 #include <cstdlib>
 
-//TODO use bitset underneath?
 
-int VSet::maxNumVerts = 64; //TODO sensible default?
+int VSet::maxNumVerts = 64;
 
 VSet::VSet()
 	: bitVec(64)
@@ -13,7 +12,7 @@ VSet::VSet()
 	{
 		bitVec.resize(maxNumVerts);
 	}
-	
+
 }
 
 
@@ -62,7 +61,6 @@ void VSet::members(std::vector<Vertex>& vec) const
 		//Check if the ith bit is set. If it is, add that to our vector
 		if (bitVec[i])
 		{
-			//std::cout << "Setting membres pos " << vecPos << " to " << i << "\n";
 			vec[vecPos] = i;
 			vecPos++;
 		}

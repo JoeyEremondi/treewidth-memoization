@@ -5,6 +5,7 @@
 #include <boost/filesystem.hpp>
 #include <boost/range/iterator_range.hpp>
 
+
 #include <vector>
 
 #include "ArrayOfSetBottomUp.hh"
@@ -20,6 +21,23 @@
 using namespace boost::timer;
 using namespace boost::graph;
 
+/*
+Test file for treewidth methods
+
+USAGE:
+  ./test # runs all tests on all files in ./testGraphs
+  ./test testToRun # runs given test tests on all files in ./testGraphs
+  ./test testToRun inFile # runs the given test on the given .dgf graph file
+
+  Possible tests to run:
+	all: run all tests
+	dawg100m : DAWG with staging area size 100 million
+	dawg50m : DAWG with staging area size 50 million
+	dawg10m : DAWG with staging area size  10 million
+	tree : bottom-up method with arrays of std::set (trees)
+	topDown : Top-down method
+	hybrid: bottom up with limit of 10000, then switch to top-down
+*/
 int main(int argc, char** argv)
 {
 
@@ -39,20 +57,58 @@ int main(int argc, char** argv)
 
 	}
 
-	//separate variable makes switching for testing easier
-	std::vector<std::string>& inFiles = filesInDir;
+	std::vector<std::string> inFiles;
 
-	if (argc > 1)
+	//Process our arguments
+	for (int i = 1; i < argc; i++)
 	{
-		inFiles = { argv[1] };
+		if (argv[i])
+		{
+
+		}
 	}
+
+	std::string testToRun;
+
+	//No args given: we run all tests, on all graphs in the /testGraphs folder
+	if (argc == 1)
+	{
+		testToRun = "all";
+		for (auto inFile : filesInDir)
+		{
+			inFiles.push_back("testGraphs/" + inFile);
+		}
+	}
+	//One arg given: do all in testGraphs, and run all tests on them
+	else if (argc == 2)
+	{
+		testToRun = argv[1];
+		for (auto inFile : filesInDir)
+		{
+			inFiles.push_back("testGraphs/" + inFile);
+		}
+
+	}
+	//Otherwise: use given test and input file
+	else if (argc > 2)
+	{
+		testToRun = argv[1];
+		inFiles = { argv[2] };
+	}
+	else
+	{
+		std::cerr << "Invalid number of arguments\n";
+		abort();
+	}
+
+
 
 
 	for (auto inFile : inFiles)
 	{
 
 		std::ifstream inGraphFile;
-		inGraphFile.open("testGraphs/" + inFile);
+		inGraphFile.open(inFile);
 		std::cout << "\n\n***********\nTesting on graph " << inFile << "\n***********\n";
 
 
@@ -69,30 +125,60 @@ int main(int argc, char** argv)
 
 		auto_cpu_timer* timer;
 
-		std::cout << "Set based Bottom-up Memoization" << std::endl;
-		timer = new auto_cpu_timer();
-		ArrayOfSetBottomUp bottomUpSearcher(testGraph);
-		std::cout << "Treewidth: " << bottomUpSearcher.tw() << "\n\n\n";
-		delete timer;
+		if (testToRun == "all" || testToRun == "tree")
+		{
+			std::cout << "Set based Bottom-up Memoization" << std::endl;
+			timer = new auto_cpu_timer();
+			ArrayOfSetBottomUp bottomUpSearcher(testGraph);
+			std::cout << "Treewidth: " << bottomUpSearcher.tw() << "\n\n\n";
+			delete timer;
+		}
 
-		std::cout << "DAWG based Bottom-up Memoization, max " << DAWG::ABS_MAX_TRANSITIONS << std::endl;
-		timer = new auto_cpu_timer();
-		DAWGBottomUp dawgSearcher(testGraph);
-		std::cout << "Treewidth: " << dawgSearcher.tw() << "\n\n\n";
-		delete timer;
+		if (testToRun == "all" || testToRun == "dawg100M")
+		{
+			DAWGBottomUp dawgSearcher(testGraph, 100 * 1000000);
+			std::cout << "DAWG based Bottom-up Memoization, max " << dawgSearcher.maxTransitions() << std::endl;
+			timer = new auto_cpu_timer();
+			std::cout << "Treewidth: " << dawgSearcher.tw() << "\n\n\n";
+			delete timer;
+		}
 
+		if (testToRun == "all" || testToRun == "dawg50M")
+		{
+			DAWGBottomUp dawgSearcher(testGraph, 50 * 1000000);
+			std::cout << "DAWG based Bottom-up Memoization, max " << dawgSearcher.maxTransitions() << std::endl;
+			timer = new auto_cpu_timer();
+			std::cout << "Treewidth: " << dawgSearcher.tw() << "\n\n\n";
+			delete timer;
+		}
 
-		timer = new auto_cpu_timer();
-		LastInsertedTopDown tdtwHybrid(testGraph, 10000, 9999991, 100);
-		std::cout << "Top Down " << tdtwHybrid.getMaxBottomUp() << std::endl;
-		std::cout << "Treewidth: " << tdtwHybrid.topDownTW() << "\n\n\n";
-		delete timer;
+		if (testToRun == "all" || testToRun == "dawg10M")
+		{
+			DAWGBottomUp dawgSearcher(testGraph, 10 * 1000000);
+			std::cout << "DAWG based Bottom-up Memoization, max " << dawgSearcher.maxTransitions() << std::endl;
+			timer = new auto_cpu_timer();
+			std::cout << "Treewidth: " << dawgSearcher.tw() << "\n\n\n";
+			delete timer;
+		}
 
-		timer = new auto_cpu_timer();
-		LastInsertedTopDown tdtw(testGraph, 1, 9999991, 100);
-		std::cout << "Top Down " << tdtw.getMaxBottomUp() << std::endl;
-		std::cout << "Treewidth: " << tdtw.topDownTW() << "\n\n\n";
-		delete timer;
+		if (testToRun == "all" || testToRun == "topDown")
+		{
+			timer = new auto_cpu_timer();
+			auto x = boost::vertices(testGraph).second;
+			LastInsertedTopDown tdtwHybrid(testGraph, 10000, 9999991, 100);
+			std::cout << "Top Down hybrid, bottom-up limit of " << tdtwHybrid.getMaxBottomUp() << std::endl;
+			std::cout << "Treewidth: " << tdtwHybrid.topDownTW() << "\n\n\n";
+			delete timer;
+		}
+
+		if (testToRun == "all" || testToRun == "hybrid")
+		{
+			timer = new auto_cpu_timer();
+			LastInsertedTopDown tdtw(testGraph, 1, 9999991, 100);
+			std::cout << "Top Down " << tdtw.getMaxBottomUp() << std::endl;
+			std::cout << "Treewidth: " << tdtw.topDownTW() << "\n\n\n";
+			delete timer;
+		}
 
 
 	}

@@ -9,11 +9,15 @@ class DAWGBottomUp :
 	public AbstractBottomUp
 {
 public:
-	DAWGBottomUp(const Graph& G);
+	DAWGBottomUp(const Graph& G, int maxTransitions);
 	~DAWGBottomUp();
+	int maxTransitions();
 
 protected:
 	int numUpdates = 0;
+
+	//Parameter to create each DAWG with
+	int maxTrans;
 
 	std::vector<DAWG> TW;
 	DAWG::iterator currentIter;
