@@ -4,6 +4,7 @@
 #include "qset.hh"
 #include "DAWG.hh"
 
+//Instance of AbstractBottomUp using a DAWG for storage
 class DAWGBottomUp :
 	public AbstractBottomUp
 {

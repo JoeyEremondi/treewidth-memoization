@@ -81,15 +81,15 @@ int main(int argc, char** argv)
 		std::cout << "Treewidth: " << dawgSearcher.tw() << "\n\n\n";
 		delete timer;
 
-		
+
 		timer = new auto_cpu_timer();
-		LastInsertedTopDown tdtwHybrid(testGraph, 10000);
+		LastInsertedTopDown tdtwHybrid(testGraph, 10000, 9999991, 100);
 		std::cout << "Top Down " << tdtwHybrid.getMaxBottomUp() << std::endl;
 		std::cout << "Treewidth: " << tdtwHybrid.topDownTW() << "\n\n\n";
 		delete timer;
 
 		timer = new auto_cpu_timer();
-		LastInsertedTopDown tdtw(testGraph, 1); 
+		LastInsertedTopDown tdtw(testGraph, 1, 9999991, 100);
 		std::cout << "Top Down " << tdtw.getMaxBottomUp() << std::endl;
 		std::cout << "Treewidth: " << tdtw.topDownTW() << "\n\n\n";
 		delete timer;

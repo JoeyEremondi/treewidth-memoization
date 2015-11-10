@@ -62,7 +62,7 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 	std::vector<Vertex> allVerts(allVertInfo.first, allVertInfo.second);
 
 
-	SStart.members(vertInfo); 
+	SStart.members(vertInfo);
 	auto vertInfoStart = vertInfo.begin();
 	auto vertInfoEnd = vertInfo.end();
 
@@ -93,12 +93,12 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 
 					Vertex firstSet = S.first();
 
-					findQvalues(nGraph, S, G, qSizes); 
+					findQvalues(nGraph, S, G, qSizes);
 
 					for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
 					{
 						Vertex v = *x;
-						if ((!S.contains(v))) 
+						if ((!S.contains(v)))
 						{
 
 

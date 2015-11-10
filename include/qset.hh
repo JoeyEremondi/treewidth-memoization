@@ -11,11 +11,10 @@
 #include "graphTypes.hh"
 
 
-//Adapted from http://stackoverflow.com/questions/14470566/how-to-traverse-graph-in-boost-use-bfs
-
-
+//Calcualate |Q(S, v)| in G
 int sizeQ(int n, const VSet &S, Vertex v, const Graph &G);
 
+//Calcualate |Q(S, v)| in G for each v in G, store in the given vector
 void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValues);
 
 

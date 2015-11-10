@@ -73,17 +73,6 @@ int DAWG::pathsToEndFrom(int depth, State q)
 	}
 }
 
-State DAWG::newState()
-{
-	State ret = nextState;
-	nextState++;
-	if (nextState <= ret)
-	{
-		std::cerr << "Overflow of states\n";
-		abort();
-	}
-	return ret;
-}
 
 
 State DAWG::minimizeHelper(int layer, State q)
@@ -395,7 +384,7 @@ void DAWG::copyFrom(const DAWG & that)
 
 	//Set our initial and next state values
 	this->initial = that.initial;
-	this->nextState = that.nextState;
+	this->statePool = that.statePool;
 
 	minimize(); //There could be lots of redundancy removed since we don't store TW values
 }
@@ -472,7 +461,7 @@ void DAWG::unionWithStaging()
 	//Make a product construction with our existing automaton
 	std::vector<std::map<std::pair<State, State>, State>> pairMap(length + 1);
 
-	State initialPair = newState();
+	State initialPair = statePool.newState();
 	pairMap[0][{initial, stagingArea->initial}] = initialPair;
 
 	StatePool statePool;
@@ -647,7 +636,7 @@ void DAWG::insertIntoEmpty(VSet word, int tw)
 	for (i = 0; i < length && stillSearching; ++i)
 	{
 		bool bit = word.contains(i);
-		State theNextState = newState();
+		State theNextState = statePool.newState();
 		std::pair<std::unordered_map<State, State>::iterator, bool> searchInfo;
 		if (bit)
 		{
@@ -666,14 +655,14 @@ void DAWG::insertIntoEmpty(VSet word, int tw)
 		else
 		{
 			//Undo our new state creation, next state is already in our map
-			nextState--;
+			statePool.undo();
 			currentState = searchInfo.first->second;
 		}
 	}
 	//Then, just loop and insert new states for our word
 	for (; i < length; i++)
 	{
-		State theNewState = newState();
+		State theNewState = statePool.newState();
 		if (word.contains(i))
 		{
 			delta1[i].emplace(currentState, theNewState);

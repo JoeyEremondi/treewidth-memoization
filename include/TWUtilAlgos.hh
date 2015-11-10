@@ -8,7 +8,6 @@
 //Useful in finding heuristic upper bounds for treewidth
 int permutTW(int nGraph, VSet vsetArg, const std::vector<Vertex>& Svec, const Graph& G);
 
-int altPermutTW(int nGraph, const VSet& vsetArg, const std::vector<Vertex>& Svec, const Graph& G);
 
 //Return the edge-complement of a graph
 std::pair<Graph, std::map<Vertex, Vertex>> complement_graph(const Graph& G);
@@ -43,11 +42,13 @@ std::pair<Vertex, int> minDegreeVertExcept(Vertex v, VSet S, const Graph& G);
 
 int d2degen(const VSet& SStart, const Graph& G);
 
+//Use contracting degeneracy with MMD heuristic to find a lower-bound on TW(Sarg)
 int MMD(VSet Sarg, const Graph& G);
 
-
+//Return the degree of a vertex v in the subgraph induced gy S of G
 int subgraphDegree(Vertex v, VSet S, const Graph& G);
 
+//Return the vertex of minimum degree of the subgraph of G induced by S
 int minDeg(VSet S, const Graph& G);
 
 

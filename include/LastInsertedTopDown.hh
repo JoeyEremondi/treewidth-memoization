@@ -3,11 +3,14 @@
 #include <unordered_map>
 #include <list>
 
+//Instance of AbstractTopDown, where we memoize using a hash table
+//Where the chains of the hashtable are of fixed length, and we drop the least-recently
+//Accesed vertices of each chain.
 class LastInsertedTopDown :
 	public AbstractTopDown
 {
 public:
-	LastInsertedTopDown(const Graph& Gin, int maxBottom) ;
+	LastInsertedTopDown(const Graph& Gin, int maxBottom, int numHashesIn, int numPerHashIn);
 	~LastInsertedTopDown();
 
 protected:

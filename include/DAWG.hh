@@ -98,6 +98,9 @@ public:
 
 
 private:
+	//Pool of states used internally
+	StatePool statePool;
+
 	//Internal constructor: we give NULL to create a staging area
 	//Otherwise, we give the address of the staging area for this DAWG
 	DAWG(DAWG* staging);
@@ -138,8 +141,7 @@ private:
 protected:
 	//Used for counting the number of words in a set
 	int pathsToEndFrom(int depth, State q);
-	//Create a new unique state
-	State newState();
+
 	//Minimize this DAWG (as a DFA)
 	void minimize();
 	//Recursive function called by minimize

@@ -2,8 +2,10 @@
 
 
 
-LastInsertedTopDown::LastInsertedTopDown(const Graph& G, int maxBottom) 
+LastInsertedTopDown::LastInsertedTopDown(const Graph& Gin, int maxBottom, int numHashesIn, int numPerHashIn)
 	: AbstractTopDown(G, maxBottom)
+	, numHashes(numHashesIn)
+	, numPerHash(numPerHashIn)
 {
 	//Initialize our vectors
 	this->memo.resize(numHashes);

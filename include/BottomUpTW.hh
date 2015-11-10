@@ -4,7 +4,9 @@
 #include "qset.hh"
 #include "TWUtilAlgos.hh"
 
-
+//Similar to AbstractBottomUp
+//But it stops when it runs out of memory or hits a transition limit
+//And keeps the values it stored, for use in a top-down algorithm
 class BottomUpTW
 {
 public:
@@ -24,8 +26,8 @@ private:
 	int twValueFound;
 	int upperBound;
 	std::map<VSet, int>* topLevelDictFound;
-	
-	
+
+
 };
 
 #endif

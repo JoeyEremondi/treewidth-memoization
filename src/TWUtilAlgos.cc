@@ -26,29 +26,6 @@ int permutTW(int nGraph, VSet vsetArg, const std::vector<Vertex>& Svec, const Gr
 }
 
 
-int altPermutTW(int nGraph, const VSet& vsetArg, const std::vector<Vertex>& SvecAll, const Graph& G) {
-	int tw = NO_WIDTH;
-	VSet vs = vsetArg;
-
-	int n = boost::num_vertices(G);
-
-
-	auto loopEnd = SvecAll.end();
-	for (auto current = SvecAll.begin(); current != loopEnd; ++current)
-	{
-		Vertex v = *current;
-		//Lets us give the entire vertex set for the graph
-		if (vsetArg.contains(v))
-		{
-
-			vs.erase(v);
-			int qval = sizeQ(nGraph, vs, v, G);
-			tw = std::max(tw, qval);
-		}
-	}
-	return tw;
-}
-
 
 std::pair<Graph, std::map<Vertex, Vertex>> complement_graph(const Graph& G)
 {
