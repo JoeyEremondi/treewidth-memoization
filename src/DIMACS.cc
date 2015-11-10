@@ -8,45 +8,9 @@
 #include <vector>
 #include <algorithm>
 
-/*
-std::pair<int, int> coloring_problem_size(std::istream& dimacs) {
-	size_t vertices = 0, edges = 0;
 
-	std::string line;
-	while (getline(dimacs, line))
-	{
-		std::istringstream iss(line);
-		char ch;
-		if (iss >> ch)
-		{
-			size_t from, to;
-			std::string format;
-
-
-
-
-			switch(ch) {
-				case 'p':
-					if (iss >> format >> vertices >> edges) {
-						std::pair<int, int> p(vertices, edges);
-			return p;
-
-					}
-					break;
-				default: break;
-			}
-		}
-	}
-
-	std::pair<int, int> p(-1, -1);
-
-	return p;
-	} */
-
-
-	//Taken from http://stackoverflow.com/questions/30415388/how-to-read-dimacs-vertex-coloring-graphs-in-c/30446685#30446685
-	//Special thanks to user sehe
-
+//Taken from http://stackoverflow.com/questions/30415388/how-to-read-dimacs-vertex-coloring-graphs-in-c/30446685#30446685
+//Special thanks to user sehe
 bool read_coloring_problem(std::istream& dimacs, Graph& g) {
 	size_t vertices = 0, edges = 0;
 

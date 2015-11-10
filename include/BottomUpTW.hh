@@ -4,12 +4,6 @@
 #include "qset.hh"
 #include "TWUtilAlgos.hh"
 
-int bottomUpTW(const Graph& G);
-
-int bottomUpTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound);
-
-int calcUpperBound(const Graph& G, const VSet& S);
-
 
 class BottomUpTW
 {

@@ -39,12 +39,10 @@ void LastInsertedTopDown::memoizeTW(int nSet, VSet S, int tw)
 	int hashVal = std::hash<VSet>()(S) % numHashes;
 	auto& ourVec = memo[hashVal];
 	ourVec.push_front({ S, tw });
-	numInDict++;
 	//Only store a fixed number of hash values
 	if (ourVec.size() >= numPerHash)
 	{
 		ourVec.pop_back();
-		numInDict--;
 	}
 }
 

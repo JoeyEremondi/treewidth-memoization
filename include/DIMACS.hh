@@ -7,8 +7,9 @@
 
 #include "qset.hh"
 
-//std::pair<int, int> coloring_problem_size(std::istream& dimacs);
-
+//Given a string stream, and a reference to a graph
+//Read the string as a DIMACS graph file, and edit the given
+//graph to store the one described in the file
 bool read_coloring_problem(std::istream& dimacs, Graph& g);
 
 #endif

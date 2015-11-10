@@ -48,9 +48,6 @@
     <ClCompile Include="src\test.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\TreeBottomUp.cc">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\TWUtilAlgos.cc">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -93,9 +90,6 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\Simplicial.hh">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\TreeBottomUp.hh">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\TWUtilAlgos.hh">

@@ -14,8 +14,6 @@ int permutTW(int nGraph, VSet vsetArg, const std::vector<Vertex>& Svec, const Gr
 	int tw = NO_WIDTH;
 	VSet vs = vsetArg;
 
-	//std::cout << "PERMUTTW set " << vsetArg.size() << " vec size " << Svec.size() << "\n";
-
 	auto loopEnd = Svec.end();
 	for (auto current = Svec.begin(); current != loopEnd; ++current)
 	{
@@ -31,8 +29,6 @@ int permutTW(int nGraph, VSet vsetArg, const std::vector<Vertex>& Svec, const Gr
 int altPermutTW(int nGraph, const VSet& vsetArg, const std::vector<Vertex>& SvecAll, const Graph& G) {
 	int tw = NO_WIDTH;
 	VSet vs = vsetArg;
-
-	//std::cout << "PERMUTTW set " << vsetArg.size() << " vec size " << Svec.size() << "\n";
 
 	int n = boost::num_vertices(G);
 
@@ -66,7 +62,6 @@ std::pair<Graph, std::map<Vertex, Vertex>> complement_graph(const Graph& G)
 	for (auto u = vertexInfo.first; u != vertexInfo.second; u++)
 	{
 		Vertex newVert = boost::add_vertex(GC);
-		//std::cout << "Making graph pair " << *u << " and " << newVert << "\n";
 		vmap[*u] = newVert;
 	}
 
@@ -76,20 +71,14 @@ std::pair<Graph, std::map<Vertex, Vertex>> complement_graph(const Graph& G)
 	{
 		for (auto v = vertexInfo.first; v != vertexInfo.second; v++)
 		{
-			//std::cout << "Edge Info: " << *u << " " << *v << " " << edge(*u, *v, G).second << "\n";
-
 			if (*u < *v && !(edge(*u, *v, G).second))
 			{
-				//std::cout << "Adding comp edge " << vmap[*u] << " and " << vmap[*v] << "\n";
-				//std::cout << "Comp numbers: " << vmap[*u] << " and " << vmap[*v] << "\n";
 				boost::add_edge(vmap[*u], vmap[*v], GC);
 			}
 
 		}
 
 	}
-
-	//std::cout << "Done comp\n";
 
 	//Return our key-value set for the map
 	//http://stackoverflow.com/questions/8321316/flip-map-key-value-pair
@@ -108,8 +97,6 @@ int subgraphDegree(Vertex v, VSet S, const Graph& G)
 {
 	VSet neighbours;
 
-	//std::cout << "Getting adj vertices for " << v << "\n";
-
 	auto neighbourIter = boost::adjacent_vertices(v, G);
 	for (auto n = neighbourIter.first; n != neighbourIter.second; ++n)
 	{
@@ -120,20 +107,13 @@ int subgraphDegree(Vertex v, VSet S, const Graph& G)
 
 }
 
-//TODO this is not returning cliques
 VSet maxIndSetHelper(VSet S, const Graph& G)
 {
-	//std::cout << "Max IS: size " << S.size() << "\n";
 	//Base case
 	if (S.size() <= 1)
 	{
-		//std::cout << "Base case\n";
 		return S;
 	}
-
-	//std::cout << "Past base case: " << showSet(S) << "\n";
-
-	//auto members = S.members();
 
 	auto minDegInfo = minDegreeSubgraphVert(S, G);
 
@@ -149,8 +129,6 @@ VSet maxIndSetHelper(VSet S, const Graph& G)
 	auto svNeighbs = boost::adjacent_vertices(minDegreeVert, G);
 	for (auto minNeighb = svNeighbs.first; minNeighb != svNeighbs.second; minNeighb++)
 	{
-		//std::cout << "Size " << S.size() << " erasing " << *minNeighb << "\n";
-
 		SV.erase(*minNeighb);
 	}
 	VSet bestFound = maxIndSetHelper(SV, G);
@@ -165,25 +143,20 @@ VSet maxIndSetHelper(VSet S, const Graph& G)
 		{
 			auto SNew = S;
 			//Erase each neighbour of this neighbour
-			//std::cout << "Size " << S.size() << " choosing " << *iter << "\n";
 			//And erase the neighbour itself
 			SNew.erase(*iter);
 
 			//Erase the min-degree vertex
-			//TODO why do we need this?
-			//std::cout << "Size " << S.size() << " erasing " << minDegreeVert << "\n";
 			SNew.erase(minDegreeVert);
 
 			auto nnSet = boost::adjacent_vertices(minDegreeVert, G);
 			for (auto nneighb = nnSet.first; nneighb != nnSet.second; nneighb++)
 			{
-				//std::cout << "Size " << S.size() << " erasing " << *nneighb << "\n";
 				SNew.erase(*nneighb);
 			}
 
 			VSet subFound = maxIndSetHelper(SNew, G);
 			subFound.insert(*iter);
-			//std::cout << "Returning to " << S.size() << "\n";
 			if (bestFound.size() < subFound.size())
 			{
 				bestFound = subFound;
@@ -192,7 +165,6 @@ VSet maxIndSetHelper(VSet S, const Graph& G)
 
 
 	}
-	//std::cout << "Max IS: returning " << S.size() << "\n";
 	return bestFound;
 
 }
@@ -208,8 +180,6 @@ VSet exactMaxIndSet(const Graph& G)
 VSet exactMaxClique(const Graph& G)
 {
 	auto compInfo = complement_graph(G);
-	//std::cout << "Graph complement:\n";
-	//boost::write_graphviz(std::cout, compInfo.first);
 
 	VSet iset = exactMaxIndSet(compInfo.first);
 	std::vector<Vertex> iVec;
@@ -298,12 +268,10 @@ VSet approxMaxClique(const Graph& G)
 
 }
 
-//TODO is there a smarter way to do this with boost subgraphs?
 int subgraphTWLowerBound(VSet S, const Graph& G, const Graph& GC)
 {
 	VSet aClique = approxIndSetHelper(S, GC);
 
-	//TODO more advanced techniques?
 	return aClique.size();
 }
 
@@ -312,16 +280,11 @@ std::pair<Vertex, int> minDegreeSubgraphVert(VSet S, const Graph& G)
 	std::vector<Vertex> members;
 	S.members(members);
 
-	//std::cout << "Members size " << members.size() << "\n";
-
 	Vertex minDegreeVert = members[0];
 	int minDeg = subgraphDegree(members[0], S, G);
 
-	//std::cout << "Set members: " << members;
-
 	for (auto iter = members.begin(); iter != members.end(); iter++)
 	{
-		//std::cout << "Checking degree for " << *iter << "\n";
 		int currentDeg = subgraphDegree(*iter, S, G);
 		if (minDeg > currentDeg)
 		{
@@ -354,7 +317,6 @@ std::pair<Vertex, int> minDegreeVertExcept(Vertex v, VSet S, const Graph& G)
 
 	for (auto iter = members.begin(); iter != members.end(); iter++)
 	{
-		//std::cout << "Checking degree for " << *iter << "\n";
 		int currentDeg = subgraphDegree(*iter, S, G);
 		if (*iter != v && minDeg > currentDeg)
 		{
@@ -366,16 +328,14 @@ std::pair<Vertex, int> minDegreeVertExcept(Vertex v, VSet S, const Graph& G)
 	return std::pair<Vertex, int>(minDegreeVert, minDeg);
 }
 
+//Based on algorithm 3 of Lower Bounds paper
 int MMD(VSet S, const Graph& G)
 {
-	//std::cout << "Min Degree vertex:" << minDeg(S, G) << "\n";
-
 	VSet H = S;
 	int maxmin = 0;
 	while (H.size() >= 2)
 	{
 		Vertex v = minDegreeSubgraphVert(H, G).first;
-		//std::cout << "maxmin v degree " << subgraphDegree(v, H, G) << "\n";
 		maxmin = std::max(maxmin, subgraphDegree(v, H, G));
 		H.erase(v);
 	}
@@ -431,7 +391,6 @@ Vertex customMinDegreeExcept(Vertex vExclude, VSet H, Graph G)
 
 
 
-//TODO fix this
 //Based on Algorithm 2 from the lower bounds paper
 int d2degen(const VSet& SStart, const Graph& G)
 {
@@ -449,7 +408,6 @@ int d2degen(const VSet& SStart, const Graph& G)
 		{
 			d2D = std::max(d2D, secondSmallestDegree(H, G));
 			Vertex u = customMinDegreeExcept(v, H, G);
-			//d2D = std::max(d2D, subgraphDegree(v, H, G)); //TODO *iter or w?
 			H.erase(u);
 		}
 

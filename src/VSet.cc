@@ -29,7 +29,6 @@ VSet::VSet(const Graph &G)
 	for (auto iter = iterInfo.first; iter != iterInfo.second; ++iter)
 	{
 		bitVec[*iter] = true;
-
 	}
 
 }
@@ -37,9 +36,6 @@ VSet::VSet(const Graph &G)
 VSet::VSet(const VSet &S)
 {
 	bitVec = S.bitVec;
-	//memcpy(bitVec, S.bitVec, MAX_NUM_VERTICES);
-
-
 }
 
 VSet::VSet(const std::vector<Vertex>& vec)
@@ -47,7 +43,6 @@ VSet::VSet(const std::vector<Vertex>& vec)
 	auto loopEnd = vec.end();
 	for (auto iter = vec.begin(); iter != loopEnd; ++iter)
 	{
-		//bitVec.set(*iter, true);
 		bitVec[*iter] = true;
 	}
 
@@ -73,18 +68,7 @@ void VSet::members(std::vector<Vertex>& vec) const
 		}
 
 	}
-	//std::cout << "MEMBERS size " << vec.size() << "\n";
-
 }
-
-/*
-bitSet VSet::getBitVec() const
-{
-	return bitVec;
-
-}
-*/
-
 
 
 Vertex VSet::first() const
@@ -99,8 +83,6 @@ Vertex VSet::firstNotContained(int numVerts) const
 		//Check if the ith bit is set. If it is, add that to our vector
 		if (!bitVec[i])
 		{
-			//std::cout << "Setting membres pos " << vecPos << " to " << i << "\n";
-
 			return i;
 		}
 
@@ -121,4 +103,23 @@ VSet VSet::setIntersection(const VSet& that) const
 	VSet ret;
 	ret.bitVec = newBitVec;
 	return ret;
+}
+
+std::string showSet(VSet S) {
+	std::ostringstream result;
+
+	result << "{";
+
+	std::vector<Vertex> members;
+	S.members(members);
+
+	for (auto iter = members.begin(); iter != members.end(); ++iter)
+	{
+		result << *iter << " ; ";
+	}
+
+	result << "}";
+
+	return result.str();
+
 }

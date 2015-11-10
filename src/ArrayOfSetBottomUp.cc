@@ -1,19 +1,22 @@
 #include "ArrayOfSetBottomUp.hh"
 #include <iostream>
 
+//Initialize our heap arrays
 ArrayOfSetBottomUp::ArrayOfSetBottomUp(const Graph& G) : AbstractBottomUp(G)
 {
 	TWarr = new std::set<VSet>*[VSet::maxNumVerts];
 	upperBoundForLayer = new int[VSet::maxNumVerts];
 }
 
-
+//Delete our heap arrays
 ArrayOfSetBottomUp::~ArrayOfSetBottomUp()
 {
 	delete[] TWarr;
 	delete[] upperBoundForLayer;
 }
 
+//For our iteration, we need to keep track of the array index of the set we're looking at
+//And an iterator for our position in that set
 void ArrayOfSetBottomUp::beginIter()
 {
 	int prevLayer = currentLayer - 1;
@@ -117,13 +120,11 @@ int ArrayOfSetBottomUp::TW(int layer, VSet S)
 			return i;
 		}
 	}
-	//TODO should never hit this?
 	return globalUpperBound;
 }
 
 void ArrayOfSetBottomUp::updateTW(int layer, VSet S, int tw)
 {
-	numUpdates++;
 	if (tw > 0)
 	{
 		for (int i = 0; i < tw; i++)
@@ -147,32 +148,20 @@ void ArrayOfSetBottomUp::updateTW(int layer, VSet S, int tw)
 
 void ArrayOfSetBottomUp::beginLayer(int layer)
 {
-	if (layer > 0)
-	{
-		int numLastLevel = 0;
-		for (int i = lowerBound; i < upperBoundForLayer[layer - 1]; i++)
-		{
-			numLastLevel += TWarr[layer - 1][i].size();
-		}
-		std::cerr << numLastLevel << " from last level\n";
-	}
 
 	//Create an array entry for each possible TW value
 	upperBoundForLayer[layer] = globalUpperBound;
 	TWarr[layer] = new std::set<VSet>[globalUpperBound];
 
-
-
 }
 
 void ArrayOfSetBottomUp::endLayer(int layer)
 {
-	//std::cout << "TW i size: " << currentLayer << " " << numStored() << "\n";
 	//Delete this layer's array of sets
 	delete[] TWarr[layer];
-	std::cerr << "Called update " << numUpdates << " times\n";
 }
-
+//Return the lowest index of a set that contains a value in our final layer
+//Otherwise, return the bound
 int ArrayOfSetBottomUp::finalResult(int finalLayer, VSet SStart)
 {
 	for (int i = 0; i < globalUpperBound; i++)
@@ -185,6 +174,7 @@ int ArrayOfSetBottomUp::finalResult(int finalLayer, VSet SStart)
 	return globalUpperBound;
 }
 
+//Just sum up the size sizes for each layer
 int ArrayOfSetBottomUp::numStored()
 {
 	int ret = 0;

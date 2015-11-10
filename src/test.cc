@@ -7,7 +7,6 @@
 
 #include <vector>
 
-#include "TreeBottomUp.hh"
 #include "ArrayOfSetBottomUp.hh"
 #include "DAWGBottomUp.hh"
 #include "LastInsertedTopDown.hh"

@@ -87,4 +87,7 @@ inline bool operator<=(const VSet& lhs, const VSet& rhs) { return !(lhs > rhs); 
 inline bool operator>=(const VSet& lhs, const VSet& rhs) { return !(lhs < rhs); }
 inline bool operator==(const VSet& lhs, const VSet& rhs) { return lhs.bitVec == rhs.bitVec; }
 
+//Useful for pretty-printing
+std::string showSet(VSet S);
+
 #endif

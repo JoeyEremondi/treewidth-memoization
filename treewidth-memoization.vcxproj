@@ -30,7 +30,6 @@
     <ClCompile Include="src\qset.cc" />
     <ClCompile Include="src\Simplicial.cc" />
     <ClCompile Include="src\test.cc" />
-    <ClCompile Include="src\TreeBottomUp.cc" />
     <ClCompile Include="src\TWUtilAlgos.cc" />
     <ClCompile Include="src\UpperBound.cc" />
     <ClCompile Include="src\VSet.cc" />
@@ -47,7 +46,6 @@
     <ClInclude Include="include\LastInsertedTopDown.hh" />
     <ClInclude Include="include\qset.hh" />
     <ClInclude Include="include\Simplicial.hh" />
-    <ClInclude Include="include\TreeBottomUp.hh" />
     <ClInclude Include="include\TWUtilAlgos.hh" />
     <ClInclude Include="include\UpperBound.hh" />
     <ClInclude Include="include\VSet.hh" />

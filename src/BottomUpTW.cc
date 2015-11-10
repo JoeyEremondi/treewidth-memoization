@@ -10,216 +10,6 @@
 #include <boost/unordered_map.hpp>
 
 
-int bottomUpTW(const Graph& G)
-{
-	VSet S(G);
-
-	//Remove elements in the max-clique of G
-	VSet maxClique = exactMaxClique(G);
-	std::vector<Vertex> cliqueVec(maxClique.size());
-	maxClique.members(cliqueVec);
-
-	for (auto iter = cliqueVec.begin(); iter != cliqueVec.end(); ++iter)
-	{
-		S.erase(*iter);
-	}
-
-	int upperBound = calcUpperBound(G, S);
-
-	return bottomUpTWFromSet(G, S, upperBound);
-
-
-
-}
-
-
-
-std::string showLayer(std::unordered_map<VSet, int> TW)
-{
-	std::ostringstream out;
-	for (auto iter = TW.begin(); iter != TW.end(); ++iter)
-	{
-		out << "{" << showSet(iter->first) << "=" << iter->second << "}, ";
-	}
-	return out.str();
-}
-
-/*
-#if defined (__GNUC__) && ( __GNUC__ >= 3 )
-typedef __gnu_cxx::hash_map< HashKey,
-#else
-typedef std::hash_map< HashKey,
-#endif
-unsigned,
-hash_compare_for_pairs,
-hash_equalkey_for_pairs > VertexSetHashMap;
-*/
-
-int maybeMin(int x, int y)
-{
-	if (x == -1)
-	{
-		return y;
-	}
-	if (y == -1)
-	{
-		return x;
-	}
-	return std::min(x, y);
-}
-
-int bottomUpTWFromSet(const Graph& G, const VSet& SStart, int globalUpperBound)
-{
-	auto TW = new std::unordered_map<VSet, int>*[VSet::maxNumVerts];
-
-	VSet emptySet;
-	TW[0] = new std::unordered_map<VSet, int>();
-	(*TW[0])[emptySet] = NO_WIDTH;
-
-	//TODO remove
-	//globalUpperBound = 26;
-
-
-	int nGraph = boost::num_vertices(G);
-	//int n = nGraph;
-	int nSet = SStart.size();
-
-
-	std::vector<Vertex> vertInfo;
-
-	auto allVertInfo = boost::vertices(G);
-	std::vector<Vertex> allVerts(allVertInfo.first, allVertInfo.second);
-	//VSet SStart(allVerts);
-
-
-	SStart.members(vertInfo); // boost::vertices(G);
-	auto vertInfoStart = vertInfo.begin();
-	auto vertInfoEnd = vertInfo.end();
-
-	//VSet clique;
-
-
-
-	int upperBound = globalUpperBound;
-
-	for (int i = 1; i <= nSet; ++i)
-	{
-		try {
-			//std::cout << "Level " << i << "\n";
-			//std::cout << "Num Q " << numQCalled << "\n";
-
-			//Initialize our dictionary at this level
-			TW[i] = new std::unordered_map<VSet, int>();
-
-			//TODO what is this? Taken from Java version
-			int minTW = upperBound;
-
-			//std::unordered_map<VSet, int> currentTW;
-
-			//Store the |Q| values, overwritten each layer
-			std::vector<int> qSizes(nGraph);
-
-			auto twLoopEnd = TW[i - 1]->end();
-			for (auto pair = TW[i - 1]->begin(); pair != twLoopEnd; ++pair)
-			{
-				VSet S = pair->first;
-				int r = pair->second;
-
-				if (r < upperBound)
-				{
-
-					//std::cout << "On set " << showSet(S);
-
-					Vertex firstSet = S.first();
-
-					findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
-
-					for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
-					{
-						Vertex v = *x;
-						if ((!S.contains(v)) /*&& (!clique.contains(v)) && v < firstSet*/) //TODO check if in clique here?
-						{
-
-
-
-							VSet SUx = S;
-							SUx.insert(v);
-
-							int q = qSizes[v];
-							//int trueQ = qCheck(nGraph, S, v, G);
-							//int qOld = sizeQ(nGraph, S, v, G);
-							//assert(q == trueQ);
-
-
-							int rr = std::max(r, q);
-
-							//if (rr >= nGraph - i - 1 && rr < minTW) {
-							minTW = std::min(minTW, rr);
-							upperBound = std::min(upperBound, std::max(minTW, nGraph - i - 1));
-							//}
-
-							if (rr < upperBound)
-							{
-								auto searchInfo = TW[i]->find(SUx);
-								if (searchInfo == TW[i]->end() || rr < searchInfo->second)
-								{
-									//std::vector<Vertex> newSeq(oldSeq);
-									//newSeq.push_back(v);
-									(*TW[i])[SUx] = rr;
-								}
-
-
-							}
-						}
-
-					}
-				}
-
-
-			}
-
-
-
-			//De-allocate our old level of the tree, to save space
-			delete TW[i - 1];
-
-			std::cout << "TW i size: " << i << " " << TW[i]->size() << "\n";
-			/*if (true)
-			{
-
-				std::cout << "TW i: " << i << " " << showLayer(TW[i]) << "\n";
-			} */
-		}
-		catch (const std::bad_alloc& e) {
-			std::cerr << "Allocation failed BUTW2: " << e.what() << '\n';
-			//Free up our resources
-			delete TW[i - 1];
-			delete TW[i];
-			delete TW;
-			return -1;
-		}
-
-	}
-
-	//std::cout << "Num Q " << numQCalled << "\n";
-
-
-
-	auto searchInfo = TW[nSet]->find(SStart);
-	if (searchInfo == TW[nSet]->end())
-	{
-		delete TW[nSet];
-		delete[] TW;
-		return upperBound;
-	}
-	delete TW[nSet];
-	delete[] TW;
-	return searchInfo->second;
-
-
-
-}
-
 BottomUpTW::BottomUpTW(const Graph & gIn, int maxLayerSizeIn)
 	: G(gIn)
 {
@@ -261,12 +51,8 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 	this->topLevelDictFound = NULL;
 
 
-	//TODO remove
-	//globalUpperBound = 26;
-
 
 	int nGraph = boost::num_vertices(G);
-	//int n = nGraph;
 	int nSet = SStart.size();
 
 
@@ -274,14 +60,11 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 
 	auto allVertInfo = boost::vertices(G);
 	std::vector<Vertex> allVerts(allVertInfo.first, allVertInfo.second);
-	//VSet SStart(allVerts);
 
 
-	SStart.members(vertInfo); // boost::vertices(G);
+	SStart.members(vertInfo); 
 	auto vertInfoStart = vertInfo.begin();
 	auto vertInfoEnd = vertInfo.end();
-
-	//VSet clique;
 
 	int numStoredElements = 0;
 
@@ -310,12 +93,12 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 
 					Vertex firstSet = S.first();
 
-					findQvalues(nGraph, S, G, qSizes); //TODO n or nGraph?
+					findQvalues(nGraph, S, G, qSizes); 
 
 					for (auto x = vertInfoStart; x != vertInfoEnd; ++x)
 					{
 						Vertex v = *x;
-						if ((!S.contains(v)) /*&& (!clique.contains(v)) && v < firstSet*/) //TODO check if in clique here?
+						if ((!S.contains(v))) 
 						{
 
 
@@ -391,8 +174,6 @@ void BottomUpTW::fillTWSet(const VSet& SStart)
 		}
 
 	}
-
-	//std::cout << "Num Q " << numQCalled << "\n";
 
 	//If we got to this point without failing, then we found a solution
 	didFindSolution = true;

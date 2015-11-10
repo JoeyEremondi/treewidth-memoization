@@ -22,16 +22,12 @@
 //And we add to our count (without expanding) for those not in S
 int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 {
-	//std::cout << "Q: starting with S = " << showSet(S) << "\n";
 
-	//int n = boost::num_vertices(G);
-
-	std::vector<Vertex> open; //TODO replace
+	std::vector<Vertex> open;
 	open.reserve(n);
 	open.push_back(v);
 
-	//Uses more memory than VSet, but is faster
-	VSet closed; //TODO replace
+	VSet closed;
 
 	int numInQ = 0;
 
@@ -54,7 +50,7 @@ int sizeQ(int n, const VSet &S, Vertex v, const Graph& G)
 			{
 				closed.insert(u);
 
-				if (S.contains(u) && u != v )
+				if (S.contains(u) && u != v)
 				{
 					open.push_back(u);
 				}
@@ -100,8 +96,6 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 			Vertex first = globalUnseen.first();
 			Vertex currentCC = first;
 
-			//std::cout << "CC " << currentCC << "\n";
-
 			open.push_back(first);
 
 
@@ -119,23 +113,19 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 
 
 				auto outEdges = boost::out_edges(w, G);
-				//std::cout << "Q: expanding " << w << "\n";
 
 				for (auto iter = outEdges.first; iter != outEdges.second; ++iter)
 				{
 					Vertex u = boost::target(*iter, G);
 
 
-					//std::cout << "Q: found neighbour " << u << "\n";
 					if (!closed.contains(u))
 					{
-						//std::cout << "Q: adding " << u << " to closed\n";
 
 						closed.insert(u);
 
 						if (S.contains(u))
 						{
-							//std::cout << "Q: adding " << u << " to queue\n";
 							open.push_back(u);
 							reachableFrom[u].push_back(currentCC);
 
@@ -146,7 +136,6 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 							reachableFrom[u].push_back(currentCC);
 							reachableFromSet[u].insert(currentCC);
 							canReach[currentCC].insert(u);
-							//std::cout << "Reached " << u << " from " << w << " in CC " << currentCC << "\n";
 						}
 					}
 				}
@@ -171,12 +160,10 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 		}
 
 		auto outEdges = boost::out_edges(v, G);
-		//std::cout << "Q: expanding " << w << "\n";
 
 		//Every edge of our current vertex is also in its Q set, unless it's in S
 		for (auto iter = outEdges.first; iter != outEdges.second; ++iter)
 		{
-			//Edge e = *iter;
 			Vertex u = boost::target(*iter, G);
 			if (!S.contains(u))
 			{
@@ -194,70 +181,5 @@ void findQvalues(int n, const VSet &S, const Graph &G, std::vector<int>& outValu
 
 
 
-int qCheck(int n, VSet S, Vertex v, Graph G)
-{
-	int numInQ = 0;
-	auto vertInfo = vertices(G);
-	auto edgeInfo = edges(G);
-	for (auto iter = vertInfo.first; iter != vertInfo.second; iter++)
-	{
-		Vertex u = *iter;
-		if (u != v && !S.contains(u))
-		{
-			VSet inducingSet = S;
-			inducingSet.insert(v);
-			inducingSet.insert(u);
-			std::vector<Vertex> members;
-			inducingSet.members(members);
-
-			Graph GG;
-			for (auto addVert = vertInfo.first; addVert != vertInfo.second; addVert++)
-			{
-				boost::add_vertex(GG);
-			}
-
-			for (auto edgeIter = edgeInfo.first; edgeIter != edgeInfo.second; edgeIter++)
-			{
-				Vertex from = boost::source(*edgeIter, G);
-				Vertex to = boost::target(*edgeIter, G);
-				if (inducingSet.contains(to) && inducingSet.contains(from))
-				{
-					boost::add_edge(to, from, GG);
-				}
-			}
-
-			std::vector<int> distances(boost::num_vertices(G) + 1);
-			boost::breadth_first_search(GG,
-				v,
-				boost::visitor(boost::make_bfs_visitor(boost::record_distances(&distances[0], boost::on_tree_edge()))));
-			if (distances[u] != 0)
-			{
-				numInQ++;
-			}
-
-		}
-
-	}
-	return numInQ;
-}
 
 
-
-std::string showSet(VSet S) {
-	std::ostringstream result;
-
-	result << "{";
-
-	std::vector<Vertex> members;
-	S.members(members);
-
-	for (auto iter = members.begin(); iter != members.end(); ++iter)
-	{
-		result << *iter << " ; ";
-	}
-
-	result << "}";
-
-	return result.str();
-
-}

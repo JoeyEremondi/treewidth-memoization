@@ -1,10 +1,8 @@
 #include "Simplicial.hh"
 
 
-//TODO put this in its own file
 bool isSimplicial(const Graph& G, Vertex v, const VSet& SStart)
 {
-	//std::vector<Vertex> neighbours;
 	auto neighbPair = boost::adjacent_vertices(v, G);
 	VSet neighbSet;
 
@@ -17,6 +15,7 @@ bool isSimplicial(const Graph& G, Vertex v, const VSet& SStart)
 		}
 	}
 
+	//For each neighbour pair, check if the edge is there
 	for (auto n = neighbPair.first; n != neighbPair.second; ++n)
 	{
 		auto nnSet = boost::adjacent_vertices(*n, G);

@@ -88,8 +88,6 @@ State DAWG::newState()
 
 void DAWG::addTransition(int depth, State from, State to, bool readLetter)
 {
-	//TODO assert not contains already?
-	//std::cout << "Adding transition " << from << " ->" << readLetter << "-> " << to << " layer " << depth << "\n" ;
 	if (readLetter)
 	{
 		delta1[depth][from] = to;
@@ -148,7 +146,7 @@ State DAWG::minimizeHelper(int layer, State q)
 	State tnext1;
 
 	//Look at our true transition
-	auto tnextIter = delta1[layer].find(q); //delta(layer, q, bit);
+	auto tnextIter = delta1[layer].find(q);
 	//Don't follow transitions that aren't there
 	if (tnextIter != delta1[layer].end())
 	{
@@ -158,14 +156,11 @@ State DAWG::minimizeHelper(int layer, State q)
 		{
 			State nextRepr = minimizeHelper(layer + 1, tnext1);
 			tnextIter->second = nextRepr;
-			//setTransition(layer, q, bit, nextRepr);
 		}
 		else
 		{
 			tnextIter->second = nextSearchInfo->second;
-			//setTransition(layer, q, bit, nextSearchInfo->second);
 		}
-		//Update our transition to point to the correct vertex
 
 	}
 	else
@@ -191,7 +186,6 @@ State DAWG::minimizeHelper(int layer, State q)
 			tnextIter->second = nextSearchInfo->second;
 			//setTransition(layer, q, bit, nextSearchInfo->second);
 		}
-		//Update our transition to point to the correct vertex
 
 	}
 	else
@@ -344,11 +338,8 @@ void DAWG::minimize()
 	//Never guaranteed to have a trie after minimization
 	isTrie = false;
 
-	//std::cerr << "Transitions before minimization " << numTransitions() << "\n";
 	Register = new std::unordered_map<StateSignature, State>[length + 1];
 	StateMap = new std::unordered_map<State, State>[length + 1];
-
-	//EndRegister.clear();
 
 
 	EndRegisterEnd = EndRegister.end();
@@ -362,11 +353,6 @@ void DAWG::minimize()
 	delete[] StateMap;
 
 	EndRegister.clear();
-
-	//Register.clear();
-	//StateMap.clear();
-
-	//std::cerr << "Transitions after minimization " << numTransitions() << "\n";
 }
 
 
@@ -386,7 +372,6 @@ DAWG::DAWG()
 
 //Special version to avoid infinite recursion
 //So we can store a DAWG inside a DAWG
-//TODO special Trie class?
 DAWG::DAWG(DAWG* staging)
 {
 	this->length = VSet::maxNumVerts;
@@ -495,9 +480,6 @@ std::vector<std::string> DAWG::wordSetHelper(int depth, State q)
 
 void DAWG::unionWithStaging()
 {
-	//auto dotBefore = this->asDot();
-	//auto stageDot = stagingArea->asDot();
-	//std::cerr << "Startuing union\n";
 
 	//Make a product construction with our existing automaton
 	std::vector<std::map<std::pair<State, State>, State>> pairMap(length + 1);
@@ -507,14 +489,8 @@ void DAWG::unionWithStaging()
 
 	StatePool statePool;
 
-	//TODO zero case
 	for (int layer = 0; layer < length; ++layer)
 	{
-		//std::cerr << "Starting layer " << layer << "\n";
-
-		//State newFrom = newStates[layer];
-		//State newTo = newStates[layer + 1];
-		//bool newBit = word.contains(layer);
 		std::unordered_map<State, State> newDelta0;
 		std::unordered_map<State, State> newDelta1;
 
@@ -524,7 +500,6 @@ void DAWG::unionWithStaging()
 			State newFrom = pairPair.first.second;
 			State pairRep = pairPair.second;
 
-			//std::cout << "Looking at pair " << qFrom << " " << newFrom << "\n";
 
 			auto searchMain0 = delta0[layer].find(qFrom);
 			bool main0 = searchMain0 != delta0[layer].end();
@@ -628,18 +603,7 @@ void DAWG::unionWithStaging()
 	this->stagingArea = new DAWG(NULL);
 
 	//And, minimize our combined automaton
-	//std::cerr << "Starting minimization\n";
 	this->minimize();
-	//std::cerr << "done minimization\n";
-
-
-
-	//std::cout << "Main area before\n" << dotBefore << "\n";
-	//std::cout << "\n\nStaging before\n" << stageDot << "\n";
-	//std::cout << "\nFinal aut\n" << asDot() << "\n";
-	//std::cerr << "Done union\n";
-
-
 }
 
 void DAWG::insert(VSet word, int tw)
@@ -647,12 +611,7 @@ void DAWG::insert(VSet word, int tw)
 	static int numInserts = 0;
 	static bool didFail = false;
 	numInserts++;
-	/*
-	if (this->stagingArea == NULL)
-	{
-		this->insertIntoEmpty(word, tw);
-		return;
-	}*/
+
 	try
 	{
 		stagingArea->insertIntoEmpty(word, tw);
@@ -829,7 +788,6 @@ DAWG::iterator DAWG::iterator::nextIter()
 		didFail = false;
 		if (iterStack.empty())
 		{
-			//std::cout << "Returning empty stack\n";
 			VSet ret;
 			currentPair = { ret, 0 };
 			return *this;
@@ -844,8 +802,6 @@ DAWG::iterator DAWG::iterator::nextIter()
 		State current = top.state;
 		int currentPos = top.depth;
 		VSet currentSet = top.set;
-
-		//std::cout << "Popped " << showSet(currentSet) << " from stack\n";
 
 		std::vector<State> currentPath = top.statePath;
 
@@ -862,9 +818,6 @@ DAWG::iterator DAWG::iterator::nextIter()
 				iterStack.push_back({ q1, currentPos + 1, newSet, path1 });
 				//Keep following the 0 path
 
-				//std::cout << "Pushing " << current << " -> true -> " << q1 << " layer " << currentPos + 1 << "\n";
-				//std::cout << "Following " << current << " -> false -> " << q0 << " layer " << currentPos + 1 << "\n";
-
 				current = q0;
 				currentSet.erase(currentPos);
 				currentPos++;
@@ -874,8 +827,6 @@ DAWG::iterator DAWG::iterator::nextIter()
 			//If only one path, just follow that path
 			else if ((q0 = super->delta(currentPos, current, false)) != super->SINK)
 			{
-				//std::cout << "Following " << current << " -> false -> " << q0 << " layer " << currentPos + 1 << "\n";
-
 				current = q0;
 				currentSet.erase(currentPos);
 				currentPos++;
@@ -884,8 +835,6 @@ DAWG::iterator DAWG::iterator::nextIter()
 			}
 			else if ((q1 = super->delta(currentPos, current, true)) != super->SINK)
 			{
-				//std::cout << "Following " << current << " -> true -> " << q1 << " layer " << currentPos + 1 << "\n";
-
 				current = q1;
 				currentSet.insert(currentPos);
 				currentPos++;
@@ -894,7 +843,6 @@ DAWG::iterator DAWG::iterator::nextIter()
 			}
 			else
 			{
-				//std::cout << "Failing\n";
 				didFail = true;
 				break;
 			}
@@ -902,7 +850,6 @@ DAWG::iterator DAWG::iterator::nextIter()
 		//When we reach our set length, return the set we accumulated
 		if (!didFail)
 		{
-			//std::cout << "Returing " << showSet(currentSet) << " after no failures, path " << showStates(currentPath) << "\n";
 			auto searchInfo = super->valueDelta.find(current);
 			if (searchInfo == super->valueDelta.end())
 			{
@@ -925,7 +872,6 @@ DAWG::iterator DAWG::iterator::nextIter()
 				abort();
 			}
 			this->currentPair = { currentSet, searchInfo->second };
-
 
 
 		}
