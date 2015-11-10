@@ -20,6 +20,7 @@ AbstractTopDown::AbstractTopDown(const Graph& gIn, int maxBottom)
 	, bottomUpInfo(G, maxBottomUpSize)
 {
 	nGraph = boost::num_vertices(G);
+	//As a heuristic, we sort our vertices by degree
 	std::sort(allVertices.begin(), allVertices.end(),
 		[gIn](auto v1, auto v2) -> bool
 	{
@@ -53,13 +54,12 @@ int AbstractTopDown::topDownTW()
 		S.erase(*iter);
 	}
 
+	//Take the upper bound that the bottom-up method found
 	sharedUpperBound = bottomUpInfo.bestUpperBound();
 
-
+	//Try setting our lower-bound to the higest value we can find
 	lowerBound = d2degen(S, G);
-	std::cout << "d2 lower " << lowerBound << "\n";
 	lowerBound = std::max(lowerBound, MMD(S, G));
-	std::cout << "MMD lower " << MMD(S, G) << "\n";
 
 	std::cout << "Found lower bound " << lowerBound << "\n";
 
@@ -76,13 +76,14 @@ int AbstractTopDown::topDownTW()
 int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 {
 
-
+	//Base case: no width for empty set, -infinity
 	if (S.empty())
 	{
 		return NO_WIDTH;
 	}
 	else if (nSet <= bottomUpInfo.levelReached())
 	{
+		//If we've recursed deep enough to see our bottom-up values, take from there
 		auto searchInfo = bottomUpInfo.topLevelDict()->find(S);
 		if (searchInfo == bottomUpInfo.topLevelDict()->end())
 		{
@@ -94,8 +95,8 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 		}
 	}
 
-
-	if (isMemoized(nSet, S)) //TODO replace with memo lookup
+	//Don't calculate if we've already stored this value
+	if (isMemoized(nSet, S))
 	{
 		return memoizedValue(nSet, S);
 	}
@@ -106,7 +107,7 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 		int minTW = sharedUpperBound;
 
 
-		//Do a simplicial vertex first if it exists
+		//Optimization: Do a simplicial vertex first if it exists
 		for (Vertex v : allVertices)
 		{
 			if (S.contains(v) && isSimplicial(G, v, S))
@@ -120,6 +121,7 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 			}
 		}
 
+		//Try our recurrence relation for each vertex in our set S
 		for (Vertex v : allVertices)
 		{
 
@@ -129,17 +131,7 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 				SminusV.erase(v);
 				int q = qValues[v];
 
-
-				//assert(setUpperBound >= sharedUpperBound);
-
-				//Don't recursively calculate TW if we know Q is bigger
-
-				/*
-				if (q >= setUpperBound)
-				{
-				minTW = std::min(minTW, q);
-				}*/
-
+				//We only need to try this value if it doesn't exceed our upper bound
 				if (q < minTW || q < sharedUpperBound)
 				{
 					int setUpperBound = sharedUpperBound;
@@ -149,6 +141,8 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 
 					setUpperBound = std::min(setUpperBound, permutTW(nGraph, S, sortedMembers, G));
 
+					//Don't compute a recursive value if we know that it violates our
+					//Upper and lower bound constraints
 					if (q >= setUpperBound || setUpperBound < lowerBound)
 					{
 						minTW = std::min(minTW, q);
@@ -167,28 +161,14 @@ int AbstractTopDown::topDownTWFromSet(const Graph& G, const VSet& S, int nSet)
 
 		try
 		{
-			//Don't cache the top few layers, to save space
-			//Same for the bottom few layers
-			if (nGraph - nSet > topLevelNoStore && nSet > bottomLevelNoStore)
-			{
-				memoizeTW(nSet, S, minTW);
-				if (numInDict % 50000 == 0)
-				{
-					std::cout << numInDict << " elements currently stored\n";
-				}
-			}
+			memoizeTW(nSet, S, minTW);
 		}
 		catch (const std::bad_alloc& e) {
+			//If we run out of memory, run the cleaning procedure
 			this->cleanMemoized();
-			std::cout << numInDict << " elements stored in Dict\n";
-			//std::cerr << "Emptying layer" << nSet << ", deleting" << TW[nSet].size() << " elements\n";
-			//numInDict -= TW[nSet].size();
-			//TW[nSet].clear(); //TODO smarter than emptying entire layer?
-
 		}
 		return minTW;
 	}
-
 
 
 }
