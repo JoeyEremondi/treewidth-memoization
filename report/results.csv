@@ -1,0 +1,29 @@
+Graph,$|V| $,$|E|$,$LB$,$UB$,$tw$,DAWG 100M,DAWG 50M,DAWG 10M,Bottom-up,Hybrid,Top-down
+ana-pp,22,148,5,13,12,\textbf{0.02 s},0.03 s,\textbf{0.02 s},\textbf{0.02 s},0.06 s,0.26 s
+,,,,,,4256 kb,4456 kb,4424 kb,\textbf{4060 kb},160264 kb,160084 kb
+barley-pp,26,78,4,10,7,31.6 s,31.41 s,30.71 s,10.08 s,4.26 s,\textbf{4.22 s}
+,,,,,,90632 kb,90628 kb,90684 kb,\textbf{23952 kb},178316 kb,178112 kb
+david-pp,29,191,4,18,13,5.7 s,6 s,5.75 s,2.19 s,0.78 s,\textbf{0.68 s}
+,,,,,,29616 kb,29488 kb,29664 kb,\textbf{9344 kb},161436 kb,160800 kb
+mainuk-pp,9,28,2,6,6,\textbf{0 s},\textbf{0 s},\textbf{0 s},\textbf{0 s},0.02 s,0.02 s
+,,,,,,4028 kb,4048 kb,4032 kb,\textbf{4016 kb},159940 kb,160080 kb
+MCSTestGraph,7,11,3,3,3,\textbf{0 s},\textbf{0 s},\textbf{0 s},\textbf{0 s},0.04 s,0.05 s
+,,,,,,4048 kb,3956 kb,3956 kb,\textbf{3828 kb},160164 kb,159936 kb
+MCSTestGraph2,9,13,1,3,3,\textbf{0 s},\textbf{0 s},\textbf{0 s},\textbf{0 s},0.02 s, s
+,,,,,,3968 kb,4052 kb,3880 kb,\textbf{3824 kb},159908 kb,160160 kb
+myciel3,11,20,2,5,5,\textbf{0 s},\textbf{0 s},\textbf{0 s},\textbf{0 s},0.02 s,0.03 s
+,,,,,,3968 kb,3968 kb,\textbf{3920 kb},4024 kb,159996 kb,160076 kb
+myciel4,23,71,4,10,10,0.32 s,0.32 s,0.32 s,\textbf{0.11 s},0.12 s,16.83 s
+,,,,,,8216 kb,8044 kb,8072 kb,\textbf{4348 kb},160076 kb,204952 kb
+oesoca+-pp,14,75,2,11,11,\textbf{0 s},\textbf{0 s},\textbf{0 s},\textbf{0 s},0.03 s,0.02 s
+,,,,,,4096 kb,4208 kb,4100 kb,\textbf{3928 kb},160084 kb,160096 kb
+pathfinder-pp,12,43,3,7,6,\textbf{0 s},\textbf{0 s},\textbf{0 s},\textbf{0 s},0.02 s,0.03 s
+,,,,,,3992 kb,4144 kb,4064 kb,\textbf{3988 kb},159940 kb,160044 kb
+queen5\_5,25,160,9,19,18,0.07 s,0.06 s,0.06 s,\textbf{0.02 s},0.03 s,55.04 s
+,,,,,,5216 kb,5416 kb,5364 kb,\textbf{3980 kb},160140 kb,258912 kb
+queen6\_6,36,290,12,27,25,2.7 s,2.74 s,2.73 s,\textbf{0.72 s},\textit{DNF},\textit{DNF}
+,,,,,,30348 kb,30288 kb,30356 kb,\textbf{5480 kb},\textit{DNF},\textit{DNF}
+ship-ship-pp,30,77,4,9,8,436.97 s,443.85 s,487.61 s,96.01 s,52.95 s,\textbf{52.02 s}
+,,,,,,1027740 kb,1028028 kb,1141488 kb,\textbf{151560 kb},303132 kb,302972 kb
+water,32,123,6,11,9,27.01 s,26.82 s,26.78 s,\textbf{7.17 s},12.25 s,12.24 s
+,,,,,,68604 kb,68696 kb,68512 kb,\textbf{14936 kb},195840 kb,195632 kb
