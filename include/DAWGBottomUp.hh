@@ -16,7 +16,7 @@ protected:
 
 	std::vector<DAWG> TW;
 	DAWG::iterator currentIter;
-	//std::vector<DAWG> TWtest;
+
 	int iterTWVal = 0;
 	bool haveSeenInitialElement = false;
 

@@ -4,8 +4,7 @@
 #include <sstream>
 #include <algorithm>
 
-//#define DEBUG
-
+//Helpful method for rendering DAWGs as graphs
 std::string DAWG::asDot()
 {
 	std::unordered_map<State, State> labels;
@@ -86,17 +85,6 @@ State DAWG::newState()
 	return ret;
 }
 
-void DAWG::addTransition(int depth, State from, State to, bool readLetter)
-{
-	if (readLetter)
-	{
-		delta1[depth][from] = to;
-	}
-	else
-	{
-		delta0[depth][from] = to;
-	}
-}
 
 State DAWG::minimizeHelper(int layer, State q)
 {
@@ -634,7 +622,7 @@ void DAWG::insert(VSet word, int tw)
 			return;
 		}
 	}
-	
+
 	if (numInserts > maxTransitions)
 	{
 		numInserts = 0;

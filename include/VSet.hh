@@ -1,12 +1,6 @@
 #ifndef __VSET__HH
 #define __VSET__HH
 
-//We gain speed by using fixed-size bitsets to store sets of vertices
-//This can be changed using compile-time parameters
-//#ifndef MAX_NUM_VERTICES
-//#define MAX_NUM_VERTICES 64
-//#endif
-
 
 #include <bitset>
 #include <vector>
@@ -14,17 +8,13 @@
 #include "graphTypes.hh"
 #define BOOST_DYNAMIC_BITSET_DONT_USE_FRIENDS
 #include "boost/dynamic_bitset.hpp"
-//#include <csize>
 
-//typedef boost::dynamic_bitset<unsigned long> bitSet;
 
 //Memory efficient storage of subsets of vertices in a graph
 class VSet
 {
 public:
-	//bitSet bitVec = 0;
 	boost::dynamic_bitset<uint64_t> bitVec;
-	//int currentSize = 0;
 
 public:
 	//Empty set
@@ -36,9 +26,7 @@ public:
 	//Convert a vector to a set of vertices
 	VSet(const std::vector<Vertex>& vec);
 
-	//Convert a vector to its integer representation
-	//unsigned long long asInt() const;
-
+	//Inline operators, shallow wrappers around the bitset operations
 	inline void erase(Vertex v) { bitVec[v] = false; }
 	inline bool contains(Vertex v) const { return bitVec[v]; };
 	inline bool empty() const { return bitVec.none(); }
@@ -46,19 +34,18 @@ public:
 	inline void insert(Vertex v) { bitVec[v] = true; }
 	inline void addAll(const VSet& that) { bitVec |= that.bitVec; }
 
-
+	//Return the lowest index of a vertex in this set
 	Vertex first() const;
-	Vertex firstNotContained(int numVerts) const;
 
 	//Write into the given vector
 	void members(std::vector<Vertex>& vec) const;
-	//bitSet getBitVec() const;
 
-	std::size_t operator()() const;
-
+	//Basic boolean operations
 	VSet setUnion(const VSet& that) const;
 	VSet setIntersection(const VSet& that) const;
 
+	//We improve performance by setting this globally
+	//And always initializing new VSets to this value
 	static int maxNumVerts;
 	
 
@@ -66,6 +53,7 @@ public:
 
 };
 
+//Allow our VSets to be stored in trees or hashtables
 namespace std {
 	template <> struct hash<VSet>
 	{
@@ -76,12 +64,10 @@ namespace std {
 	};
 }
 
-
 inline bool operator< (const VSet& lhs, const VSet& rhs) {
 	return lhs.bitVec < rhs.bitVec;
-
-
 }
+
 inline bool operator> (const VSet& lhs, const VSet& rhs) { return rhs < lhs; }
 inline bool operator<=(const VSet& lhs, const VSet& rhs) { return !(lhs > rhs); }
 inline bool operator>=(const VSet& lhs, const VSet& rhs) { return !(lhs < rhs); }

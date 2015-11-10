@@ -61,7 +61,7 @@ int main(int argc, char** argv)
 		read_coloring_problem(inGraphFile, testGraph);
 		inGraphFile.close();
 
-		//TODO better place for this?
+		//Set our vSet max number of verts globally here, speeds up vSet creation
 		VSet::maxNumVerts = boost::num_vertices(testGraph);
 
 		std::cout << "Num Vertices: " << boost::num_vertices(testGraph) << "\n";

@@ -76,18 +76,7 @@ Vertex VSet::first() const
 	return bitVec.find_first();
 }
 
-Vertex VSet::firstNotContained(int numVerts) const
-{
-	for (int i = 0; i < numVerts; ++i)
-	{
-		//Check if the ith bit is set. If it is, add that to our vector
-		if (!bitVec[i])
-		{
-			return i;
-		}
 
-	}
-}
 
 VSet VSet::setUnion(const VSet& that) const
 {
